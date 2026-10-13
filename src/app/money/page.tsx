@@ -43,6 +43,12 @@ export default function MoneyPage() {
 
   useEffect(() => {
     loadData();
+
+    const handleCreated = () => {
+      loadData();
+    };
+    window.addEventListener("synapseflow:transaction-created", handleCreated);
+    return () => window.removeEventListener("synapseflow:transaction-created", handleCreated);
   }, [loadData]);
 
   return (

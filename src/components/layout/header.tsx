@@ -1,15 +1,16 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Search, Bell, Moon, Sun, Menu } from "lucide-react";
+import { Search, Bell, Moon, Sun, Menu, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface HeaderProps {
   onToggleMobileMenu?: () => void;
+  onOpenQuickAdd?: () => void;
   className?: string;
 }
 
-export function Header({ onToggleMobileMenu, className }: HeaderProps) {
+export function Header({ onToggleMobileMenu, onOpenQuickAdd, className }: HeaderProps) {
   const [isDark, setIsDark] = useState(true);
   const [mounted, setMounted] = useState(false);
 
@@ -78,6 +79,21 @@ export function Header({ onToggleMobileMenu, className }: HeaderProps) {
             className="w-64 lg:w-80 h-9 pl-10 pr-4 text-xs rounded-full bg-card border border-card-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-neon/40 transition-all"
           />
         </div>
+
+        {/* Desktop Quick-Add Transaction Button */}
+        {onOpenQuickAdd && (
+          <button
+            onClick={onOpenQuickAdd}
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neon/15 hover:bg-neon/25 text-neon border border-neon/40 text-xs font-bold transition-all"
+            title="Catat Cepat Transaksi (Alt+N)"
+          >
+            <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+            <span>Catat Cepat</span>
+            <kbd className="hidden lg:inline-block ml-1 px-1.5 py-0.2 bg-black/40 text-[9px] font-mono text-neon/80 rounded border border-neon/30">
+              Alt+N
+            </kbd>
+          </button>
+        )}
 
         {/* Theme Toggle (Light / Dark mode) */}
         {mounted && (

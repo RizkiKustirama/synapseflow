@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { RightPanel } from "@/components/layout/right-panel";
@@ -13,8 +14,22 @@ interface AppShellProps {
 }
 
 export function AppShell({ children }: AppShellProps) {
+  const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
+
+  // Global keyboard shortcut: Alt + N (Quick Add)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.altKey && (e.key === "n" || e.key === "N")) {
+        e.preventDefault();
+        setQuickAddOpen((prev) => !prev);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background text-foreground">
@@ -29,7 +44,10 @@ export function AppShell({ children }: AppShellProps) {
 
       {/* 3. Center Canvas Column (Header + Main Content) */}
       <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
-        <Header onToggleMobileMenu={() => setMobileMenuOpen(true)} />
+        <Header
+          onToggleMobileMenu={() => setMobileMenuOpen(true)}
+          onOpenQuickAdd={() => setQuickAddOpen(true)}
+        />
         
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 pb-24 lg:pb-8">
           <div className="max-w-6xl mx-auto w-full">
@@ -49,7 +67,10 @@ export function AppShell({ children }: AppShellProps) {
         isOpen={quickAddOpen}
         onClose={() => setQuickAddOpen(false)}
         onSuccess={() => {
-          // Can refresh router or state if needed
+          router.refresh();
+          if (typeof window !== "undefined") {
+            window.dispatchEvent(new CustomEvent("synapseflow:transaction-created"));
+          }
         }}
       />
     </div>
