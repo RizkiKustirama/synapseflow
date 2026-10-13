@@ -702,7 +702,7 @@ export async function deleteMilestone(milestoneId: string, projectId: string) {
  * 12. Create Project Expense & Auto-sync to Money as EXPENSE
  */
 export async function createProjectExpense(formData: ProjectExpenseFormInput) {
-  const userId = await getCurrentUserId();
+  await getCurrentUserId();
   const validated = projectExpenseSchema.parse(formData);
 
   try {
