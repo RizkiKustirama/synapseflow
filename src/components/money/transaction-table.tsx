@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -14,13 +14,10 @@ import {
 import {
   ArrowUpDown,
   Search,
-  ArrowUpRight,
-  ArrowDownRight,
   Trash2,
   Eye,
   ChevronLeft,
   ChevronRight,
-  Filter,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -47,12 +44,15 @@ export function TransactionTable({ data, onRefresh }: TransactionTableProps) {
     return data.filter((item) => item.type === typeFilter);
   }, [data, typeFilter]);
 
-  const handleDelete = async (id: string, description: string) => {
-    if (confirm(`Hapus transaksi "${description}"?`)) {
-      await deleteTransaction(id);
-      onRefresh();
-    }
-  };
+  const handleDelete = useCallback(
+    async (id: string, description: string) => {
+      if (confirm(`Hapus transaksi "${description}"?`)) {
+        await deleteTransaction(id);
+        onRefresh();
+      }
+    },
+    [onRefresh]
+  );
 
   const columns = useMemo<ColumnDef<StoredTransaction>[]>(
     () => [
@@ -171,7 +171,7 @@ export function TransactionTable({ data, onRefresh }: TransactionTableProps) {
         ),
       },
     ],
-    []
+    [handleDelete]
   );
 
   const table = useReactTable({

@@ -5,7 +5,7 @@ import { X, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createCategory, updateCategory, StoredCategory } from "@/actions/money.actions";
-import { cn, formatRupiah } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 interface CategoryModalProps {
   isOpen: boolean;

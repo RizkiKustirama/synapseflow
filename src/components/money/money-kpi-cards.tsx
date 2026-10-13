@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ArrowUpRight, ArrowDownRight, Wallet, TrendingUp, PiggyBank } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, Wallet, PiggyBank } from "lucide-react";
 import { formatRupiah } from "@/lib/utils";
 
 interface MoneyKpiCardsProps {
