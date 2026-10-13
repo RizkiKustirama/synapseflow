@@ -1,0 +1,354 @@
+// ==============================================================================
+// SYNAPSEFLOW - PRISMA SCHEMA FOR POSTGRESQL
+// Multi-User Isolated Personal Operating System & Semi-ERP
+// ==============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ------------------------------------------------------------------------------
+// ENUMS
+// ------------------------------------------------------------------------------
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum TransactionSourceType {
+  MANUAL
+  EMPLOYMENT_PAYROLL
+  FREELANCE_MILESTONE
+  PROJECT_EXPENSE
+}
+
+enum WorkLocationType {
+  REMOTE
+  HYBRID
+  ONSITE
+}
+
+enum JobApplicationStatus {
+  WISHLIST
+  APPLIED
+  SCREENING
+  INTERVIEW
+  TECH_TEST
+  OFFERING
+  ACCEPTED
+  REJECTED
+  GHOSTED
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+}
+
+enum EmploymentStatus {
+  ACTIVE
+  PROBATION
+  COMPLETED
+  RESIGNED
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  BLOCKED
+  DONE
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum ProjectStatus {
+  PROSPECT
+  IN_PROGRESS
+  REVIEW
+  COMPLETED
+  CANCELLED
+}
+
+enum MilestoneStatus {
+  DRAFT
+  INVOICED
+  PAID
+  OVERDUE
+}
+
+// ------------------------------------------------------------------------------
+// MODELS
+// ------------------------------------------------------------------------------
+
+model User {
+  id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email           String            @unique @db.VarChar(255)
+  fullName        String            @map("full_name") @db.VarChar(255)
+  avatarUrl       String?           @map("avatar_url") @db.Text
+  currency        String            @default("IDR") @db.VarChar(10)
+  createdAt       DateTime          @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime          @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  // Relasi
+  categories      Category[]
+  jobApplications JobApplication[]
+  employments     Employment[]
+  clients         Client[]
+  projects        FreelanceProject[]
+  milestones      ProjectMilestone[]
+  transactions    Transaction[]
+
+  @@map("users")
+}
+
+model Category {
+  id            String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId        String          @map("user_id") @db.Uuid
+  name          String          @db.VarChar(100)
+  type          TransactionType
+  icon          String          @default("tag") @db.VarChar(50)
+  color         String          @default("#3BF029") @db.VarChar(50)
+  monthlyBudget Decimal?        @map("monthly_budget") @db.Decimal(15, 2)
+  createdAt     DateTime        @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt     DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions  Transaction[]
+
+  @@unique([userId, name, type])
+  @@index([userId])
+  @@map("categories")
+}
+
+model JobApplication {
+  id               String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId           String               @map("user_id") @db.Uuid
+  companyName      String               @map("company_name") @db.VarChar(255)
+  position         String               @db.VarChar(255)
+  workLocation     WorkLocationType     @default(REMOTE) @map("work_location")
+  status           JobApplicationStatus @default(APPLIED)
+  salaryOfferedMin Decimal?             @map("salary_offered_min") @db.Decimal(15, 2)
+  salaryOfferedMax Decimal?             @map("salary_offered_max") @db.Decimal(15, 2)
+  expectedSalary   Decimal?             @map("expected_salary") @db.Decimal(15, 2)
+  jobUrl           String?              @map("job_url") @db.Text
+  cvVersion        String?              @map("cv_version") @db.VarChar(100)
+  appliedDate      DateTime             @default(now()) @map("applied_date") @db.Date
+  notes            String?              @db.Text
+  createdAt        DateTime             @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime             @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  user             User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  interviewLogs    JobInterviewLog[]
+  employments      Employment[]
+
+  @@index([userId, status])
+  @@map("job_applications")
+}
+
+model JobInterviewLog {
+  id              String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  applicationId   String         @map("application_id") @db.Uuid
+  roundName       String         @map("round_name") @db.VarChar(100)
+  scheduledAt     DateTime       @map("scheduled_at") @db.Timestamptz
+  meetingLink     String?        @map("meeting_link") @db.Text
+  interviewerInfo String?        @map("interviewer_info") @db.Text
+  questionsAsked  String?        @map("questions_asked") @db.Text
+  feedbackNotes   String?        @map("feedback_notes") @db.Text
+  createdAt       DateTime       @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime       @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  application     JobApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId])
+  @@map("job_interview_logs")
+}
+
+model Employment {
+  id               String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId           String           @map("user_id") @db.Uuid
+  jobApplicationId String?          @map("job_application_id") @db.Uuid
+  companyName      String           @map("company_name") @db.VarChar(255)
+  role             String           @db.VarChar(255)
+  jobType          EmploymentType   @default(FULL_TIME) @map("job_type")
+  status           EmploymentStatus @default(ACTIVE)
+  payday           Int              @default(25)
+  baseSalary       Decimal          @default(0.00) @map("base_salary") @db.Decimal(15, 2)
+  fixedAllowance   Decimal          @default(0.00) @map("fixed_allowance") @db.Decimal(15, 2)
+  startDate        DateTime         @map("start_date") @db.Date
+  endDate          DateTime?        @map("end_date") @db.Date
+  createdAt        DateTime         @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt        DateTime         @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobApplication   JobApplication?  @relation(fields: [jobApplicationId], references: [id], onDelete: SetNull)
+  tasks            EmploymentTask[]
+  payrollRecords   PayrollRecord[]
+  transactions     Transaction[]
+
+  @@index([userId, status])
+  @@map("employments")
+}
+
+model EmploymentTask {
+  id           String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  employmentId String       @map("employment_id") @db.Uuid
+  title        String       @db.VarChar(255)
+  description  String?      @db.Text
+  status       TaskStatus   @default(TODO)
+  priority     TaskPriority @default(MEDIUM)
+  dueDate      DateTime?    @map("due_date") @db.Date
+  createdAt    DateTime     @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt    DateTime     @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  employment   Employment   @relation(fields: [employmentId], references: [id], onDelete: Cascade)
+
+  @@index([employmentId, status])
+  @@map("employment_tasks")
+}
+
+model Client {
+  id          String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String             @map("user_id") @db.Uuid
+  name        String             @db.VarChar(255)
+  company     String?            @db.VarChar(255)
+  email       String?            @db.VarChar(255)
+  phone       String?            @db.VarChar(50)
+  notes       String?            @db.Text
+  createdAt   DateTime           @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projects    FreelanceProject[]
+
+  @@index([userId])
+  @@map("clients")
+}
+
+model FreelanceProject {
+  id          String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String             @map("user_id") @db.Uuid
+  clientId    String?            @map("client_id") @db.Uuid
+  title       String             @db.VarChar(255)
+  description String?            @db.Text
+  status      ProjectStatus      @default(IN_PROGRESS)
+  totalBudget Decimal            @default(0.00) @map("total_budget") @db.Decimal(15, 2)
+  startDate   DateTime?          @map("start_date") @db.Date
+  deadline    DateTime?          @db.Date
+  createdAt   DateTime           @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime           @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  client      Client?            @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  milestones  ProjectMilestone[]
+  tasks       ProjectTask[]
+  transactions Transaction[]
+
+  @@index([userId, status])
+  @@map("freelance_projects")
+}
+
+model ProjectMilestone {
+  id            String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId        String           @map("user_id") @db.Uuid
+  projectId     String           @map("project_id") @db.Uuid
+  title         String           @db.VarChar(255)
+  amount        Decimal          @db.Decimal(15, 2)
+  status        MilestoneStatus  @default(DRAFT)
+  invoiceNumber String?          @map("invoice_number") @db.VarChar(100)
+  dueDate       DateTime?        @map("due_date") @db.Date
+  paidDate      DateTime?        @map("paid_date") @db.Date
+  createdAt     DateTime         @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt     DateTime         @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  user          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project       FreelanceProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  transactions  Transaction[]
+
+  @@index([userId, status])
+  @@index([projectId])
+  @@map("project_milestones")
+}
+
+model ProjectTask {
+  id        String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  projectId String           @map("project_id") @db.Uuid
+  title     String           @db.VarChar(255)
+  status    TaskStatus       @default(TODO)
+  dueDate   DateTime?        @map("due_date") @db.Date
+  createdAt DateTime         @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime         @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  project   FreelanceProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("project_tasks")
+}
+
+model Transaction {
+  id            String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId        String                @map("user_id") @db.Uuid
+  categoryId    String                @map("category_id") @db.Uuid
+  type          TransactionType
+  amount        Decimal               @db.Decimal(15, 2)
+  date          DateTime              @default(now()) @db.Date
+  description   String                @db.VarChar(255)
+  notes         String?               @db.Text
+  receiptUrl    String?               @map("receipt_url") @db.Text
+
+  sourceType    TransactionSourceType @default(MANUAL) @map("source_type")
+  employmentId  String?               @map("employment_id") @db.Uuid
+  projectId     String?               @map("project_id") @db.Uuid
+  milestoneId   String?               @map("milestone_id") @db.Uuid
+
+  createdAt     DateTime              @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt     DateTime              @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  user          User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category      Category              @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  employment    Employment?           @relation(fields: [employmentId], references: [id], onDelete: SetNull)
+  project       FreelanceProject?     @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  milestone     ProjectMilestone?     @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
+  payrollRecord PayrollRecord?
+
+  @@index([userId, date(sort: Desc)])
+  @@index([userId, type])
+  @@index([projectId])
+  @@index([employmentId])
+  @@map("transactions")
+}
+
+model PayrollRecord {
+  id              String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  employmentId    String       @map("employment_id") @db.Uuid
+  periodMonth     Int          @map("period_month")
+  periodYear      Int          @map("period_year")
+  baseAmount      Decimal      @map("base_amount") @db.Decimal(15, 2)
+  allowanceAmount Decimal      @default(0.00) @map("allowance_amount") @db.Decimal(15, 2)
+  bonusIncentive  Decimal      @default(0.00) @map("bonus_incentive") @db.Decimal(15, 2)
+  deductions      Decimal      @default(0.00) @db.Decimal(15, 2)
+  netReceived     Decimal      @map("net_received") @db.Decimal(15, 2)
+  paidDate        DateTime     @map("paid_date") @db.Date
+  slipFileUrl     String?      @map("slip_file_url") @db.Text
+  transactionId   String?      @unique @map("transaction_id") @db.Uuid
+  createdAt       DateTime     @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime     @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  employment      Employment   @relation(fields: [employmentId], references: [id], onDelete: Cascade)
+  transaction     Transaction? @relation(fields: [transactionId], references: [id], onDelete: SetNull)
+
+  @@unique([employmentId, periodMonth, periodYear])
+  @@index([employmentId])
+  @@map("payroll_records")
+}

@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light Mode (Ivory Charcoal & Neon Lime) */
+    --background: #F5F6F8;
+    --foreground: #0F172A;
+    --sidebar-background: #0C0E12;
+    --sidebar-foreground: #FFFFFF;
+    --sidebar-accent: rgba(255, 255, 255, 0.12);
+    --card: #FFFFFF;
+    --card-foreground: #0F172A;
+    --card-border: #E2E8F0;
+    --hero-card-bg: linear-gradient(135deg, #EAFCE3 0%, #FFFFFF 100%);
+    --hero-card-fg: #0F172A;
+    --muted-text: #64748B;
+    --neon-accent: #22C55E;
+    --badge-processing: #86EF3C;
+    --badge-done: #FED7AA;
+    --badge-pending: #E2E8F0;
+  }
+
+  .dark {
+    /* Dark Mode (Cyber-Forest Obsidian & Neon Glow) */
+    --background: #081308;
+    --foreground: #FFFFFF;
+    --sidebar-background: #227C0E;
+    --sidebar-foreground: #FFFFFF;
+    --sidebar-accent: #175B09;
+    --card: #112111;
+    --card-foreground: #FFFFFF;
+    --card-border: #1D381D;
+    --hero-card-bg: #FFFFFF;
+    --hero-card-fg: #0C180B;
+    --muted-text: #7DA37B;
+    --neon-accent: #3BF029;
+    --badge-processing: #86EF3C;
+    --badge-done: #D97706;
+    --badge-pending: #233B23;
+  }
+
+  * {
+    border-color: var(--card-border);
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+/* Custom scrollbar for ERP tables and panels */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(125, 163, 123, 0.25);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(125, 163, 123, 0.5);
+}
