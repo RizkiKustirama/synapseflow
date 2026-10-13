@@ -365,3 +365,90 @@ export async function getMoneySummary() {
     totalReceivables,
   };
 }
+
+/**
+ * 7. Update Category
+ */
+export async function updateCategory(categoryId: string, formData: CategoryFormInput) {
+  const userId = await getCurrentUserId();
+  const validated = categorySchema.parse(formData);
+
+  try {
+    const updated = await prisma.category.update({
+      where: { id: categoryId, userId },
+      data: {
+        name: validated.name,
+        type: validated.type,
+        icon: validated.icon,
+        color: validated.color,
+        monthlyBudget: validated.monthlyBudget ? Number(validated.monthlyBudget) : null,
+      },
+    });
+    revalidatePath("/money");
+    revalidatePath("/money/budgets");
+    return { success: true, data: updated };
+  } catch {
+    const idx = mockCategoriesStore.findIndex((c) => c.id === categoryId);
+    if (idx !== -1) {
+      mockCategoriesStore[idx] = {
+        ...mockCategoriesStore[idx],
+        name: validated.name,
+        type: validated.type,
+        icon: validated.icon,
+        color: validated.color,
+        monthlyBudget: validated.monthlyBudget ?? null,
+      };
+    }
+    revalidatePath("/money");
+    revalidatePath("/money/budgets");
+    return { success: true, data: mockCategoriesStore[idx] };
+  }
+}
+
+/**
+ * 8. Delete Category
+ */
+export async function deleteCategory(categoryId: string) {
+  const userId = await getCurrentUserId();
+
+  try {
+    await prisma.category.deleteMany({
+      where: { id: categoryId, userId },
+    });
+  } catch {
+    mockCategoriesStore = mockCategoriesStore.filter((c) => c.id !== categoryId);
+  }
+
+  revalidatePath("/money");
+  revalidatePath("/money/budgets");
+  return { success: true };
+}
+
+/**
+ * 9. Get Categories with Monthly Spent vs Budget Calculation
+ */
+export async function getCategoryBudgetsWithSpent() {
+  const categories = await getCategories("EXPENSE");
+  const transactions = await getTransactions({ type: "EXPENSE" });
+
+  return categories.map((cat) => {
+    const totalSpent = transactions
+      .filter((t) => t.categoryId === cat.id)
+      .reduce((sum, t) => sum + t.amount, 0);
+
+    const budget = cat.monthlyBudget || 0;
+    const percentage = budget > 0 ? Math.min(100, Math.round((totalSpent / budget) * 100)) : 0;
+    const isOverBudget = budget > 0 && totalSpent > budget;
+    const isNearLimit = budget > 0 && percentage >= 70 && !isOverBudget;
+
+    return {
+      ...cat,
+      totalSpent,
+      budget,
+      percentage,
+      status: isOverBudget ? ("OVER_BUDGET" as const) : isNearLimit ? ("WARNING" as const) : ("HEALTHY" as const),
+      remaining: Math.max(0, budget - totalSpent),
+    };
+  });
+}
+
