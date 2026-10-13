@@ -444,7 +444,7 @@ export async function toggleDashboardTaskStatus(taskId: string, currentStatus: s
 
   await prisma.employmentTask.update({
     where: { id: taskId },
-    data: { status: newStatus as any },
+    data: { status: newStatus },
   });
 
   revalidatePath("/");
