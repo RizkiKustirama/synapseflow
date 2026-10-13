@@ -6,12 +6,13 @@ import { Plus, Wallet, PieChart, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { QuickAddModal } from "@/components/money/quick-add-modal";
 import { TransactionTable } from "@/components/money/transaction-table";
+import { MoneyKpiCards } from "@/components/money/money-kpi-cards";
+import { ReceivablesCard } from "@/components/money/receivables-card";
 import {
   getTransactions,
   getMoneySummary,
   StoredTransaction,
 } from "@/actions/money.actions";
-import { formatRupiah } from "@/lib/utils";
 
 export default function MoneyPage() {
   const [transactions, setTransactions] = useState<StoredTransaction[]>([]);
@@ -93,56 +94,11 @@ export default function MoneyPage() {
         </button>
       </div>
 
-      {/* Summary KPI Strip */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-5 rounded-3xl bg-card border border-card-border shadow-sm">
-          <span className="text-[11px] text-muted-foreground font-semibold uppercase">
-            Total Saldo Kas
-          </span>
-          <p className="text-xl sm:text-2xl font-black text-foreground mt-1 tabular-nums">
-            {formatRupiah(summary.totalBalance)}
-          </p>
-          <span className="text-[10px] text-neon font-medium mt-1 inline-block">
-            Surplus Kas Aktif
-          </span>
-        </div>
+      {/* Real-time KPI Cards & Ratio Gauge */}
+      <MoneyKpiCards summary={summary} />
 
-        <div className="p-5 rounded-3xl bg-card border border-card-border shadow-sm">
-          <span className="text-[11px] text-muted-foreground font-semibold uppercase">
-            Pemasukan Bulan Ini
-          </span>
-          <p className="text-xl sm:text-2xl font-black text-neon mt-1 tabular-nums">
-            {formatRupiah(summary.monthlyIncome)}
-          </p>
-          <span className="text-[10px] text-muted-foreground mt-1 inline-block">
-            Gaji + Freelance
-          </span>
-        </div>
-
-        <div className="p-5 rounded-3xl bg-card border border-card-border shadow-sm">
-          <span className="text-[11px] text-muted-foreground font-semibold uppercase">
-            Pengeluaran Bulan Ini
-          </span>
-          <p className="text-xl sm:text-2xl font-black text-red-400 mt-1 tabular-nums">
-            {formatRupiah(summary.monthlyExpense)}
-          </p>
-          <span className="text-[10px] text-muted-foreground mt-1 inline-block">
-            Biaya hidup & operasional
-          </span>
-        </div>
-
-        <div className="p-5 rounded-3xl bg-card border border-card-border shadow-sm">
-          <span className="text-[11px] text-muted-foreground font-semibold uppercase">
-            Total Piutang Aktif
-          </span>
-          <p className="text-xl sm:text-2xl font-black text-amber-400 mt-1 tabular-nums">
-            {formatRupiah(summary.totalReceivables)}
-          </p>
-          <span className="text-[10px] text-muted-foreground mt-1 inline-block">
-            Menunggu termin freelance
-          </span>
-        </div>
-      </div>
+      {/* Receivables (Piutang Tracker) Card */}
+      <ReceivablesCard onSettled={loadData} />
 
       {/* TanStack Data Table for Transactions */}
       <div className="space-y-3">
