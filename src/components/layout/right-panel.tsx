@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
-import { Calendar } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Calendar, CheckCircle2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn, formatRupiah, getDaysUntilPayday } from "@/lib/utils";
+import { getExecutiveDashboardData, ExecutiveDashboardData } from "@/actions/dashboard.actions";
 
 interface RightPanelProps {
   className?: string;
@@ -11,6 +12,7 @@ interface RightPanelProps {
 
 export function RightPanel({ className }: RightPanelProps) {
   const [selectedDay, setSelectedDay] = useState(new Date().getDate());
+  const [data, setData] = useState<ExecutiveDashboardData | null>(null);
 
   // Generate 7 days of current week
   const today = new Date();
@@ -29,7 +31,34 @@ export function RightPanel({ className }: RightPanelProps) {
     };
   });
 
-  const { daysRemaining } = getDaysUntilPayday(25);
+  useEffect(() => {
+    let mounted = true;
+    async function loadData() {
+      try {
+        const res = await getExecutiveDashboardData();
+        if (mounted) setData(res);
+      } catch (err) {
+        console.error("RightPanel load error:", err);
+      }
+    }
+    loadData();
+
+    const handleRefresh = () => {
+      loadData();
+    };
+    window.addEventListener("synapseflow:transaction-created", handleRefresh);
+    return () => {
+      mounted = false;
+      window.removeEventListener("synapseflow:transaction-created", handleRefresh);
+    };
+  }, []);
+
+  const fallbackDays = getDaysUntilPayday(25).daysRemaining;
+  const paydayNumber = data?.metrics.nextPayday.payday || 25;
+  const daysRemaining = data?.metrics.nextPayday.daysRemaining ?? fallbackDays;
+  const companyName = data?.metrics.nextPayday.companyName || "Pekerjaan Aktif";
+  const baseSalary = data?.metrics.nextPayday.baseSalary || 0;
+  const deliverables = data?.activeDeliverables || [];
 
   return (
     <aside
@@ -79,7 +108,7 @@ export function RightPanel({ className }: RightPanelProps) {
         <div className="flex items-center justify-between mb-2">
           <span className="text-xs font-bold text-foreground">Payday Countdown</span>
           <Badge variant="processing" className="text-[10px]">
-            Tgl 25
+            Tgl {paydayNumber}
           </Badge>
         </div>
 
@@ -103,7 +132,7 @@ export function RightPanel({ className }: RightPanelProps) {
                 stroke="currentColor"
                 strokeWidth="4"
                 strokeDasharray="163.3"
-                strokeDashoffset={163.3 * (daysRemaining / 30)}
+                strokeDashoffset={163.3 * (Math.max(0, Math.min(30, daysRemaining)) / 30)}
                 className="text-neon transition-all duration-1000"
                 fill="transparent"
                 strokeLinecap="round"
@@ -120,11 +149,11 @@ export function RightPanel({ className }: RightPanelProps) {
           </div>
 
           <div className="flex flex-col">
-            <span className="text-xs font-semibold text-foreground">
-              PT Tech Innovasi
+            <span className="text-xs font-semibold text-foreground truncate max-w-[150px]">
+              {companyName}
             </span>
             <span className="text-[11px] text-muted-foreground mt-0.5">
-              Gaji Pokok: {formatRupiah(18500000)}
+              Gaji Pokok: {formatRupiah(baseSalary)}
             </span>
             <span className="text-[10px] text-neon font-medium mt-1">
               • Auto-sync ke Money siap
@@ -137,52 +166,44 @@ export function RightPanel({ className }: RightPanelProps) {
       <div className="p-4 rounded-3xl bg-card border border-card-border shadow-sm space-y-3">
         <div className="flex items-center justify-between">
           <span className="text-xs font-bold text-foreground">Proyek & Milestones</span>
-          <span className="text-[10px] text-neon font-semibold">2 Aktif</span>
+          <span className="text-[10px] text-neon font-semibold">{deliverables.length} Aktif</span>
         </div>
 
-        {/* Milestone 1 */}
-        <div className="p-3 rounded-2xl bg-background border border-card-border/60 space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-foreground truncate max-w-[150px]">
-              E-Commerce Redesign
-            </span>
-            <Badge variant="processing" className="text-[9px]">
-              DP Lunas
-            </Badge>
+        {deliverables.length === 0 ? (
+          <div className="p-4 rounded-2xl bg-background/50 border border-card-border/40 text-center space-y-1">
+            <CheckCircle2 className="w-6 h-6 text-neon mx-auto opacity-70" />
+            <p className="text-xs font-semibold text-foreground">Semua Termin Selesai</p>
+            <p className="text-[10px] text-muted-foreground">Tidak ada piutang jatuh tempo</p>
           </div>
-          <div className="w-full bg-card-border h-1.5 rounded-full overflow-hidden">
-            <div
-              className="bg-neon h-full rounded-full transition-all"
-              style={{ width: "70%" }}
-            />
-          </div>
-          <div className="flex justify-between text-[10px] text-muted-foreground">
-            <span>Termin 2 (Progress 40%)</span>
-            <span className="text-foreground font-semibold">{formatRupiah(8000000)}</span>
-          </div>
-        </div>
-
-        {/* Milestone 2 */}
-        <div className="p-3 rounded-2xl bg-background border border-card-border/60 space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-foreground truncate max-w-[150px]">
-              Design System SaaS
-            </span>
-            <Badge variant="done" className="text-[9px]">
-              Pelunasan
-            </Badge>
-          </div>
-          <div className="w-full bg-card-border h-1.5 rounded-full overflow-hidden">
-            <div
-              className="bg-amber-400 h-full rounded-full transition-all"
-              style={{ width: "90%" }}
-            />
-          </div>
-          <div className="flex justify-between text-[10px] text-muted-foreground">
-            <span>Invoiced (Piutang)</span>
-            <span className="text-foreground font-semibold">{formatRupiah(6500000)}</span>
-          </div>
-        </div>
+        ) : (
+          deliverables.slice(0, 3).map((item) => (
+            <div key={item.id} className="p-3 rounded-2xl bg-background border border-card-border/60 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-foreground truncate max-w-[150px]">
+                  {item.projectName}
+                </span>
+                <Badge
+                  variant={item.status === "PAID" ? "done" : item.status === "INVOICED" ? "processing" : "pending"}
+                  className="text-[9px]"
+                >
+                  {item.status === "PAID" ? "Lunas" : item.status === "INVOICED" ? "Invoiced" : "Draft"}
+                </Badge>
+              </div>
+              <div className="w-full bg-card-border h-1.5 rounded-full overflow-hidden">
+                <div
+                  className={cn(
+                    "h-full rounded-full transition-all",
+                    item.status === "PAID" ? "bg-neon w-full" : "bg-amber-400 w-3/4"
+                  )}
+                />
+              </div>
+              <div className="flex justify-between text-[10px] text-muted-foreground">
+                <span className="truncate max-w-[140px]">{item.title}</span>
+                <span className="text-foreground font-semibold">{formatRupiah(item.amount)}</span>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </aside>
   );
