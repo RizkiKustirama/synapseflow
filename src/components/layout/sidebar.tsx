@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Briefcase,
@@ -11,8 +11,10 @@ import {
   Wallet,
   Settings,
   Sparkles,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getCurrentUser, logoutUser, AuthUser } from "@/actions/auth.actions";
 
 interface SidebarProps {
   className?: string;
@@ -29,7 +31,7 @@ const navItems = [
     title: "Career",
     href: "/career",
     icon: Briefcase,
-    badge: "3",
+    badge: undefined,
   },
   {
     title: "Employment",
@@ -41,96 +43,116 @@ const navItems = [
     title: "Freelance",
     href: "/freelance",
     icon: FolderGit2,
-    badge: "2",
+    badge: undefined,
   },
   {
-    title: "Money Ledger",
+    title: "Money",
     href: "/money",
     icon: Wallet,
     badge: undefined,
   },
 ];
 
+function getInitials(name: string): string {
+  if (!name) return "SF";
+  const parts = name.trim().split(" ");
+  if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
 export function Sidebar({ className }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  useEffect(() => {
+    getCurrentUser().then((userData) => {
+      if (userData) setUser(userData);
+    });
+  }, []);
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await logoutUser();
+      router.push("/login");
+      router.refresh();
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
+
+  const displayName = user?.fullName || "Pengguna Synapse";
+  const displayEmail = user?.email || "multi-tenant@synapse.app";
+  const initials = getInitials(displayName);
 
   return (
     <aside
       className={cn(
-        "hidden lg:flex flex-col w-64 xl:w-72 h-screen sticky top-0 bg-sidebar text-sidebar-foreground border-r border-sidebar-accent/30 p-4 select-none z-30 transition-all",
+        "hidden lg:flex flex-col w-64 h-screen bg-sidebar text-sidebar-foreground border-r border-sidebar-border p-4 transition-all duration-300",
         className
       )}
     >
       {/* Brand Header */}
-      <div className="flex items-center gap-3 px-3 py-3 mb-4">
-        {/* Möbius Ribbon Logo */}
-        <div className="relative flex items-center justify-center w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-600 via-lime-500 to-neon shadow-[0_0_20px_rgba(59,240,41,0.3)]">
-          <div className="w-5 h-5 rounded-full border-2 border-white/90 flex items-center justify-center">
-            <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
-          </div>
+      <div className="flex items-center gap-3 px-2 py-3 mb-4">
+        <div className="relative flex items-center justify-center w-9 h-9 rounded-xl bg-neon/20 text-neon border border-neon/40 shadow-sm shadow-neon/20">
+          <div className="w-4 h-4 rounded-full bg-neon animate-pulse" />
         </div>
-
         <div className="flex flex-col">
-          <span className="text-xl font-extrabold tracking-tight">
+          <span className="text-base font-black tracking-tight text-white leading-none">
             Synapse<span className="text-neon">Flow</span>
           </span>
-          <span className="text-[10px] uppercase font-bold tracking-widest text-white/50">
-            Semi-ERP OS
+          <span className="text-[10px] uppercase tracking-wider text-white/50 font-bold mt-1">
+            Personal OS
           </span>
         </div>
       </div>
 
-      {/* User Level Profile Card */}
-      <div className="mb-6 p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
+      {/* User Mini Profile Card */}
+      <div className="p-3 mb-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
         <div className="flex items-center gap-3">
-          {/* Avatar with Circular Ring Progress */}
-          <div className="relative flex items-center justify-center">
-            <svg className="w-12 h-12 transform -rotate-90">
+          <div className="relative flex items-center justify-center w-10 h-10 shrink-0">
+            <svg className="w-full h-full transform -rotate-90">
               <circle
-                cx="24"
-                cy="24"
-                r="20"
+                cx="20"
+                cy="20"
+                r="17"
                 stroke="currentColor"
-                strokeWidth="3"
+                strokeWidth="2.5"
                 className="text-white/10"
                 fill="transparent"
               />
               <circle
-                cx="24"
-                cy="24"
-                r="20"
+                cx="20"
+                cy="20"
+                r="17"
                 stroke="currentColor"
-                strokeWidth="3"
-                strokeDasharray="125.6"
-                strokeDashoffset="35.1"
+                strokeWidth="2.5"
+                strokeDasharray="106.8"
+                strokeDashoffset="26.7"
                 className="text-neon transition-all duration-1000"
                 fill="transparent"
                 strokeLinecap="round"
               />
             </svg>
-            <div className="absolute w-9 h-9 rounded-full bg-gradient-to-br from-emerald-800 to-black border-2 border-sidebar-foreground/20 flex items-center justify-center text-xs font-bold text-white">
-              SF
+            <div className="absolute w-8 h-8 rounded-full bg-gradient-to-br from-emerald-800 to-black border border-white/20 flex items-center justify-center text-[11px] font-bold text-white uppercase">
+              {initials}
             </div>
           </div>
 
           <div className="flex flex-col flex-1 min-w-0">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-white truncate">
-                Alex Pratama
+              <span className="text-xs font-bold text-white truncate" title={displayName}>
+                {displayName}
               </span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-neon/20 text-neon font-bold">
-                Lv. 7
+              <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-neon/20 text-neon font-bold">
+                Aktif
               </span>
             </div>
-            <span className="text-[11px] text-white/60 truncate">
-              Senior Fullstack
+            <span className="text-[10px] text-white/60 truncate mt-0.5" title={displayEmail}>
+              {displayEmail}
             </span>
-            <div className="w-full bg-white/10 h-1 rounded-full mt-1.5 overflow-hidden">
-              <div
-                className="bg-neon h-full rounded-full transition-all duration-700"
-                style={{ width: "72%" }}
-              />
-            </div>
           </div>
         </div>
       </div>
@@ -138,7 +160,7 @@ export function Sidebar({ className }: SidebarProps) {
       {/* Navigation Links */}
       <nav className="flex-1 space-y-1.5 overflow-y-auto pr-1">
         <div className="px-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-white/40">
-          Main Modules
+          Modul Utama
         </div>
 
         {navItems.map((item) => {
@@ -170,25 +192,12 @@ export function Sidebar({ className }: SidebarProps) {
                 />
                 <span>{item.title}</span>
               </div>
-
-              {item.badge && (
-                <span
-                  className={cn(
-                    "px-2 py-0.5 text-xs font-bold rounded-full transition-all",
-                    isActive
-                      ? "bg-neon text-black"
-                      : "bg-white/10 text-white group-hover:bg-neon/20 group-hover:text-neon"
-                  )}
-                >
-                  {item.badge}
-                </span>
-              )}
             </Link>
           );
         })}
 
         <div className="pt-4 px-3 pb-1 text-[11px] font-bold uppercase tracking-wider text-white/40">
-          Preferences
+          Preferensi & Akun
         </div>
 
         <Link
@@ -205,18 +214,28 @@ export function Sidebar({ className }: SidebarProps) {
             <span>Settings</span>
           </div>
         </Link>
+
+        {/* Logout button */}
+        <button
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-rose-400/80 hover:text-rose-400 hover:bg-rose-500/10 transition-all duration-200 cursor-pointer"
+        >
+          <LogOut className="w-5 h-5" />
+          <span>{isLoggingOut ? "Keluar..." : "Keluar (Logout)"}</span>
+        </button>
       </nav>
 
-      {/* Footer Banner / Community Card */}
+      {/* Footer Banner */}
       <div className="mt-auto p-3.5 rounded-2xl bg-gradient-to-br from-white/10 to-transparent border border-white/10">
         <div className="flex items-start gap-2.5">
           <div className="p-2 rounded-xl bg-neon/20 text-neon">
             <Sparkles className="w-4 h-4" />
           </div>
           <div className="flex flex-col">
-            <span className="text-xs font-bold text-white">Synapse Pro</span>
+            <span className="text-xs font-bold text-white">Multi-Tenant OS</span>
             <span className="text-[11px] text-white/60 leading-tight mt-0.5">
-              Multi-tenant sync active
+              Isolasi database aktif
             </span>
           </div>
         </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { RightPanel } from "@/components/layout/right-panel";
@@ -15,6 +15,7 @@ interface AppShellProps {
 
 export function AppShell({ children }: AppShellProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
 
@@ -30,6 +31,16 @@ export function AppShell({ children }: AppShellProps) {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
+
+  // For public auth pages (login / register), render clean layout without navigation chrome
+  const isAuthPage = pathname === "/login" || pathname === "/register";
+  if (isAuthPage) {
+    return (
+      <div className="min-h-screen w-full bg-background text-foreground flex flex-col justify-center">
+        {children}
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background text-foreground">
@@ -48,11 +59,9 @@ export function AppShell({ children }: AppShellProps) {
           onToggleMobileMenu={() => setMobileMenuOpen(true)}
           onOpenQuickAdd={() => setQuickAddOpen(true)}
         />
-        
+
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 pb-24 lg:pb-8">
-          <div className="max-w-6xl mx-auto w-full">
-            {children}
-          </div>
+          <div className="max-w-6xl mx-auto w-full">{children}</div>
         </main>
       </div>
 
@@ -69,7 +78,9 @@ export function AppShell({ children }: AppShellProps) {
         onSuccess={() => {
           router.refresh();
           if (typeof window !== "undefined") {
-            window.dispatchEvent(new CustomEvent("synapseflow:transaction-created"));
+            window.dispatchEvent(
+              new CustomEvent("synapseflow:transaction-created")
+            );
           }
         }}
       />
