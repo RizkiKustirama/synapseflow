@@ -11,6 +11,7 @@ import {
   PayrollRecordFormInput,
 } from "@/lib/validations/employment.schema";
 import { createTransaction, getCategories } from "@/actions/money.actions";
+import { getDaysUntilPayday } from "@/lib/utils";
 
 const DEFAULT_USER_ID = "c0000000-0000-0000-0000-000000000001";
 
@@ -224,6 +225,146 @@ export async function getEmployments(): Promise<StoredEmployment[]> {
 export async function getActiveEmployment(): Promise<StoredEmployment | null> {
   const list = await getEmployments();
   return list.find((e) => e.status === "ACTIVE") || list[0] || null;
+}
+
+/**
+ * 2B. Get Employment By ID (Scoped to User)
+ */
+export async function getEmploymentById(id: string): Promise<StoredEmployment | null> {
+  const userId = await getCurrentUserId();
+
+  try {
+    const emp = await prisma.employment.findFirst({
+      where: { id, userId },
+      include: {
+        tasks: { orderBy: { createdAt: "desc" } },
+        payrollRecords: { orderBy: { periodYear: "desc" } },
+      },
+    });
+
+    if (emp) {
+      return {
+        id: emp.id,
+        userId: emp.userId,
+        jobApplicationId: emp.jobApplicationId,
+        companyName: emp.companyName,
+        role: emp.role,
+        jobType: emp.jobType,
+        status: emp.status,
+        payday: emp.payday,
+        baseSalary: Number(emp.baseSalary),
+        fixedAllowance: Number(emp.fixedAllowance),
+        startDate: emp.startDate.toISOString().split("T")[0],
+        endDate: emp.endDate ? emp.endDate.toISOString().split("T")[0] : null,
+        tasks: emp.tasks.map((t) => ({
+          id: t.id,
+          employmentId: t.employmentId,
+          title: t.title,
+          description: t.description,
+          status: t.status,
+          priority: t.priority,
+          dueDate: t.dueDate ? t.dueDate.toISOString().split("T")[0] : null,
+          createdAt: t.createdAt.toISOString(),
+        })),
+        payrollRecords: emp.payrollRecords.map((p) => ({
+          id: p.id,
+          employmentId: p.employmentId,
+          periodMonth: p.periodMonth,
+          periodYear: p.periodYear,
+          baseSalary: Number(p.baseAmount),
+          allowance: Number(p.allowanceAmount),
+          incentiveBonus: Number(p.bonusIncentive),
+          deductions: Number(p.deductions),
+          netSalary: Number(p.netReceived),
+          payslipUrl: p.slipFileUrl,
+          isSyncedToMoney: !!p.transactionId,
+          syncedTransactionId: p.transactionId,
+          paidAt: p.paidDate.toISOString().split("T")[0],
+        })),
+      };
+    }
+  } catch {
+    // Database offline fallback
+  }
+
+  return mockEmploymentsStore.find((e) => e.id === id && e.userId === userId) || null;
+}
+
+/**
+ * 2C. Get Scoped Office Tasks for Employment
+ */
+export async function getOfficeTasks(employmentId: string): Promise<StoredEmploymentTask[]> {
+  const emp = await getEmploymentById(employmentId);
+  return emp ? emp.tasks : [];
+}
+
+export const getEmploymentTasks = getOfficeTasks;
+
+/**
+ * 2D. Get Scoped Payroll Records for Employment
+ */
+export async function getPayrollRecords(employmentId: string): Promise<StoredPayrollRecord[]> {
+  const emp = await getEmploymentById(employmentId);
+  return emp ? emp.payrollRecords : [];
+}
+
+/**
+ * Helper: Calculate tenure duration in Indonesian format
+ */
+export function calculateTenure(startDateStr: string, endDateStr?: string | null): string {
+  const start = new Date(startDateStr);
+  const end = endDateStr ? new Date(endDateStr) : new Date();
+
+  if (isNaN(start.getTime())) return "-";
+
+  let years = end.getFullYear() - start.getFullYear();
+  let months = end.getMonth() - start.getMonth();
+
+  if (end.getDate() < start.getDate()) {
+    months--;
+  }
+
+  if (months < 0) {
+    years--;
+    months += 12;
+  }
+
+  if (years <= 0 && months <= 0) {
+    return "< 1 Bulan";
+  }
+
+  if (years <= 0) {
+    return `${months} Bulan`;
+  }
+
+  if (months === 0) {
+    return `${years} Tahun`;
+  }
+
+  return `${years} Thn ${months} Bln`;
+}
+
+/**
+ * Helper: Compute Company Detail Hub top stats
+ */
+export function getCompanyWorkspaceStats(emp: StoredEmployment) {
+  const tenure = calculateTenure(emp.startDate, emp.endDate);
+  const { daysRemaining, nextDate } = getDaysUntilPayday(emp.payday);
+  const totalPaidAmount = emp.payrollRecords.reduce((acc, curr) => acc + curr.netSalary, 0);
+  const completedTasksCount = emp.tasks.filter((t) => t.status === "DONE").length;
+  const totalTasksCount = emp.tasks.length;
+  const taskCompletionRatio =
+    totalTasksCount > 0 ? Math.round((completedTasksCount / totalTasksCount) * 100) : 0;
+
+  return {
+    tenure,
+    daysUntilPayday: daysRemaining,
+    nextPaydayDate: nextDate,
+    totalPaidAmount,
+    completedTasksCount,
+    totalTasksCount,
+    taskCompletionRatio,
+  };
 }
 
 /**
@@ -562,11 +703,18 @@ export async function syncPayrollToMoney(payrollId: string, employmentId: string
  */
 export async function getEmploymentSummary() {
   const employments = await getEmployments();
-  const activeEmp = employments.find((e) => e.status === "ACTIVE") || employments[0] || null;
+  const activeEmployments = employments.filter((e) => e.status === "ACTIVE");
+  const activeEmp = activeEmployments[0] || employments[0] || null;
 
   const totalBaseSalary = activeEmp ? activeEmp.baseSalary : 0;
   const totalFixedAllowance = activeEmp ? activeEmp.fixedAllowance : 0;
   const totalTakeHomePay = totalBaseSalary + totalFixedAllowance;
+
+  // Global accumulated monthly salary for all active contracts
+  const totalAccumulatedMonthlySalary = activeEmployments.reduce(
+    (sum, e) => sum + e.baseSalary + e.fixedAllowance,
+    0
+  );
 
   const allTasks = employments.flatMap((e) => e.tasks);
   const pendingTasks = allTasks.filter((t) => t.status !== "DONE").length;
@@ -577,14 +725,20 @@ export async function getEmploymentSummary() {
     .filter((p) => p.isSyncedToMoney)
     .reduce((acc, curr) => acc + curr.netSalary, 0);
 
+  const totalPaidPayrollAllTime = allPayrolls.reduce((acc, curr) => acc + curr.netSalary, 0);
+
   return {
     hasActiveEmployment: !!activeEmp,
+    activeEmploymentsCount: activeEmployments.length,
+    totalEmploymentsCount: employments.length,
     companyName: activeEmp?.companyName || "-",
     role: activeEmp?.role || "-",
     payday: activeEmp?.payday || 25,
     totalBaseSalary,
     totalFixedAllowance,
     totalTakeHomePay,
+    totalAccumulatedMonthlySalary,
+    totalPaidPayrollAllTime,
     pendingTasks,
     urgentTasks,
     totalSyncedPayroll,
