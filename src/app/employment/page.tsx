@@ -1,61 +1,76 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import Link from "next/link";
 import {
   Building2,
   Calendar,
-  CheckSquare,
-  Clock,
   DollarSign,
   Plus,
   RefreshCw,
   Sparkles,
+  Wallet,
+  Search,
+  ChevronRight,
+  Pencil,
+  Trash2,
+  CheckCircle2,
+  Clock,
+  Briefcase,
+  AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { formatRupiah, cn } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { formatRupiah, formatDate, cn } from "@/lib/utils";
 import {
   getEmployments,
-  getActiveEmployment,
   getEmploymentSummary,
+  deleteEmployment,
+  calculateTenure,
   StoredEmployment,
 } from "@/actions/employment.actions";
-import { ContractCard } from "@/components/employment/contract-card";
 import { ContractModal } from "@/components/employment/contract-modal";
-import { OfficeTasks } from "@/components/employment/office-tasks";
-import { PayrollTable } from "@/components/employment/payroll-table";
 
-type SubTab = "OVERVIEW" | "TASKS" | "PAYROLL";
+type StatusFilter = "ALL" | "ACTIVE" | "PROBATION" | "COMPLETED_RESIGNED";
 
-export default function EmploymentPage() {
-  const [activeEmp, setActiveEmp] = useState<StoredEmployment | null>(null);
-  const [allEmps, setAllEmps] = useState<StoredEmployment[]>([]);
+export default function EmploymentMasterPage() {
+  const [employments, setEmployments] = useState<StoredEmployment[]>([]);
   const [summary, setSummary] = useState({
     hasActiveEmployment: false,
+    activeEmploymentsCount: 0,
+    totalEmploymentsCount: 0,
     companyName: "-",
     role: "-",
     payday: 25,
     totalBaseSalary: 0,
     totalFixedAllowance: 0,
     totalTakeHomePay: 0,
+    totalAccumulatedMonthlySalary: 0,
+    totalPaidPayrollAllTime: 0,
     pendingTasks: 0,
     urgentTasks: 0,
     totalSyncedPayroll: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<SubTab>("OVERVIEW");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
+  const [searchQuery, setSearchQuery] = useState("");
   const [isContractModalOpen, setIsContractModalOpen] = useState(false);
+  const [employmentToEdit, setEmploymentToEdit] = useState<StoredEmployment | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const loadData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const [primaryEmp, list, stats] = await Promise.all([
-        getActiveEmployment(),
+      const [list, stats] = await Promise.all([
         getEmployments(),
         getEmploymentSummary(),
       ]);
-      setActiveEmp(primaryEmp);
-      setAllEmps(list);
+      setEmployments(list);
       setSummary(stats);
+    } catch (err) {
+      console.error("Failed to load employments:", err);
     } finally {
       setIsLoading(false);
     }
@@ -65,6 +80,90 @@ export default function EmploymentPage() {
     loadData();
   }, [loadData]);
 
+  const handleDelete = async (id: string, companyName: string) => {
+    if (!confirm(`Hapus kontrak kerja "${companyName}"? Seluruh task dan slip gaji perusahaan ini akan ikut terhapus.`)) {
+      return;
+    }
+    setDeletingId(id);
+    try {
+      await deleteEmployment(id);
+      await loadData();
+    } catch (err) {
+      console.error("Failed to delete employment:", err);
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  // Filtered employments
+  const filteredEmployments = useMemo(() => {
+    return employments.filter((emp) => {
+      // 1. Status Filter
+      if (statusFilter === "ACTIVE" && emp.status !== "ACTIVE") return false;
+      if (statusFilter === "PROBATION" && emp.status !== "PROBATION") return false;
+      if (
+        statusFilter === "COMPLETED_RESIGNED" &&
+        emp.status !== "COMPLETED" &&
+        emp.status !== "RESIGNED"
+      ) {
+        return false;
+      }
+
+      // 2. Search Query Filter
+      if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase();
+        const matchCompany = emp.companyName.toLowerCase().includes(query);
+        const matchRole = emp.role.toLowerCase().includes(query);
+        if (!matchCompany && !matchRole) return false;
+      }
+
+      return true;
+    });
+  }, [employments, statusFilter, searchQuery]);
+
+  const getStatusBadgeVariant = (status: StoredEmployment["status"]) => {
+    switch (status) {
+      case "ACTIVE":
+        return "processing";
+      case "PROBATION":
+        return "done";
+      case "COMPLETED":
+      case "RESIGNED":
+      default:
+        return "pending";
+    }
+  };
+
+  const getStatusLabel = (status: StoredEmployment["status"]) => {
+    switch (status) {
+      case "ACTIVE":
+        return "Aktif";
+      case "PROBATION":
+        return "Probation";
+      case "COMPLETED":
+        return "Selesai";
+      case "RESIGNED":
+        return "Resigned";
+      default:
+        return status;
+    }
+  };
+
+  const getJobTypeLabel = (type: StoredEmployment["jobType"]) => {
+    switch (type) {
+      case "FULL_TIME":
+        return "Full-time";
+      case "PART_TIME":
+        return "Part-time";
+      case "CONTRACT":
+        return "Kontrak";
+      case "INTERNSHIP":
+        return "Magang";
+      default:
+        return type;
+    }
+  };
+
   return (
     <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-300">
       {/* 1. Header & Actions */}
@@ -72,13 +171,13 @@ export default function EmploymentPage() {
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neon/10 border border-neon/30 text-neon text-xs font-bold mb-2">
             <Sparkles className="w-3.5 h-3.5" />
-            Semi-ERP Office & Payroll Engine
+            Semi-ERP Company & Contract Hub
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
-            Employment (Kerja Kantor & Kontrak)
+            Employment (Direktori Perusahaan & Kontrak)
           </h1>
           <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-            Manajemen profil kontrak aktif, task sprint harian, dan pencatatan slip gaji dengan auto-sync ke buku kas Money.
+            Kelola berbagai kontrak kerja aktif, masa kerja, daily sprint tasks, dan riwayat slip gaji per perusahaan.
           </p>
         </div>
 
@@ -86,7 +185,7 @@ export default function EmploymentPage() {
           {/* Refresh Button */}
           <button
             onClick={loadData}
-            className="p-2 rounded-xl bg-card border border-card-border text-muted-foreground hover:text-foreground hover:border-neon/40 transition-colors"
+            className="p-2.5 rounded-xl bg-card border border-card-border text-muted-foreground hover:text-foreground hover:border-neon/40 transition-colors"
             title="Refresh Data"
           >
             <RefreshCw className={cn("w-4 h-4", isLoading && "animate-spin")} />
@@ -94,261 +193,319 @@ export default function EmploymentPage() {
 
           {/* Add Contract CTA */}
           <Button
-            onClick={() => setIsContractModalOpen(true)}
-            className="h-10 text-xs font-bold gap-2"
+            onClick={() => {
+              setEmploymentToEdit(null);
+              setIsContractModalOpen(true);
+            }}
+            className="h-10 text-xs font-bold gap-2 bg-neon text-black hover:bg-neon/90"
           >
-            <Plus className="w-4 h-4 stroke-[2.5]" /> Tambah Kontrak
+            <Plus className="w-4 h-4 stroke-[2.5]" /> Tambah Kontrak Baru
           </Button>
         </div>
       </div>
 
-      {/* 2. Top KPI Summary Banner */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        {/* KPI 1: Take Home Pay */}
-        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-card border border-card-border space-y-1.5 shadow-sm">
-          <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-[11px] font-bold uppercase tracking-wider">
-              Estimasi THP Bulanan
+      {/* 2. Global Summary Bar (3 High-Impact Bento Cards) */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5">
+        {/* Card 1: Total Kontrak Aktif */}
+        <Card className="hover:border-neon/40 transition-all duration-200">
+          <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
+            <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+              Total Kontrak Aktif
             </span>
-            <div className="w-7 h-7 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
-              <DollarSign className="w-3.5 h-3.5" />
+            <div className="p-2 rounded-xl bg-neon/15 text-neon">
+              <Building2 className="w-4 h-4" />
             </div>
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-lg sm:text-xl font-black text-foreground tabular-nums truncate">
-              {formatRupiah(summary.totalTakeHomePay)}
-            </span>
-          </div>
-          <p className="text-[11px] text-muted-foreground truncate">
-            {summary.companyName !== "-" ? summary.companyName : "Belum ada kontrak aktif"}
-          </p>
-        </div>
+          </CardHeader>
+          <CardContent className="space-y-1">
+            <div className="text-2xl sm:text-3xl font-black text-foreground tabular-nums">
+              {summary.activeEmploymentsCount} Perusahaan
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Dari total {summary.totalEmploymentsCount} kontrak kerja tercatat
+            </p>
+          </CardContent>
+        </Card>
 
-        {/* KPI 2: Payday Cycle */}
-        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-card border border-card-border space-y-1.5 shadow-sm">
-          <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-[11px] font-bold uppercase tracking-wider">
-              Siklus Payday
+        {/* Card 2: Akumulasi Estimasi Gaji Bulanan */}
+        <Card className="hover:border-neon/40 transition-all duration-200">
+          <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
+            <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+              Akumulasi Gaji Bulanan
             </span>
-            <div className="w-7 h-7 rounded-xl bg-neon/15 text-neon flex items-center justify-center">
-              <Calendar className="w-3.5 h-3.5" />
+            <div className="p-2 rounded-xl bg-emerald-500/15 text-emerald-400">
+              <DollarSign className="w-4 h-4" />
             </div>
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-xl sm:text-2xl font-black text-neon tabular-nums">
-              Tgl {summary.payday}
-            </span>
-            <span className="text-[11px] text-muted-foreground">
-              setiap bulan
-            </span>
-          </div>
-          <p className="text-[11px] text-muted-foreground">
-            Jadwal transfer gaji kantor
-          </p>
-        </div>
+          </CardHeader>
+          <CardContent className="space-y-1">
+            <div className="text-2xl sm:text-3xl font-black text-emerald-400 tabular-nums">
+              {formatRupiah(summary.totalAccumulatedMonthlySalary)}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Total gaji pokok & tunjangan dari seluruh kontrak aktif
+            </p>
+          </CardContent>
+        </Card>
 
-        {/* KPI 3: Sprint Tasks */}
-        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-card border border-card-border space-y-1.5 shadow-sm">
-          <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-[11px] font-bold uppercase tracking-wider">
-              Tugas Sprint
+        {/* Card 3: Total Gaji Terbayar (All Time) */}
+        <Card className="hover:border-neon/40 transition-all duration-200">
+          <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
+            <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+              Total Gaji Terbayar
             </span>
-            <div className="w-7 h-7 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center">
-              <CheckSquare className="w-3.5 h-3.5" />
+            <div className="p-2 rounded-xl bg-blue-500/15 text-blue-400">
+              <Wallet className="w-4 h-4" />
             </div>
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-xl sm:text-2xl font-black text-foreground tabular-nums">
-              {summary.pendingTasks}
-            </span>
-            {summary.urgentTasks > 0 ? (
-              <span className="text-[11px] text-red-400 font-semibold">
-                ({summary.urgentTasks} urgent)
-              </span>
-            ) : (
-              <span className="text-[11px] text-muted-foreground">
-                pending
-              </span>
+          </CardHeader>
+          <CardContent className="space-y-1">
+            <div className="text-2xl sm:text-3xl font-black text-blue-400 tabular-nums">
+              {formatRupiah(summary.totalPaidPayrollAllTime)}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Total take-home pay dari seluruh slip gaji yang tercatat
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* 3. Search Bar & Status Filter Pills */}
+      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+        {/* Filter Pills */}
+        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-card border border-card-border overflow-x-auto">
+          <button
+            onClick={() => setStatusFilter("ALL")}
+            className={cn(
+              "px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all whitespace-nowrap",
+              statusFilter === "ALL"
+                ? "bg-neon text-black shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-card-border/40"
             )}
-          </div>
-          <p className="text-[11px] text-muted-foreground">
-            To-do list harian kantor
-          </p>
+          >
+            Semua ({employments.length})
+          </button>
+
+          <button
+            onClick={() => setStatusFilter("ACTIVE")}
+            className={cn(
+              "px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all whitespace-nowrap",
+              statusFilter === "ACTIVE"
+                ? "bg-neon text-black shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-card-border/40"
+            )}
+          >
+            Aktif ({employments.filter((e) => e.status === "ACTIVE").length})
+          </button>
+
+          <button
+            onClick={() => setStatusFilter("PROBATION")}
+            className={cn(
+              "px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all whitespace-nowrap",
+              statusFilter === "PROBATION"
+                ? "bg-neon text-black shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-card-border/40"
+            )}
+          >
+            Probation ({employments.filter((e) => e.status === "PROBATION").length})
+          </button>
+
+          <button
+            onClick={() => setStatusFilter("COMPLETED_RESIGNED")}
+            className={cn(
+              "px-3.5 py-1.5 text-xs font-bold rounded-xl transition-all whitespace-nowrap",
+              statusFilter === "COMPLETED_RESIGNED"
+                ? "bg-neon text-black shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-card-border/40"
+            )}
+          >
+            Selesai / Resigned (
+            {
+              employments.filter(
+                (e) => e.status === "COMPLETED" || e.status === "RESIGNED"
+              ).length
+            }
+            )
+          </button>
         </div>
 
-        {/* KPI 4: Total Synced to Ledger */}
-        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-card border border-card-border space-y-1.5 shadow-sm">
-          <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-[11px] font-bold uppercase tracking-wider">
-              Tersinkron ke Money
-            </span>
-            <div className="w-7 h-7 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center">
-              <Clock className="w-3.5 h-3.5" />
-            </div>
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-lg sm:text-xl font-black text-foreground tabular-nums truncate">
-              {formatRupiah(summary.totalSyncedPayroll)}
-            </span>
-          </div>
-          <p className="text-[11px] text-muted-foreground">
-            Total penerimaan tercatat di kas
-          </p>
+        {/* Search Input */}
+        <div className="relative w-full md:w-72">
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Cari perusahaan atau role..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9 h-10 text-xs rounded-xl bg-card border-card-border"
+          />
         </div>
       </div>
 
-      {/* 3. Sub-Tabs Navigation */}
-      <div className="flex items-center gap-2 border-b border-card-border pb-3">
-        <button
-          onClick={() => setActiveTab("OVERVIEW")}
-          className={cn(
-            "flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-bold transition-all",
-            activeTab === "OVERVIEW"
-              ? "bg-card border border-card-border text-neon shadow-sm"
-              : "text-muted-foreground hover:text-foreground hover:bg-card-border/30"
-          )}
-        >
-          <Building2 className="w-4 h-4" />
-          <span>Kontrak & Ringkasan</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("TASKS")}
-          className={cn(
-            "flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-bold transition-all",
-            activeTab === "TASKS"
-              ? "bg-card border border-card-border text-neon shadow-sm"
-              : "text-muted-foreground hover:text-foreground hover:bg-card-border/30"
-          )}
-        >
-          <CheckSquare className="w-4 h-4" />
-          <span>Daily Sprint Tasks</span>
-          {activeEmp && activeEmp.tasks.length > 0 && (
-            <span className="px-1.5 py-0.2 rounded-full bg-card-border text-[10px] text-foreground font-semibold">
-              {activeEmp.tasks.filter((t) => t.status !== "DONE").length}
-            </span>
-          )}
-        </button>
-
-        <button
-          onClick={() => setActiveTab("PAYROLL")}
-          className={cn(
-            "flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-bold transition-all",
-            activeTab === "PAYROLL"
-              ? "bg-card border border-card-border text-neon shadow-sm"
-              : "text-muted-foreground hover:text-foreground hover:bg-card-border/30"
-          )}
-        >
-          <DollarSign className="w-4 h-4" />
-          <span>Slip Gaji & Sync Money</span>
-          {activeEmp && activeEmp.payrollRecords.length > 0 && (
-            <span className="px-1.5 py-0.2 rounded-full bg-card-border text-[10px] text-foreground font-semibold">
-              {activeEmp.payrollRecords.length}
-            </span>
-          )}
-        </button>
-      </div>
-
-      {/* 4. Tab Content */}
-      {activeTab === "OVERVIEW" && (
-        <div className="space-y-6 sm:space-y-8">
-          {/* Active Contract Card */}
-          <ContractCard employment={activeEmp} onRefresh={loadData} />
-
-          {/* Dual Column: Quick Sprint Preview + Quick Payroll Preview */}
-          {activeEmp && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Sprint Tasks Preview */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                    <CheckSquare className="w-4 h-4 text-neon" />
-                    Sprint Checklist Kantor
-                  </h3>
-                  <button
-                    onClick={() => setActiveTab("TASKS")}
-                    className="text-xs text-neon hover:underline font-semibold"
-                  >
-                    Buka Seluruh Task →
-                  </button>
-                </div>
-                <OfficeTasks
-                  employmentId={activeEmp.id}
-                  tasks={activeEmp.tasks.slice(0, 5)}
-                  onRefresh={loadData}
-                />
-              </div>
-
-              {/* Payroll Records Preview */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                    <DollarSign className="w-4 h-4 text-emerald-400" />
-                    Slip Gaji Terbaru
-                  </h3>
-                  <button
-                    onClick={() => setActiveTab("PAYROLL")}
-                    className="text-xs text-neon hover:underline font-semibold"
-                  >
-                    Buka Riwayat Slip →
-                  </button>
-                </div>
-                <PayrollTable employment={activeEmp} onRefresh={loadData} />
-              </div>
+      {/* 4. Company Cards Grid */}
+      {filteredEmployments.length === 0 ? (
+        <Card className="p-12 text-center border-dashed border-card-border">
+          <div className="max-w-md mx-auto space-y-4">
+            <div className="w-14 h-14 rounded-2xl bg-card-border/60 text-muted-foreground flex items-center justify-center mx-auto">
+              <Building2 className="w-7 h-7" />
             </div>
-          )}
+            <div className="space-y-1">
+              <h3 className="text-base font-bold text-foreground">
+                Tidak ada perusahaan ditemukan
+              </h3>
+              <p className="text-xs text-muted-foreground">
+                {searchQuery || statusFilter !== "ALL"
+                  ? "Coba ubah filter status atau kata kunci pencarian Anda."
+                  : "Belum ada kontrak kerja kantor terdaftar. Tambahkan kontrak pertama Anda."}
+              </p>
+            </div>
+            <Button
+              onClick={() => {
+                setEmploymentToEdit(null);
+                setIsContractModalOpen(true);
+              }}
+              className="bg-neon text-black hover:bg-neon/90 text-xs font-bold gap-2"
+            >
+              <Plus className="w-4 h-4" /> Tambah Kontrak Baru
+            </Button>
+          </div>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {filteredEmployments.map((emp) => {
+            const pendingTasksCount = emp.tasks.filter((t) => t.status !== "DONE").length;
+            const tenureStr = calculateTenure(emp.startDate, emp.endDate);
+            const totalMonthly = emp.baseSalary + emp.fixedAllowance;
 
-          {/* List of other employments if multiple exist */}
-          {allEmps.length > 1 && (
-            <div className="p-4 rounded-2xl bg-card border border-card-border space-y-3">
-              <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">
-                Riwayat Pekerjaan Lainnya ({allEmps.length - 1})
-              </h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {allEmps
-                  .filter((e) => e.id !== activeEmp?.id)
-                  .map((emp) => (
-                    <div
-                      key={emp.id}
-                      className="p-3 rounded-xl bg-background border border-card-border flex items-center justify-between"
-                    >
-                      <div>
-                        <p className="text-xs font-bold text-foreground">{emp.companyName}</p>
-                        <p className="text-[11px] text-muted-foreground">{emp.role} • {emp.status}</p>
+            return (
+              <Card
+                key={emp.id}
+                className="flex flex-col justify-between hover:-translate-y-1 hover:border-neon/40 hover:shadow-[0_0_24px_rgba(59,240,41,0.08)] transition-all duration-200"
+              >
+                {/* Card Header */}
+                <CardHeader className="pb-3 space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <div className="p-2.5 rounded-2xl bg-neon/15 text-neon">
+                        <Building2 className="w-5 h-5" />
                       </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setActiveEmp(emp)}
-                        className="text-[10px] h-7 px-2.5 font-bold"
-                      >
-                        Lihat Profil
-                      </Button>
+                      <div>
+                        <Badge
+                          variant={getStatusBadgeVariant(emp.status)}
+                          className="text-[9px]"
+                        >
+                          {getStatusLabel(emp.status)}
+                        </Badge>
+                      </div>
                     </div>
-                  ))}
-              </div>
-            </div>
-          )}
+
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => {
+                          setEmploymentToEdit(emp);
+                          setIsContractModalOpen(true);
+                        }}
+                        className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-card-border/40 transition-colors"
+                        title="Edit Kontrak"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(emp.id, emp.companyName)}
+                        disabled={deletingId === emp.id}
+                        className="p-1.5 rounded-lg text-muted-foreground hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                        title="Hapus Kontrak"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-base font-extrabold text-foreground group-hover:text-neon transition-colors line-clamp-1">
+                      {emp.companyName}
+                    </h3>
+                    <p className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5 mt-0.5">
+                      <Briefcase className="w-3 h-3" />
+                      <span>{emp.role}</span>
+                      <span>•</span>
+                      <span className="text-foreground">{getJobTypeLabel(emp.jobType)}</span>
+                    </p>
+                  </div>
+                </CardHeader>
+
+                {/* Card Body Metrics */}
+                <CardContent className="space-y-3.5 pt-0">
+                  {/* Financial Ribbon */}
+                  <div className="p-3 rounded-2xl bg-background/80 border border-card-border/60 space-y-1.5">
+                    <div className="flex items-baseline justify-between text-xs">
+                      <span className="text-muted-foreground font-medium">Gaji Bulanan</span>
+                      <span className="font-extrabold text-foreground tabular-nums">
+                        {formatRupiah(totalMonthly)}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <Calendar className="w-3 h-3 text-neon" />
+                        Gajian tiap tgl {emp.payday}
+                      </span>
+                      <span>Pokok: {formatRupiah(emp.baseSalary)}</span>
+                    </div>
+                  </div>
+
+                  {/* Operational Tags */}
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="p-2.5 rounded-xl bg-card-border/20 border border-card-border/40 flex items-center gap-2">
+                      <Clock className="w-3.5 h-3.5 text-neon shrink-0" />
+                      <div className="min-w-0">
+                        <span className="text-[10px] text-muted-foreground block">Masa Kerja</span>
+                        <span className="font-bold text-foreground text-[11px] truncate block">
+                          {tenureStr}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="p-2.5 rounded-xl bg-card-border/20 border border-card-border/40 flex items-center gap-2">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                      <div className="min-w-0">
+                        <span className="text-[10px] text-muted-foreground block">Sprint Tasks</span>
+                        <span className="font-bold text-foreground text-[11px] truncate block">
+                          {emp.tasks.length} ({pendingTasksCount} aktif)
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Primary Workspace CTA Button */}
+                  <Link href={`/employment/${emp.id}`} className="block w-full pt-1">
+                    <Button
+                      variant="outline"
+                      className="w-full h-10 text-xs font-bold justify-between border-card-border hover:border-neon hover:text-neon group"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Building2 className="w-3.5 h-3.5 text-neon" />
+                        Buka Workspace Perusahaan
+                      </span>
+                      <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
 
-      {activeTab === "TASKS" && activeEmp && (
-        <OfficeTasks
-          employmentId={activeEmp.id}
-          tasks={activeEmp.tasks}
-          onRefresh={loadData}
-        />
-      )}
-
-      {activeTab === "PAYROLL" && activeEmp && (
-        <PayrollTable employment={activeEmp} onRefresh={loadData} />
-      )}
-
-      {/* Global Contract Creation Modal */}
+      {/* 5. Create / Edit Contract Modal */}
       <ContractModal
         isOpen={isContractModalOpen}
-        onClose={() => setIsContractModalOpen(false)}
-        onSuccess={loadData}
+        onClose={() => {
+          setIsContractModalOpen(false);
+          setEmploymentToEdit(null);
+        }}
+        onSuccess={() => {
+          setIsContractModalOpen(false);
+          setEmploymentToEdit(null);
+          loadData();
+        }}
+        employmentToEdit={employmentToEdit}
       />
     </div>
   );
