@@ -14,6 +14,7 @@ import {
   Check,
   Loader2,
   AlertCircle,
+  Globe,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,10 +56,10 @@ const STATUS_OPTIONS: { value: ApplicationStatus; label: string; color: string }
   { value: "GHOSTED", label: "Ghosted", color: "text-zinc-400 border-zinc-700 bg-zinc-800/40" },
 ];
 
-const LOCATION_OPTIONS: { value: WorkLocation; label: string; icon: string }[] = [
-  { value: "REMOTE", label: "Remote", icon: "🌐" },
-  { value: "HYBRID", label: "Hybrid", icon: "🏢" },
-  { value: "ONSITE", label: "Onsite", icon: "📍" },
+const LOCATION_OPTIONS: { value: WorkLocation; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
+  { value: "REMOTE", label: "Remote", icon: Globe },
+  { value: "HYBRID", label: "Hybrid", icon: Building2 },
+  { value: "ONSITE", label: "Onsite", icon: MapPin },
 ];
 
 export function ApplicationDialog({
@@ -319,7 +320,7 @@ export function ApplicationDialog({
                             : "text-muted-foreground hover:text-foreground"
                         )}
                       >
-                        <span className="text-xs">{loc.icon}</span>
+                        <loc.icon className="w-3.5 h-3.5" />
                         {loc.label}
                       </button>
                     );

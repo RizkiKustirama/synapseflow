@@ -316,7 +316,8 @@ export function PayrollTable({ employment, onRefresh }: PayrollTableProps) {
                         <td className="py-4 px-4 whitespace-nowrap text-center">
                           {payroll.isSyncedToMoney ? (
                             <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[11px] font-bold">
-                              <span>✅ Tersinkron ke Money</span>
+                              <CheckCircle2 className="w-3.5 h-3.5" />
+                              <span>Tersinkron ke Money</span>
                             </div>
                           ) : (
                             <Button
@@ -331,7 +332,7 @@ export function PayrollTable({ employment, onRefresh }: PayrollTableProps) {
                               ) : (
                                 <Zap className="w-3.5 h-3.5 fill-current" />
                               )}
-                              ⚡ Catat ke Money Tracker
+                              Catat ke Money Tracker
                             </Button>
                           )}
                         </td>
@@ -449,7 +450,8 @@ export function PayrollTable({ employment, onRefresh }: PayrollTableProps) {
                     <div>
                       {payroll.isSyncedToMoney ? (
                         <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-bold">
-                          <span>✅ Tersinkron ke Money</span>
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>Tersinkron ke Money</span>
                         </div>
                       ) : (
                         <Button
@@ -464,7 +466,7 @@ export function PayrollTable({ employment, onRefresh }: PayrollTableProps) {
                           ) : (
                             <Zap className="w-3.5 h-3.5 fill-current" />
                           )}
-                          ⚡ Catat ke Money Tracker
+                          Catat ke Money Tracker
                         </Button>
                       )}
                     </div>

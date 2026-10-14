@@ -284,92 +284,100 @@ export default function CareerPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-card-border">
-                {applications.map((app) => (
-                  <tr
-                    key={app.id}
-                    className="hover:bg-card-border/20 transition-colors"
-                  >
-                    <td className="py-3.5 px-4 font-bold text-foreground">
-                      <div className="flex items-center gap-2">
-                        <Building2 className="w-4 h-4 text-muted-foreground" />
-                        <span>{app.companyName}</span>
-                        {app.jobUrl && (
-                          <a
-                            href={app.jobUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-muted-foreground hover:text-neon"
-                          >
-                            <ExternalLink className="w-3 h-3" />
-                          </a>
-                        )}
-                      </div>
-                    </td>
-                    <td className="py-3.5 px-4 text-foreground font-medium">
-                      {app.position}
-                    </td>
-                    <td className="py-3.5 px-4">
-                      <Badge
-                        variant={
-                          app.status === "ACCEPTED" || app.status === "OFFERING"
-                            ? "default"
-                            : app.status === "REJECTED" || app.status === "GHOSTED"
-                            ? "destructive"
-                            : "processing"
-                        }
-                        className="text-[10px]"
-                      >
-                        {app.status}
-                      </Badge>
-                    </td>
-                    <td className="py-3.5 px-4 text-muted-foreground">
-                      {app.workLocation}
-                    </td>
-                    <td className="py-3.5 px-4 font-bold text-foreground">
-                      {app.salaryOfferedMax
-                        ? formatRupiah(app.salaryOfferedMax)
-                        : app.expectedSalary
-                        ? formatRupiah(app.expectedSalary)
-                        : "-"}
-                    </td>
-                    <td className="py-3.5 px-4">
-                      <button
-                        onClick={() => handleOpenInterview(app)}
-                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-background border border-card-border hover:border-purple-500/40 text-purple-400 font-bold text-[11px]"
-                      >
-                        <Users className="w-3 h-3" />
-                        {app.interviewLogs.length} Sesi
-                      </button>
-                    </td>
-                    <td className="py-3.5 px-4 text-right">
-                      <div className="inline-flex items-center gap-1.5 justify-end">
-                        {(app.status === "OFFERING" || app.status === "ACCEPTED") && (
-                          <button
-                            onClick={() => handleConvert(app)}
-                            className="px-2.5 py-1 rounded-lg bg-neon/15 hover:bg-neon/25 text-neon border border-neon/40 text-[10px] font-bold"
-                            title="Konversi ke Employment"
-                          >
-                            ⚡ Konversi
-                          </button>
-                        )}
-                        <button
-                          onClick={() => handleEdit(app)}
-                          className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-background"
-                          title="Edit Lamaran"
-                        >
-                          <Edit className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(app.id, app.companyName)}
-                          className="p-1.5 rounded-lg text-muted-foreground hover:text-red-400 hover:bg-background"
-                          title="Hapus Lamaran"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
+                {applications.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="py-8 text-center text-muted-foreground">
+                      Belum ada lamaran kerja tercatat. Klik &quot;+ Tambah Lamaran&quot; untuk memulai.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  applications.map((app) => (
+                    <tr
+                      key={app.id}
+                      className="hover:bg-card-border/20 transition-colors"
+                    >
+                      <td className="py-3.5 px-4 font-bold text-foreground">
+                        <div className="flex items-center gap-2">
+                          <Building2 className="w-4 h-4 text-muted-foreground" />
+                          <span>{app.companyName}</span>
+                          {app.jobUrl && (
+                            <a
+                              href={app.jobUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-muted-foreground hover:text-neon"
+                            >
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          )}
+                        </div>
+                      </td>
+                      <td className="py-3.5 px-4 text-foreground font-medium">
+                        {app.position}
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <Badge
+                          variant={
+                            app.status === "ACCEPTED" || app.status === "OFFERING"
+                              ? "default"
+                              : app.status === "REJECTED" || app.status === "GHOSTED"
+                              ? "destructive"
+                              : "processing"
+                          }
+                          className="text-[10px]"
+                        >
+                          {app.status}
+                        </Badge>
+                      </td>
+                      <td className="py-3.5 px-4 text-muted-foreground">
+                        {app.workLocation}
+                      </td>
+                      <td className="py-3.5 px-4 font-bold text-foreground">
+                        {app.salaryOfferedMax
+                          ? formatRupiah(app.salaryOfferedMax)
+                          : app.expectedSalary
+                          ? formatRupiah(app.expectedSalary)
+                          : "-"}
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <button
+                          onClick={() => handleOpenInterview(app)}
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-background border border-card-border hover:border-purple-500/40 text-purple-400 font-bold text-[11px]"
+                        >
+                          <Users className="w-3 h-3" />
+                          {app.interviewLogs.length} Sesi
+                        </button>
+                      </td>
+                      <td className="py-3.5 px-4 text-right">
+                        <div className="inline-flex items-center gap-1.5 justify-end">
+                          {(app.status === "OFFERING" || app.status === "ACCEPTED") && (
+                            <button
+                              onClick={() => handleConvert(app)}
+                              className="px-2.5 py-1 rounded-lg bg-neon/15 hover:bg-neon/25 text-neon border border-neon/40 text-[10px] font-bold"
+                              title="Konversi ke Employment"
+                            >
+                              Konversi
+                            </button>
+                          )}
+                          <button
+                            onClick={() => handleEdit(app)}
+                            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-background"
+                            title="Edit Lamaran"
+                          >
+                            <Edit className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(app.id, app.companyName)}
+                            className="p-1.5 rounded-lg text-muted-foreground hover:text-red-400 hover:bg-background"
+                            title="Hapus Lamaran"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>

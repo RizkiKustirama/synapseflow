@@ -586,7 +586,7 @@ export function MilestoneManager({
                                   ) : (
                                     <Zap className="w-3.5 h-3.5 fill-black" />
                                   )}
-                                  ⚡ Tandai Lunas & Sync ke Money
+                                  Tandai Lunas & Sync ke Money
                                 </Button>
                               )}
 

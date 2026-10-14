@@ -11,18 +11,21 @@ import { ReceivablesCard } from "@/components/money/receivables-card";
 import {
   getTransactions,
   getMoneySummary,
+  getReceivables,
   StoredTransaction,
+  StoredReceivableItem,
 } from "@/actions/money.actions";
 
 export default function MoneyPage() {
   const [transactions, setTransactions] = useState<StoredTransaction[]>([]);
+  const [receivables, setReceivables] = useState<StoredReceivableItem[]>([]);
   const [summary, setSummary] = useState({
-    totalBalance: 24850000,
-    monthlyIncome: 24500000,
-    monthlyExpense: 535000,
-    netCashflow: 23965000,
-    savingsRate: 97.8,
-    totalReceivables: 14500000,
+    totalBalance: 0,
+    monthlyIncome: 0,
+    monthlyExpense: 0,
+    netCashflow: 0,
+    savingsRate: 0,
+    totalReceivables: 0,
   });
   const [modalOpen, setModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -30,12 +33,14 @@ export default function MoneyPage() {
   const loadData = useCallback(async () => {
     setIsLoading(true);
     try {
-      const [trxData, summaryData] = await Promise.all([
+      const [trxData, summaryData, receivablesData] = await Promise.all([
         getTransactions(),
         getMoneySummary(),
+        getReceivables(),
       ]);
       setTransactions(trxData);
       setSummary(summaryData);
+      setReceivables(receivablesData);
     } finally {
       setIsLoading(false);
     }
@@ -104,7 +109,7 @@ export default function MoneyPage() {
       <MoneyKpiCards summary={summary} />
 
       {/* Receivables (Piutang Tracker) Card */}
-      <ReceivablesCard onSettled={loadData} />
+      <ReceivablesCard items={receivables} onSettled={loadData} />
 
       {/* TanStack Data Table for Transactions */}
       <div className="space-y-3">

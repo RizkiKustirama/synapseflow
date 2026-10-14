@@ -570,7 +570,7 @@ export function ProjectBoard({
                               : unpaidTermin.length > 0
                               ? `${unpaidTermin.length} Belum Lunas`
                               : project.milestones.length > 0
-                              ? "Semua Lunas ✓"
+                              ? "Semua Lunas"
                               : "0 Termin"}
                           </span>
                         </button>

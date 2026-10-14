@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUserId } from "@/actions/money.actions";
+import { getCurrentUserId } from "@/lib/user";
 import { getDaysUntilPayday } from "@/lib/utils";
 
 export interface CashflowHistoryPoint {
@@ -398,6 +398,31 @@ export async function getExecutiveDashboardData(): Promise<ExecutiveDashboardDat
     date: tx.date.toISOString().split("T")[0],
   }));
 
+  // Dynamic freelance net profit margin
+  let totalPaidMilestoneRevenue = 0;
+  for (const p of activeProjects) {
+    for (const m of p.milestones) {
+      if (m.status === "PAID") {
+        totalPaidMilestoneRevenue += Number(m.amount);
+      }
+    }
+  }
+
+  const projectExpensesAgg = await prisma.transaction.aggregate({
+    where: {
+      userId,
+      type: "EXPENSE",
+      projectId: { in: activeProjects.map((p) => p.id) },
+    },
+    _sum: { amount: true },
+  });
+  const totalProjectExpenses = Number(projectExpensesAgg._sum.amount || 0);
+
+  const dynamicNetMarginAvg =
+    totalPaidMilestoneRevenue > 0
+      ? Math.max(0, Math.round(((totalPaidMilestoneRevenue - totalProjectExpenses) / totalPaidMilestoneRevenue) * 100))
+      : 0;
+
   const result: ExecutiveDashboardData = {
     user: {
       name: user.fullName || "Pengguna",
@@ -437,7 +462,7 @@ export async function getExecutiveDashboardData(): Promise<ExecutiveDashboardDat
         activeProjectsCount: activeProjects.length,
         totalBudget: totalBudgetActiveProjects,
         unpaidReceivables: freelanceReceivables,
-        netMarginAvg: 75,
+        netMarginAvg: dynamicNetMarginAvg,
       },
       money: {
         transactionCountThisMonth: currentMonthTxCount,

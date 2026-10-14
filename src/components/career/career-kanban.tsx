@@ -43,56 +43,56 @@ interface ColumnConfig {
 const COLUMNS: ColumnConfig[] = [
   {
     id: "WISHLIST",
-    title: "📌 Wishlist",
+    title: "Wishlist",
     statuses: ["WISHLIST"],
     colorClass: "border-slate-500/30 text-slate-400",
     badgeClass: "bg-slate-500/15 text-slate-300 border-slate-500/30",
   },
   {
     id: "APPLIED",
-    title: "📤 Applied",
+    title: "Applied",
     statuses: ["APPLIED"],
     colorClass: "border-blue-500/30 text-blue-400",
     badgeClass: "bg-blue-500/15 text-blue-300 border-blue-500/30",
   },
   {
     id: "SCREENING",
-    title: "🔍 Screening",
+    title: "Screening",
     statuses: ["SCREENING"],
     colorClass: "border-cyan-500/30 text-cyan-400",
     badgeClass: "bg-cyan-500/15 text-cyan-300 border-cyan-500/30",
   },
   {
     id: "INTERVIEW",
-    title: "🎙️ Interview",
+    title: "Interview",
     statuses: ["INTERVIEW"],
     colorClass: "border-purple-500/30 text-purple-400",
     badgeClass: "bg-purple-500/15 text-purple-300 border-purple-500/30",
   },
   {
     id: "TECH_TEST",
-    title: "💻 Tech Test",
+    title: "Tech Test",
     statuses: ["TECH_TEST"],
     colorClass: "border-amber-500/30 text-amber-400",
     badgeClass: "bg-amber-500/15 text-amber-300 border-amber-500/30",
   },
   {
     id: "OFFERING",
-    title: "🎁 Offering",
+    title: "Offering",
     statuses: ["OFFERING"],
     colorClass: "border-emerald-500/30 text-emerald-400",
     badgeClass: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
   },
   {
     id: "ACCEPTED",
-    title: "✅ Accepted",
+    title: "Accepted",
     statuses: ["ACCEPTED"],
     colorClass: "border-neon/40 text-neon",
     badgeClass: "bg-neon/15 text-neon border-neon/40",
   },
   {
     id: "REJECTED",
-    title: "❌ Rejected / Ghosted",
+    title: "Rejected / Ghosted",
     statuses: ["REJECTED", "GHOSTED"],
     colorClass: "border-rose-500/30 text-rose-400",
     badgeClass: "bg-rose-500/15 text-rose-300 border-rose-500/30",
@@ -460,7 +460,7 @@ export function CareerKanban({
                               className="w-full py-2.5 px-3 rounded-xl bg-neon text-black text-xs font-extrabold flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(59,240,41,0.35)] hover:shadow-[0_0_20px_rgba(59,240,41,0.55)] hover:bg-neon/90 active:scale-[0.98] transition-all"
                             >
                               <Zap className="w-3.5 h-3.5 fill-black" />
-                              <span>Konversi ke Employment ⚡</span>
+                              <span>Konversi ke Employment</span>
                             </button>
                           )}
 
