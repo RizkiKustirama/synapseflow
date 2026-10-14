@@ -57,3 +57,68 @@ export function getDaysUntilPayday(payday: number = 25): { daysRemaining: number
 
   return { daysRemaining, nextDate: targetDate };
 }
+
+/**
+ * Calculate tenure duration in Indonesian format
+ */
+export function calculateTenure(startDateStr: string, endDateStr?: string | null): string {
+  const start = new Date(startDateStr);
+  const end = endDateStr ? new Date(endDateStr) : new Date();
+
+  if (isNaN(start.getTime())) return "-";
+
+  let years = end.getFullYear() - start.getFullYear();
+  let months = end.getMonth() - start.getMonth();
+
+  if (end.getDate() < start.getDate()) {
+    months--;
+  }
+
+  if (months < 0) {
+    years--;
+    months += 12;
+  }
+
+  if (years <= 0 && months <= 0) {
+    return "< 1 Bulan";
+  }
+
+  if (years <= 0) {
+    return `${months} Bulan`;
+  }
+
+  if (months === 0) {
+    return `${years} Tahun`;
+  }
+
+  return `${years} Thn ${months} Bln`;
+}
+
+/**
+ * Compute Company Workspace top stats
+ */
+export function getCompanyWorkspaceStats(emp: {
+  startDate: string;
+  endDate?: string | null;
+  payday: number;
+  payrollRecords: Array<{ netSalary: number }>;
+  tasks: Array<{ status: string }>;
+}) {
+  const tenure = calculateTenure(emp.startDate, emp.endDate);
+  const { daysRemaining, nextDate } = getDaysUntilPayday(emp.payday);
+  const totalPaidAmount = emp.payrollRecords.reduce((acc, curr) => acc + curr.netSalary, 0);
+  const completedTasksCount = emp.tasks.filter((t) => t.status === "DONE").length;
+  const totalTasksCount = emp.tasks.length;
+  const taskCompletionRatio =
+    totalTasksCount > 0 ? Math.round((completedTasksCount / totalTasksCount) * 100) : 0;
+
+  return {
+    tenure,
+    daysUntilPayday: daysRemaining,
+    nextPaydayDate: nextDate,
+    totalPaidAmount,
+    completedTasksCount,
+    totalTasksCount,
+    taskCompletionRatio,
+  };
+}

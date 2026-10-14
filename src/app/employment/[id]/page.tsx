@@ -22,10 +22,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { formatRupiah, formatDate, cn } from "@/lib/utils";
+import { formatRupiah, formatDate, getCompanyWorkspaceStats, cn } from "@/lib/utils";
 import {
   getEmploymentById,
-  getCompanyWorkspaceStats,
   StoredEmployment,
 } from "@/actions/employment.actions";
 import { ContractCard } from "@/components/employment/contract-card";

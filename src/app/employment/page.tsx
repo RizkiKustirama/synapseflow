@@ -17,18 +17,16 @@ import {
   CheckCircle2,
   Clock,
   Briefcase,
-  AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { formatRupiah, formatDate, cn } from "@/lib/utils";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { formatRupiah, calculateTenure, cn } from "@/lib/utils";
 import {
   getEmployments,
   getEmploymentSummary,
   deleteEmployment,
-  calculateTenure,
   StoredEmployment,
 } from "@/actions/employment.actions";
 import { ContractModal } from "@/components/employment/contract-modal";

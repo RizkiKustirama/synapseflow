@@ -11,7 +11,6 @@ import {
   PayrollRecordFormInput,
 } from "@/lib/validations/employment.schema";
 import { createTransaction, getCategories } from "@/actions/money.actions";
-import { getDaysUntilPayday } from "@/lib/utils";
 
 const DEFAULT_USER_ID = "c0000000-0000-0000-0000-000000000001";
 
@@ -308,64 +307,7 @@ export async function getPayrollRecords(employmentId: string): Promise<StoredPay
   return emp ? emp.payrollRecords : [];
 }
 
-/**
- * Helper: Calculate tenure duration in Indonesian format
- */
-export function calculateTenure(startDateStr: string, endDateStr?: string | null): string {
-  const start = new Date(startDateStr);
-  const end = endDateStr ? new Date(endDateStr) : new Date();
 
-  if (isNaN(start.getTime())) return "-";
-
-  let years = end.getFullYear() - start.getFullYear();
-  let months = end.getMonth() - start.getMonth();
-
-  if (end.getDate() < start.getDate()) {
-    months--;
-  }
-
-  if (months < 0) {
-    years--;
-    months += 12;
-  }
-
-  if (years <= 0 && months <= 0) {
-    return "< 1 Bulan";
-  }
-
-  if (years <= 0) {
-    return `${months} Bulan`;
-  }
-
-  if (months === 0) {
-    return `${years} Tahun`;
-  }
-
-  return `${years} Thn ${months} Bln`;
-}
-
-/**
- * Helper: Compute Company Detail Hub top stats
- */
-export function getCompanyWorkspaceStats(emp: StoredEmployment) {
-  const tenure = calculateTenure(emp.startDate, emp.endDate);
-  const { daysRemaining, nextDate } = getDaysUntilPayday(emp.payday);
-  const totalPaidAmount = emp.payrollRecords.reduce((acc, curr) => acc + curr.netSalary, 0);
-  const completedTasksCount = emp.tasks.filter((t) => t.status === "DONE").length;
-  const totalTasksCount = emp.tasks.length;
-  const taskCompletionRatio =
-    totalTasksCount > 0 ? Math.round((completedTasksCount / totalTasksCount) * 100) : 0;
-
-  return {
-    tenure,
-    daysUntilPayday: daysRemaining,
-    nextPaydayDate: nextDate,
-    totalPaidAmount,
-    completedTasksCount,
-    totalTasksCount,
-    taskCompletionRatio,
-  };
-}
 
 /**
  * 3. Create Employment
