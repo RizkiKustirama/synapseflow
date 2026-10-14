@@ -339,29 +339,79 @@ export async function deleteTransaction(transactionId: string) {
  * 6. Get Cashflow & Money KPI Summary
  */
 export async function getMoneySummary() {
-  const transactions = await getTransactions();
+  const userId = await getCurrentUserId();
 
-  let totalIncome = 0;
-  let totalExpense = 0;
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
 
-  for (const t of transactions) {
-    if (t.type === "INCOME") {
-      totalIncome += t.amount;
-    } else {
-      totalExpense += t.amount;
+  let totalBalance = 0;
+  let monthlyIncome = 0;
+  let monthlyExpense = 0;
+  let totalReceivables = 0;
+
+  try {
+    // 1. All-time balance calculation
+    const allTransactions = await prisma.transaction.findMany({
+      where: { userId },
+      select: { type: true, amount: true, date: true },
+    });
+
+    for (const t of allTransactions) {
+      const amt = Number(t.amount);
+      if (t.type === "INCOME") {
+        totalBalance += amt;
+      } else {
+        totalBalance -= amt;
+      }
+
+      // Check current calendar month
+      const txDate = new Date(t.date);
+      if (txDate >= startOfMonth && txDate <= endOfMonth) {
+        if (t.type === "INCOME") {
+          monthlyIncome += amt;
+        } else {
+          monthlyExpense += amt;
+        }
+      }
     }
+
+    // 2. Dynamic freelance receivables (INVOICED milestones)
+    const receivablesAgg = await prisma.projectMilestone.aggregate({
+      where: { userId, status: "INVOICED" },
+      _sum: { amount: true },
+    });
+    totalReceivables = Number(receivablesAgg._sum.amount || 0);
+  } catch {
+    // Fallback store calculation
+    for (const t of mockTransactionsStore.filter((tx) => tx.userId === userId)) {
+      if (t.type === "INCOME") {
+        totalBalance += t.amount;
+      } else {
+        totalBalance -= t.amount;
+      }
+
+      const txDate = new Date(t.date);
+      if (txDate >= startOfMonth && txDate <= endOfMonth) {
+        if (t.type === "INCOME") {
+          monthlyIncome += t.amount;
+        } else {
+          monthlyExpense += t.amount;
+        }
+      }
+    }
+    totalReceivables = 14000000;
   }
 
-  const netCashflow = totalIncome - totalExpense;
-  const savingsRate = totalIncome > 0 ? ((netCashflow / totalIncome) * 100) : 0;
-  const totalReceivables = 14500000; // Unpaid Invoiced freelance milestones
+  const netCashflow = monthlyIncome - monthlyExpense;
+  const savingsRate = monthlyIncome > 0 ? ((netCashflow / monthlyIncome) * 100) : 0;
 
   return {
-    totalBalance: 24850000 + netCashflow,
-    monthlyIncome: totalIncome,
-    monthlyExpense: totalExpense,
+    totalBalance,
+    monthlyIncome,
+    monthlyExpense,
     netCashflow,
-    savingsRate: Math.max(0, parseFloat(savingsRate.toFixed(1))),
+    savingsRate: Math.max(0, Math.min(100, parseFloat(savingsRate.toFixed(1)))),
     totalReceivables,
   };
 }
@@ -428,11 +478,44 @@ export async function deleteCategory(categoryId: string) {
  * 9. Get Categories with Monthly Spent vs Budget Calculation
  */
 export async function getCategoryBudgetsWithSpent() {
+  const userId = await getCurrentUserId();
   const categories = await getCategories("EXPENSE");
-  const transactions = await getTransactions({ type: "EXPENSE" });
+
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+
+  let monthlyExpenses: { categoryId: string; amount: number }[] = [];
+  try {
+    const dbExpenses = await prisma.transaction.findMany({
+      where: {
+        userId,
+        type: "EXPENSE",
+        date: { gte: startOfMonth, lte: endOfMonth },
+      },
+      select: {
+        categoryId: true,
+        amount: true,
+      },
+    });
+    monthlyExpenses = dbExpenses.map((e) => ({
+      categoryId: e.categoryId,
+      amount: Number(e.amount),
+    }));
+  } catch {
+    monthlyExpenses = mockTransactionsStore
+      .filter(
+        (t) =>
+          t.userId === userId &&
+          t.type === "EXPENSE" &&
+          new Date(t.date) >= startOfMonth &&
+          new Date(t.date) <= endOfMonth
+      )
+      .map((t) => ({ categoryId: t.categoryId, amount: t.amount }));
+  }
 
   return categories.map((cat) => {
-    const totalSpent = transactions
+    const totalSpent = monthlyExpenses
       .filter((t) => t.categoryId === cat.id)
       .reduce((sum, t) => sum + t.amount, 0);
 

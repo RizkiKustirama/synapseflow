@@ -1,7 +1,23 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { Search, Bell, Moon, Sun, Menu, Plus } from "lucide-react";
+import React, { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
+import {
+  Search,
+  Bell,
+  Moon,
+  Sun,
+  Menu,
+  Plus,
+  Briefcase,
+  Building2,
+  FolderGit2,
+  Wallet,
+  PieChart,
+  Settings,
+  ArrowRight,
+  Sparkles,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface HeaderProps {
@@ -10,18 +26,56 @@ interface HeaderProps {
   className?: string;
 }
 
+const SEARCH_ITEMS = [
+  { title: "Buku Kas & Transaksi", href: "/money", icon: Wallet, group: "Keuangan" },
+  { title: "Anggaran Kategori Bulanan", href: "/money/budgets", icon: PieChart, group: "Keuangan" },
+  { title: "Pipeline Karier & Lamaran", href: "/career", icon: Briefcase, group: "Karier" },
+  { title: "Pekerjaan Kantor & Kontrak", href: "/employment", icon: Building2, group: "Kantor" },
+  { title: "Proyek Freelance & Piutang", href: "/freelance", icon: FolderGit2, group: "Freelance" },
+  { title: "Pengaturan Akun & Sistem", href: "/settings", icon: Settings, group: "Sistem" },
+];
+
 export function Header({ onToggleMobileMenu, onOpenQuickAdd, className }: HeaderProps) {
+  const router = useRouter();
   const [isDark, setIsDark] = useState(true);
   const [mounted, setMounted] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setMounted(true);
-    // Check initial dark mode from document or localStorage
     const isDarkMode = document.documentElement.classList.contains("dark");
     setIsDark(isDarkMode || true);
     if (!document.documentElement.classList.contains("dark")) {
       document.documentElement.classList.add("dark");
     }
+
+    // Keyboard shortcut: Ctrl+K or / to focus search
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        setIsSearchOpen(true);
+      } else if (e.key === "Escape") {
+        setIsSearchOpen(false);
+        searchInputRef.current?.blur();
+      }
+    };
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(e.target as Node)) {
+        setIsSearchOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   const toggleTheme = () => {
@@ -40,6 +94,17 @@ export function Header({ onToggleMobileMenu, onOpenQuickAdd, className }: Header
     month: "long",
     year: "numeric",
   }).format(new Date());
+
+  const filteredItems = SEARCH_ITEMS.filter((item) =>
+    item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    item.group.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleSelectItem = (href: string) => {
+    setIsSearchOpen(false);
+    setSearchQuery("");
+    router.push(href);
+  };
 
   return (
     <header
@@ -70,14 +135,69 @@ export function Header({ onToggleMobileMenu, onOpenQuickAdd, className }: Header
 
       {/* Center / Right: Global Search & Actions */}
       <div className="flex items-center gap-3">
-        {/* Pill Search Bar */}
-        <div className="relative hidden md:flex items-center">
+        {/* Functional Search Bar with Dropdown */}
+        <div ref={searchContainerRef} className="relative hidden md:flex items-center">
           <Search className="absolute left-3.5 w-4 h-4 text-muted-foreground pointer-events-none" />
           <input
+            ref={searchInputRef}
             type="text"
-            placeholder="Search projects, jobs, cashflow..."
-            className="w-64 lg:w-80 h-9 pl-10 pr-4 text-xs rounded-full bg-card border border-card-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-neon/40 transition-all"
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setIsSearchOpen(true);
+            }}
+            onFocus={() => setIsSearchOpen(true)}
+            placeholder="Cari modul, proyek, kas (Ctrl+K)..."
+            className="w-64 lg:w-80 h-9 pl-10 pr-12 text-xs rounded-full bg-card border border-card-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-neon/40 transition-all"
           />
+          <kbd className="absolute right-3 hidden lg:inline-block px-1.5 py-0.5 bg-card-border/60 text-[10px] font-mono text-muted-foreground rounded border border-card-border">
+            Ctrl+K
+          </kbd>
+
+          {/* Quick Search Palette Dropdown */}
+          {isSearchOpen && (
+            <div className="absolute top-11 left-0 w-80 lg:w-96 rounded-2xl bg-card border border-card-border shadow-2xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+              <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground border-b border-card-border/60 flex items-center justify-between">
+                <span>Navigasi Cepat</span>
+                <span className="text-neon flex items-center gap-1">
+                  <Sparkles className="w-3 h-3" /> SynapseFlow
+                </span>
+              </div>
+              <div className="py-1 max-h-64 overflow-y-auto space-y-0.5">
+                {filteredItems.length > 0 ? (
+                  filteredItems.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <button
+                        key={item.href}
+                        onClick={() => handleSelectItem(item.href)}
+                        className="w-full flex items-center justify-between p-2 rounded-xl text-left hover:bg-neon/10 hover:border-neon/30 border border-transparent transition-all group"
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-7 h-7 rounded-lg bg-card-border/40 flex items-center justify-center text-neon group-hover:bg-neon/20 transition-colors">
+                            <Icon className="w-3.5 h-3.5" />
+                          </div>
+                          <div>
+                            <div className="text-xs font-bold text-foreground group-hover:text-neon transition-colors">
+                              {item.title}
+                            </div>
+                            <div className="text-[10px] text-muted-foreground">
+                              {item.group}
+                            </div>
+                          </div>
+                        </div>
+                        <ArrowRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-neon group-hover:translate-x-0.5 transition-all" />
+                      </button>
+                    );
+                  })
+                ) : (
+                  <div className="py-4 text-center text-xs text-muted-foreground">
+                    Tidak ada modul yang cocok dengan &quot;{searchQuery}&quot;
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Desktop Quick-Add Transaction Button */}
