@@ -114,8 +114,21 @@ export interface ExecutiveDashboardData {
 
 const MONTH_NAMES_SHORT = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
 
+// In-memory deduplication cache to avoid parallel double-queries between DashboardPage and RightPanel
+let dashboardCache: { userId: string; timestamp: number; data: ExecutiveDashboardData } | null = null;
+const CACHE_TTL_MS = 5000;
+
 export async function getExecutiveDashboardData(): Promise<ExecutiveDashboardData> {
   const userId = await getCurrentUserId();
+  const nowMs = Date.now();
+
+  if (
+    dashboardCache &&
+    dashboardCache.userId === userId &&
+    nowMs - dashboardCache.timestamp < CACHE_TTL_MS
+  ) {
+    return dashboardCache.data;
+  }
 
   // 1. Fetch User
   let user = await prisma.user.findUnique({
@@ -385,7 +398,7 @@ export async function getExecutiveDashboardData(): Promise<ExecutiveDashboardDat
     date: tx.date.toISOString().split("T")[0],
   }));
 
-  return {
+  const result: ExecutiveDashboardData = {
     user: {
       name: user.fullName || "Pengguna",
       email: user.email,
@@ -437,13 +450,23 @@ export async function getExecutiveDashboardData(): Promise<ExecutiveDashboardDat
     activeDeliverables,
     recentTransactions,
   };
+
+  dashboardCache = { userId, timestamp: Date.now(), data: result };
+  return result;
 }
 
 export async function toggleDashboardTaskStatus(taskId: string, currentStatus: string) {
+  const userId = await getCurrentUserId();
   const newStatus = currentStatus === "DONE" ? "TODO" : "DONE";
 
-  await prisma.employmentTask.update({
-    where: { id: taskId },
+  // Invalidate cache immediately on update
+  dashboardCache = null;
+
+  await prisma.employmentTask.updateMany({
+    where: {
+      id: taskId,
+      employment: { userId },
+    },
     data: { status: newStatus },
   });
 

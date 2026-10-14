@@ -558,6 +558,13 @@ export async function createMilestone(formData: ProjectMilestoneFormInput) {
   const validated = projectMilestoneSchema.parse(formData);
 
   try {
+    // Enforce ownership: Verify project belongs to current user
+    const project = await prisma.freelanceProject.findFirst({
+      where: { id: validated.projectId, userId },
+      select: { id: true },
+    });
+    if (!project) throw new Error("Akses ditolak: Proyek tidak ditemukan atau bukan milik Anda");
+
     const created = await prisma.projectMilestone.create({
       data: {
         userId,
@@ -573,7 +580,10 @@ export async function createMilestone(formData: ProjectMilestoneFormInput) {
 
     revalidatePath("/freelance");
     return { success: true, data: created };
-  } catch {
+  } catch (err) {
+    if (err instanceof Error && err.message.startsWith("Akses ditolak")) {
+      throw err;
+    }
     const newM: StoredMilestone = {
       id: "m-" + Date.now().toString(),
       userId,
@@ -586,7 +596,7 @@ export async function createMilestone(formData: ProjectMilestoneFormInput) {
       paidDate: validated.paidDate ? (typeof validated.paidDate === "string" ? validated.paidDate : validated.paidDate.toISOString().split("T")[0]) : null,
     };
 
-    const project = mockProjectsStore.find((p) => p.id === validated.projectId);
+    const project = mockProjectsStore.find((p) => p.id === validated.projectId && p.userId === userId);
     if (project) {
       project.milestones.push(newM);
       const metrics = computeProjectMetrics(project.milestones, project.expenses);
@@ -598,7 +608,7 @@ export async function createMilestone(formData: ProjectMilestoneFormInput) {
 }
 
 /**
- * 10. Update Milestone Status & 1-Click Sync to Money when PAID
+ * 10. Update Milestone Status & 1-Click Sync to Money when PAID (Idempotent)
  */
 export async function updateMilestoneStatus(
   milestoneId: string,
@@ -611,36 +621,59 @@ export async function updateMilestoneStatus(
     const isPaid = newStatus === "PAID";
     const paidDate = isPaid ? new Date() : null;
 
-    // 1. If marking as PAID, create live INCOME transaction in Money ledger
     let transactionId: string | undefined = undefined;
+
     if (isPaid) {
-      const project = (await getFreelanceProjects()).find((p) => p.id === projectId);
-      const milestone = project?.milestones.find((m) => m.id === milestoneId);
+      // Idempotency check: verify if a transaction is already linked to this milestone
+      const existingTx = await prisma.transaction.findFirst({
+        where: { milestoneId, userId },
+      });
 
-      if (milestone) {
-        const categories = await getCategories("INCOME");
-        const freelanceCat =
-          categories.find((c) => c.name.toLowerCase().includes("freelance")) ||
-          categories[0];
+      if (existingTx) {
+        transactionId = existingTx.id;
+      } else {
+        const project = await prisma.freelanceProject.findFirst({
+          where: { id: projectId, userId },
+          select: { title: true },
+        });
+        const milestone = await prisma.projectMilestone.findFirst({
+          where: { id: milestoneId, userId },
+        });
 
-        if (freelanceCat) {
-          const trx = await createTransaction({
-            categoryId: freelanceCat.id,
-            type: "INCOME",
-            amount: milestone.amount,
-            date: new Date().toISOString(),
-            description: `Pelunasan Termin - ${milestone.title} (${project?.title || "Proyek"})`,
-            notes: `Auto-synced from Freelance module milestone #${milestone.id}. Invoice: ${milestone.invoiceNumber || "-"}`,
-            sourceType: "FREELANCE_MILESTONE",
-            projectId,
-            milestoneId,
-          });
-          transactionId = trx?.data?.id;
+        if (milestone) {
+          const categories = await getCategories("INCOME");
+          const freelanceCat =
+            categories.find((c) => c.name.toLowerCase().includes("freelance")) ||
+            categories[0];
+
+          if (freelanceCat) {
+            const trx = await createTransaction({
+              categoryId: freelanceCat.id,
+              type: "INCOME",
+              amount: Number(milestone.amount),
+              date: new Date().toISOString(),
+              description: `Pelunasan Termin - ${milestone.title} (${project?.title || "Proyek"})`,
+              notes: `Auto-synced from Freelance module milestone #${milestone.id}. Invoice: ${milestone.invoiceNumber || "-"}`,
+              sourceType: "FREELANCE_MILESTONE",
+              projectId,
+              milestoneId,
+            });
+            transactionId = trx?.data?.id;
+          }
         }
       }
+    } else {
+      // If reverted from PAID to DRAFT or INVOICED, remove the auto-synced transaction to avoid phantom income
+      await prisma.transaction.deleteMany({
+        where: {
+          milestoneId,
+          userId,
+          sourceType: "FREELANCE_MILESTONE",
+        },
+      });
     }
 
-    // 2. Update milestone in database
+    // Update milestone in database
     await prisma.projectMilestone.updateMany({
       where: { id: milestoneId, userId },
       data: {
@@ -655,13 +688,15 @@ export async function updateMilestoneStatus(
     return { success: true, transactionId };
   } catch {
     // Fallback store update
-    const project = mockProjectsStore.find((p) => p.id === projectId);
+    const project = mockProjectsStore.find((p) => p.id === projectId && p.userId === userId);
     if (project) {
       const m = project.milestones.find((item) => item.id === milestoneId);
       if (m) {
         m.status = newStatus;
         if (newStatus === "PAID") {
           m.paidDate = new Date().toISOString().split("T")[0];
+        } else {
+          m.paidDate = null;
         }
       }
       const metrics = computeProjectMetrics(project.milestones, project.expenses);

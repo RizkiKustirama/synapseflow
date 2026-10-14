@@ -385,9 +385,17 @@ export async function deleteJobApplication(id: string) {
  * 6. Add Interview Log (Interview CRM)
  */
 export async function addInterviewLog(formData: InterviewLogFormInput) {
+  const userId = await getCurrentUserId();
   const validated = interviewLogSchema.parse(formData);
 
   try {
+    // Enforce ownership: Verify job application belongs to current user
+    const app = await prisma.jobApplication.findFirst({
+      where: { id: validated.applicationId, userId },
+      select: { id: true },
+    });
+    if (!app) throw new Error("Akses ditolak: Lamaran kerja tidak ditemukan atau bukan milik Anda");
+
     const created = await prisma.jobInterviewLog.create({
       data: {
         applicationId: validated.applicationId,
@@ -401,7 +409,10 @@ export async function addInterviewLog(formData: InterviewLogFormInput) {
     });
     revalidatePath("/career");
     return { success: true, data: created };
-  } catch {
+  } catch (err) {
+    if (err instanceof Error && err.message.startsWith("Akses ditolak")) {
+      throw err;
+    }
     const newLog: StoredInterviewLog = {
       id: "int-" + Date.now().toString(),
       applicationId: validated.applicationId,
@@ -413,7 +424,7 @@ export async function addInterviewLog(formData: InterviewLogFormInput) {
       feedbackNotes: validated.feedbackNotes,
     };
 
-    const app = mockApplicationsStore.find((a) => a.id === validated.applicationId);
+    const app = mockApplicationsStore.find((a) => a.id === validated.applicationId && a.userId === userId);
     if (app) {
       app.interviewLogs.push(newLog);
     }
@@ -426,14 +437,19 @@ export async function addInterviewLog(formData: InterviewLogFormInput) {
  * 7. Delete Interview Log
  */
 export async function deleteInterviewLog(id: string, applicationId: string) {
+  const userId = await getCurrentUserId();
+
   try {
-    await prisma.jobInterviewLog.delete({
-      where: { id },
+    await prisma.jobInterviewLog.deleteMany({
+      where: {
+        id,
+        application: { userId },
+      },
     });
     revalidatePath("/career");
     return { success: true };
   } catch {
-    const app = mockApplicationsStore.find((a) => a.id === applicationId);
+    const app = mockApplicationsStore.find((a) => a.id === applicationId && a.userId === userId);
     if (app) {
       app.interviewLogs = app.interviewLogs.filter((l) => l.id !== id);
     }

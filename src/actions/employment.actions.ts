@@ -10,7 +10,7 @@ import {
   EmploymentTaskFormInput,
   PayrollRecordFormInput,
 } from "@/lib/validations/employment.schema";
-import { createTransaction, getCategories } from "@/actions/money.actions";
+import { getCategories } from "@/actions/money.actions";
 
 const DEFAULT_USER_ID = "c0000000-0000-0000-0000-000000000001";
 
@@ -165,7 +165,9 @@ export async function getEmployments(): Promise<StoredEmployment[]> {
       where: { userId },
       include: {
         tasks: { orderBy: { createdAt: "desc" } },
-        payrollRecords: { orderBy: { periodYear: "desc" } },
+        payrollRecords: {
+          orderBy: [{ periodYear: "desc" }, { periodMonth: "desc" }],
+        },
       },
       orderBy: { createdAt: "desc" },
     });
@@ -237,7 +239,9 @@ export async function getEmploymentById(id: string): Promise<StoredEmployment | 
       where: { id, userId },
       include: {
         tasks: { orderBy: { createdAt: "desc" } },
-        payrollRecords: { orderBy: { periodYear: "desc" } },
+        payrollRecords: {
+          orderBy: [{ periodYear: "desc" }, { periodMonth: "desc" }],
+        },
       },
     });
 
@@ -430,9 +434,17 @@ export async function deleteEmployment(id: string) {
  * 6. Create Employment Task
  */
 export async function createEmploymentTask(formData: EmploymentTaskFormInput) {
+  const userId = await getCurrentUserId();
   const validated = employmentTaskSchema.parse(formData);
 
   try {
+    // Enforce ownership: Verify employment belongs to current user
+    const emp = await prisma.employment.findFirst({
+      where: { id: validated.employmentId, userId },
+      select: { id: true },
+    });
+    if (!emp) throw new Error("Akses ditolak: Profil pekerjaan tidak ditemukan atau bukan milik Anda");
+
     const created = await prisma.employmentTask.create({
       data: {
         employmentId: validated.employmentId,
@@ -445,7 +457,10 @@ export async function createEmploymentTask(formData: EmploymentTaskFormInput) {
     });
     revalidatePath("/employment");
     return { success: true, data: created };
-  } catch {
+  } catch (err) {
+    if (err instanceof Error && err.message.startsWith("Akses ditolak")) {
+      throw err;
+    }
     const newTask: StoredEmploymentTask = {
       id: "task-" + Date.now().toString(),
       employmentId: validated.employmentId,
@@ -457,7 +472,7 @@ export async function createEmploymentTask(formData: EmploymentTaskFormInput) {
       createdAt: new Date().toISOString(),
     };
 
-    const emp = mockEmploymentsStore.find((e) => e.id === validated.employmentId);
+    const emp = mockEmploymentsStore.find((e) => e.id === validated.employmentId && e.userId === userId);
     if (emp) {
       emp.tasks.unshift(newTask);
     }
@@ -474,15 +489,26 @@ export async function updateTaskStatus(
   status: StoredEmploymentTask["status"],
   employmentId: string
 ) {
+  const userId = await getCurrentUserId();
+
   try {
-    await prisma.employmentTask.update({
-      where: { id: taskId },
+    const updated = await prisma.employmentTask.updateMany({
+      where: {
+        id: taskId,
+        employment: { userId },
+      },
       data: { status },
     });
+    if (updated.count === 0) {
+      throw new Error("Akses ditolak: Task tidak ditemukan atau bukan milik Anda");
+    }
     revalidatePath("/employment");
     return { success: true };
-  } catch {
-    const emp = mockEmploymentsStore.find((e) => e.id === employmentId);
+  } catch (err) {
+    if (err instanceof Error && err.message.startsWith("Akses ditolak")) {
+      throw err;
+    }
+    const emp = mockEmploymentsStore.find((e) => e.id === employmentId && e.userId === userId);
     if (emp) {
       const task = emp.tasks.find((t) => t.id === taskId);
       if (task) {
@@ -498,14 +524,19 @@ export async function updateTaskStatus(
  * 8. Delete Task
  */
 export async function deleteEmploymentTask(taskId: string, employmentId: string) {
+  const userId = await getCurrentUserId();
+
   try {
-    await prisma.employmentTask.delete({
-      where: { id: taskId },
+    await prisma.employmentTask.deleteMany({
+      where: {
+        id: taskId,
+        employment: { userId },
+      },
     });
     revalidatePath("/employment");
     return { success: true };
   } catch {
-    const emp = mockEmploymentsStore.find((e) => e.id === employmentId);
+    const emp = mockEmploymentsStore.find((e) => e.id === employmentId && e.userId === userId);
     if (emp) {
       emp.tasks = emp.tasks.filter((t) => t.id !== taskId);
     }
@@ -518,6 +549,7 @@ export async function deleteEmploymentTask(taskId: string, employmentId: string)
  * 9. Create Payroll Record
  */
 export async function createPayrollRecord(formData: PayrollRecordFormInput) {
+  const userId = await getCurrentUserId();
   const validated = payrollRecordSchema.parse(formData);
   const netSalary =
     validated.baseSalary +
@@ -526,6 +558,13 @@ export async function createPayrollRecord(formData: PayrollRecordFormInput) {
     validated.deductions;
 
   try {
+    // Enforce ownership: Verify employment belongs to current user
+    const emp = await prisma.employment.findFirst({
+      where: { id: validated.employmentId, userId },
+      select: { id: true },
+    });
+    if (!emp) throw new Error("Akses ditolak: Profil pekerjaan tidak ditemukan atau bukan milik Anda");
+
     const created = await prisma.payrollRecord.create({
       data: {
         employmentId: validated.employmentId,
@@ -542,7 +581,10 @@ export async function createPayrollRecord(formData: PayrollRecordFormInput) {
     });
     revalidatePath("/employment");
     return { success: true, data: created };
-  } catch {
+  } catch (err) {
+    if (err instanceof Error && err.message.startsWith("Akses ditolak")) {
+      throw err;
+    }
     const newRecord: StoredPayrollRecord = {
       id: "pay-" + Date.now().toString(),
       employmentId: validated.employmentId,
@@ -559,7 +601,7 @@ export async function createPayrollRecord(formData: PayrollRecordFormInput) {
       paidAt: typeof validated.paidAt === "string" ? validated.paidAt : validated.paidAt.toISOString().split("T")[0],
     };
 
-    const emp = mockEmploymentsStore.find((e) => e.id === validated.employmentId);
+    const emp = mockEmploymentsStore.find((e) => e.id === validated.employmentId && e.userId === userId);
     if (emp) {
       emp.payrollRecords.unshift(newRecord);
     }
@@ -572,14 +614,21 @@ export async function createPayrollRecord(formData: PayrollRecordFormInput) {
  * 10. Interconnection Action: 1-Click Sync Payroll Slip to Money Module
  */
 export async function syncPayrollToMoney(payrollId: string, employmentId: string) {
-  try {
-    // 1. Locate the payroll record
-    const emp = (await getEmployments()).find((e) => e.id === employmentId);
-    if (!emp) throw new Error("Profil pekerjaan tidak ditemukan");
+  const userId = await getCurrentUserId();
 
-    const record = emp.payrollRecords.find((p) => p.id === payrollId);
+  try {
+    // 1. Locate the employment profile & verify ownership
+    const emp = await prisma.employment.findFirst({
+      where: { id: employmentId, userId },
+      include: {
+        payrollRecords: { where: { id: payrollId } },
+      },
+    });
+    if (!emp) throw new Error("Profil pekerjaan tidak ditemukan atau bukan milik Anda");
+
+    const record = emp.payrollRecords[0];
     if (!record) throw new Error("Slip gaji tidak ditemukan");
-    if (record.isSyncedToMoney) {
+    if (record.transactionId) {
       return { success: true, message: "Slip gaji sudah tersinkronkan sebelumnya" };
     }
 
@@ -591,50 +640,56 @@ export async function syncPayrollToMoney(payrollId: string, employmentId: string
 
     if (!salaryCat) throw new Error("Kategori pemasukan Gaji belum tersedia");
 
-    // 3. Create Transaction in Money ledger
+    // 3. Atomically create Transaction in Money ledger and link to PayrollRecord
     const monthNames = [
       "Januari", "Februari", "Maret", "April", "Mei", "Juni",
       "Juli", "Agustus", "September", "Oktober", "November", "Desember",
     ];
     const monthLabel = monthNames[record.periodMonth - 1] || `Bulan ${record.periodMonth}`;
 
-    const trxResult = await createTransaction({
-      categoryId: salaryCat.id,
-      type: "INCOME",
-      amount: record.netSalary,
-      date: new Date(record.paidAt).toISOString(),
-      description: `Gaji Kantor - ${emp.companyName} (${monthLabel} ${record.periodYear})`,
-      notes: `Auto-synced from Employment #${emp.id}. Rincian: Pokok Rp ${record.baseSalary.toLocaleString("id-ID")}, Tunjangan Rp ${record.allowance.toLocaleString("id-ID")}, Bonus Rp ${record.incentiveBonus.toLocaleString("id-ID")}, Potongan Rp ${record.deductions.toLocaleString("id-ID")}.`,
-      sourceType: "EMPLOYMENT_PAYROLL",
-      employmentId: emp.id,
-    });
-
-    const trxId = trxResult?.data?.id || "trx-" + Date.now().toString();
-
-    // 4. Update PayrollRecord in DB or fallback store
-    try {
-      await prisma.payrollRecord.update({
-        where: { id: payrollId },
+    const createdTxId = await prisma.$transaction(async (tx) => {
+      const createdTx = await tx.transaction.create({
         data: {
-          transactionId: trxId,
+          userId,
+          categoryId: salaryCat.id,
+          type: "INCOME",
+          amount: Number(record.netReceived),
+          date: record.paidDate,
+          description: `Gaji Kantor - ${emp.companyName} (${monthLabel} ${record.periodYear})`,
+          notes: `Auto-synced from Employment #${emp.id}. Rincian: Pokok Rp ${Number(record.baseAmount).toLocaleString("id-ID")}, Tunjangan Rp ${Number(record.allowanceAmount).toLocaleString("id-ID")}, Bonus Rp ${Number(record.bonusIncentive).toLocaleString("id-ID")}, Potongan Rp ${Number(record.deductions).toLocaleString("id-ID")}.`,
+          sourceType: "EMPLOYMENT_PAYROLL",
+          employmentId: emp.id,
         },
       });
-    } catch {
-      const mockEmp = mockEmploymentsStore.find((e) => e.id === employmentId);
-      if (mockEmp) {
-        const mockRec = mockEmp.payrollRecords.find((p) => p.id === payrollId);
-        if (mockRec) {
-          mockRec.isSyncedToMoney = true;
-          mockRec.syncedTransactionId = trxId;
-        }
-      }
-    }
+
+      await tx.payrollRecord.update({
+        where: { id: payrollId },
+        data: {
+          transactionId: createdTx.id,
+        },
+      });
+
+      return createdTx.id;
+    });
 
     revalidatePath("/employment");
     revalidatePath("/money");
     revalidatePath("/");
-    return { success: true, transactionId: trxId };
+    return { success: true, transactionId: createdTxId };
   } catch (err: unknown) {
+    // Fallback for offline/mock environments
+    const mockEmp = mockEmploymentsStore.find((e) => e.id === employmentId && e.userId === userId);
+    if (mockEmp) {
+      const mockRec = mockEmp.payrollRecords.find((p) => p.id === payrollId);
+      if (mockRec && !mockRec.isSyncedToMoney) {
+        mockRec.isSyncedToMoney = true;
+        mockRec.syncedTransactionId = "trx-mock-" + Date.now().toString();
+        revalidatePath("/employment");
+        revalidatePath("/money");
+        revalidatePath("/");
+        return { success: true, transactionId: mockRec.syncedTransactionId };
+      }
+    }
     const msg = err instanceof Error ? err.message : "Gagal sinkronisasi gaji";
     return { success: false, error: msg };
   }
