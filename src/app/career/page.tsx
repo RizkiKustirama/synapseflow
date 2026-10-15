@@ -98,8 +98,8 @@ export default function CareerPage() {
       {/* 1. Header & Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neon/10 border border-neon/30 text-neon text-xs font-bold mb-2">
-            <Sparkles className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-card border border-card-border text-[11px] font-semibold text-muted-foreground w-fit mb-2 shadow-sm">
+            <Sparkles className="w-3.5 h-3.5 text-neon" />
             Job Hunting CRM & Interview Pipeline
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
@@ -110,16 +110,16 @@ export default function CareerPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2.5 flex-wrap">
           {/* View Mode Toggle */}
-          <div className="flex items-center p-1 rounded-xl bg-card border border-card-border">
+          <div className="inline-flex items-center gap-1.5 p-1.5 rounded-full bg-card border border-card-border shadow-sm">
             <button
               onClick={() => setViewMode("KANBAN")}
               className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all",
+                "flex items-center gap-1.5 px-4 py-2 rounded-full text-xs transition-all",
                 viewMode === "KANBAN"
-                  ? "bg-background text-neon shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-neon text-black font-extrabold shadow-sm"
+                  : "text-muted-foreground hover:text-foreground font-medium"
               )}
               title="Kanban Board View"
             >
@@ -129,10 +129,10 @@ export default function CareerPage() {
             <button
               onClick={() => setViewMode("TABLE")}
               className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all",
+                "flex items-center gap-1.5 px-4 py-2 rounded-full text-xs transition-all",
                 viewMode === "TABLE"
-                  ? "bg-background text-neon shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-neon text-black font-extrabold shadow-sm"
+                  : "text-muted-foreground hover:text-foreground font-medium"
               )}
               title="Table View"
             >
@@ -144,36 +144,39 @@ export default function CareerPage() {
           {/* Refresh Button */}
           <button
             onClick={loadData}
-            className="p-2 rounded-xl bg-card border border-card-border text-muted-foreground hover:text-foreground hover:border-neon/40 transition-colors"
+            className="p-2.5 rounded-full bg-card border border-card-border text-muted-foreground hover:text-foreground hover:border-neon/40 transition-colors shadow-sm"
             title="Refresh Data"
           >
             <RefreshCw className={cn("w-4 h-4", isLoading && "animate-spin")} />
           </button>
 
           {/* Create Application CTA */}
-          <Button onClick={handleAddNew} className="h-10 text-xs font-bold gap-2">
+          <Button
+            onClick={handleAddNew}
+            className="h-10 px-5 rounded-full text-xs font-extrabold gap-2 bg-neon text-black hover:bg-neon/90 shadow-sm"
+          >
             <Plus className="w-4 h-4 stroke-[2.5]" /> Tambah Lamaran
           </Button>
         </div>
       </div>
 
-      {/* 2. Top KPI Metrics Banner */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      {/* 2. Top KPI Metrics Banner (Stitch Card Light Mode) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
         {/* KPI 1: Active Pipeline */}
-        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-card border border-card-border space-y-1.5 shadow-sm">
+        <div className="p-5 sm:p-6 rounded-[2rem] bg-card border border-card-border space-y-2 shadow-sm hover:border-blue-500/30 transition-all">
           <div className="flex items-center justify-between text-muted-foreground">
             <span className="text-[11px] font-bold uppercase tracking-wider">
               Pipeline Aktif
             </span>
-            <div className="w-7 h-7 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center">
-              <Briefcase className="w-3.5 h-3.5" />
+            <div className="w-9 h-9 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center">
+              <Briefcase className="w-4 h-4" />
             </div>
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-xl sm:text-2xl font-black text-foreground tabular-nums">
               {stats.activePipeline}
             </span>
-            <span className="text-[11px] text-muted-foreground">
+            <span className="text-[11px] text-muted-foreground font-medium">
               dari {stats.totalApplications} total
             </span>
           </div>
@@ -183,20 +186,20 @@ export default function CareerPage() {
         </div>
 
         {/* KPI 2: Total Interviews */}
-        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-card border border-card-border space-y-1.5 shadow-sm">
+        <div className="p-5 sm:p-6 rounded-[2rem] bg-card border border-card-border space-y-2 shadow-sm hover:border-purple-500/30 transition-all">
           <div className="flex items-center justify-between text-muted-foreground">
             <span className="text-[11px] font-bold uppercase tracking-wider">
               Sesi Interview
             </span>
-            <div className="w-7 h-7 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center">
-              <Users className="w-3.5 h-3.5" />
+            <div className="w-9 h-9 rounded-full bg-purple-500/10 text-purple-500 flex items-center justify-center">
+              <Users className="w-4 h-4" />
             </div>
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-xl sm:text-2xl font-black text-foreground tabular-nums">
               {stats.totalInterviews}
             </span>
-            <span className="text-[11px] text-purple-400 font-semibold">
+            <span className="text-[11px] text-purple-500 font-bold">
               terjadwal & dicatat
             </span>
           </div>
@@ -206,20 +209,20 @@ export default function CareerPage() {
         </div>
 
         {/* KPI 3: Offer Rate */}
-        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-card border border-card-border space-y-1.5 shadow-sm">
+        <div className="p-5 sm:p-6 rounded-[2rem] bg-card border border-card-border space-y-2 shadow-sm hover:border-neon/40 transition-all">
           <div className="flex items-center justify-between text-muted-foreground">
             <span className="text-[11px] font-bold uppercase tracking-wider">
               Offer Rate
             </span>
-            <div className="w-7 h-7 rounded-xl bg-neon/15 text-neon flex items-center justify-center">
-              <Award className="w-3.5 h-3.5" />
+            <div className="w-9 h-9 rounded-full bg-neon/15 text-neon flex items-center justify-center">
+              <Award className="w-4 h-4" />
             </div>
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-xl sm:text-2xl font-black text-neon tabular-nums">
               {stats.offerRate}%
             </span>
-            <span className="text-[11px] text-muted-foreground">
+            <span className="text-[11px] text-muted-foreground font-medium">
               rasio offering
             </span>
           </div>
@@ -229,17 +232,17 @@ export default function CareerPage() {
         </div>
 
         {/* KPI 4: Avg Expected Salary */}
-        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-card border border-card-border space-y-1.5 shadow-sm">
+        <div className="p-5 sm:p-6 rounded-[2rem] bg-card border border-card-border space-y-2 shadow-sm hover:border-amber-500/30 transition-all">
           <div className="flex items-center justify-between text-muted-foreground">
             <span className="text-[11px] font-bold uppercase tracking-wider">
               Rata-rata Target Gaji
             </span>
-            <div className="w-7 h-7 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center">
-              <DollarSign className="w-3.5 h-3.5" />
+            <div className="w-9 h-9 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center">
+              <DollarSign className="w-4 h-4" />
             </div>
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="text-lg sm:text-xl font-black text-foreground tabular-nums truncate">
+            <span className="text-xl sm:text-2xl font-black text-foreground tabular-nums truncate">
               {formatRupiah(stats.avgExpectedSalary)}
             </span>
           </div>
@@ -259,10 +262,10 @@ export default function CareerPage() {
           onConvert={handleConvert}
         />
       ) : (
-        /* High-Density Table View */
-        <div className="rounded-3xl bg-card border border-card-border overflow-hidden shadow-sm">
-          <div className="p-4 border-b border-card-border flex items-center justify-between">
-            <h3 className="text-sm font-bold text-foreground">
+        /* High-Density Table View (Stitch Card Light Mode) */
+        <div className="rounded-[2rem] lg:rounded-[2.5rem] bg-card border border-card-border overflow-hidden shadow-xl">
+          <div className="p-6 border-b border-card-border flex items-center justify-between">
+            <h3 className="text-base font-bold text-foreground">
               Daftar Lamaran Kerja ({applications.length})
             </h3>
             <span className="text-xs text-muted-foreground">
@@ -272,21 +275,21 @@ export default function CareerPage() {
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-background/80 text-muted-foreground border-b border-card-border">
+              <thead className="bg-card-inner text-muted-foreground border-b border-card-border-subtle">
                 <tr>
-                  <th className="py-3 px-4 font-bold">Perusahaan</th>
-                  <th className="py-3 px-4 font-bold">Posisi</th>
-                  <th className="py-3 px-4 font-bold">Status</th>
-                  <th className="py-3 px-4 font-bold">Lokasi</th>
-                  <th className="py-3 px-4 font-bold">Gaji Target / Ditawarkan</th>
-                  <th className="py-3 px-4 font-bold">Interview</th>
-                  <th className="py-3 px-4 font-bold text-right">Aksi</th>
+                  <th className="py-3.5 px-5 font-bold">Perusahaan</th>
+                  <th className="py-3.5 px-4 font-bold">Posisi</th>
+                  <th className="py-3.5 px-4 font-bold">Status</th>
+                  <th className="py-3.5 px-4 font-bold">Lokasi</th>
+                  <th className="py-3.5 px-4 font-bold">Gaji Target / Ditawarkan</th>
+                  <th className="py-3.5 px-4 font-bold">Interview</th>
+                  <th className="py-3.5 px-5 font-bold text-right">Aksi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-card-border">
+              <tbody className="divide-y divide-card-border-subtle">
                 {applications.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="py-8 text-center text-muted-foreground">
+                    <td colSpan={7} className="py-12 text-center text-muted-foreground">
                       Belum ada lamaran kerja tercatat. Klik &quot;+ Tambah Lamaran&quot; untuk memulai.
                     </td>
                   </tr>
@@ -294,9 +297,9 @@ export default function CareerPage() {
                   applications.map((app) => (
                     <tr
                       key={app.id}
-                      className="hover:bg-card-border/20 transition-colors"
+                      className="hover:bg-card-inner/60 transition-colors"
                     >
-                      <td className="py-3.5 px-4 font-bold text-foreground">
+                      <td className="py-3.5 px-5 font-bold text-foreground">
                         <div className="flex items-center gap-2">
                           <Building2 className="w-4 h-4 text-muted-foreground" />
                           <span>{app.companyName}</span>
@@ -324,7 +327,7 @@ export default function CareerPage() {
                               ? "destructive"
                               : "processing"
                           }
-                          className="text-[10px]"
+                          className="text-[10px] rounded-full px-2.5 py-0.5"
                         >
                           {app.status}
                         </Badge>
@@ -342,18 +345,18 @@ export default function CareerPage() {
                       <td className="py-3.5 px-4">
                         <button
                           onClick={() => handleOpenInterview(app)}
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-background border border-card-border hover:border-purple-500/40 text-purple-400 font-bold text-[11px]"
+                          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-card-inner border border-card-border-subtle hover:border-purple-500/40 text-purple-500 font-bold text-[11px] transition-all"
                         >
                           <Users className="w-3 h-3" />
                           {app.interviewLogs.length} Sesi
                         </button>
                       </td>
-                      <td className="py-3.5 px-4 text-right">
+                      <td className="py-3.5 px-5 text-right">
                         <div className="inline-flex items-center gap-1.5 justify-end">
                           {(app.status === "OFFERING" || app.status === "ACCEPTED") && (
                             <button
                               onClick={() => handleConvert(app)}
-                              className="px-2.5 py-1 rounded-lg bg-neon/15 hover:bg-neon/25 text-neon border border-neon/40 text-[10px] font-bold"
+                              className="px-3 py-1 rounded-full bg-neon/15 hover:bg-neon/25 text-neon border border-neon/40 text-[10px] font-bold transition-all"
                               title="Konversi ke Employment"
                             >
                               Konversi
@@ -361,14 +364,14 @@ export default function CareerPage() {
                           )}
                           <button
                             onClick={() => handleEdit(app)}
-                            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-background"
+                            className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-card-inner transition-colors"
                             title="Edit Lamaran"
                           >
                             <Edit className="w-3.5 h-3.5" />
                           </button>
                           <button
                             onClick={() => handleDelete(app.id, app.companyName)}
-                            className="p-1.5 rounded-lg text-muted-foreground hover:text-red-400 hover:bg-background"
+                            className="p-1.5 rounded-full text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
                             title="Hapus Lamaran"
                           >
                             <Trash2 className="w-3.5 h-3.5" />

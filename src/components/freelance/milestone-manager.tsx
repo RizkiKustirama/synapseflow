@@ -269,7 +269,7 @@ export function MilestoneManager({
         />
 
         {/* Modal Dialog Content */}
-        <div className="relative w-full max-w-5xl max-h-[92vh] flex flex-col bg-card border border-card-border rounded-3xl shadow-2xl z-10 overflow-hidden">
+        <div className="relative w-full max-w-5xl max-h-[92vh] flex flex-col bg-card border border-card-border rounded-[2rem] lg:rounded-[2.5rem] shadow-2xl z-10 overflow-hidden">
           {/* Header */}
           <div className="p-5 sm:p-6 pb-4 border-b border-card-border flex items-start justify-between gap-4 bg-card/60 backdrop-blur-sm">
             <div className="space-y-1.5">
@@ -304,10 +304,10 @@ export function MilestoneManager({
               type="button"
               onClick={onClose}
               disabled={Boolean(loadingActionId)}
-              className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-sidebar-accent transition-colors disabled:opacity-50"
+              className="p-2 rounded-full bg-card-inner border border-card-border-subtle text-muted-foreground hover:text-foreground hover:border-card-border transition-colors disabled:opacity-50"
               aria-label="Tutup modal"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
 
@@ -327,13 +327,13 @@ export function MilestoneManager({
           )}
 
           {successToast && (
-            <div className="mx-6 mt-4 p-3 rounded-2xl bg-neon/10 border border-neon/30 flex items-center gap-2 text-xs text-neon font-bold animate-in fade-in">
-              <Sparkles className="w-4 h-4 flex-shrink-0" />
+            <div className="mx-6 mt-4 p-3 rounded-full bg-neon/10 border border-neon/30 flex items-center gap-2 text-xs text-neon font-bold animate-in fade-in">
+              <Sparkles className="w-4 h-4 flex-shrink-0 ml-1" />
               <span className="flex-1">{successToast}</span>
               <button
                 type="button"
                 onClick={() => setSuccessToast(null)}
-                className="text-neon hover:opacity-80"
+                className="text-neon hover:opacity-80 mr-1"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -356,22 +356,22 @@ export function MilestoneManager({
 
               <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
                 {/* 1. Total Budget */}
-                <div className="p-3.5 rounded-2xl bg-sidebar-accent/50 border border-card-border space-y-1">
+                <div className="p-3.5 sm:p-4 rounded-2xl bg-card-inner border border-card-border-subtle space-y-1">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
                     <Briefcase className="w-3 h-3" /> Total Budget
                   </span>
-                  <p className="text-sm sm:text-base font-extrabold text-foreground truncate">
+                  <p className="text-sm sm:text-base font-extrabold text-foreground truncate tabular-nums">
                     {formatRupiah(project.totalBudget)}
                   </p>
                   <p className="text-[10px] text-muted-foreground truncate">Nilai total kontrak</p>
                 </div>
 
                 {/* 2. Paid Revenue */}
-                <div className="p-3.5 rounded-2xl bg-sidebar-accent/50 border border-card-border space-y-1">
+                <div className="p-3.5 sm:p-4 rounded-2xl bg-card-inner border border-card-border-subtle space-y-1">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-neon flex items-center gap-1">
                     <CheckCircle2 className="w-3 h-3 text-neon" /> Pendapatan Masuk
                   </span>
-                  <p className="text-sm sm:text-base font-extrabold text-neon truncate">
+                  <p className="text-sm sm:text-base font-extrabold text-neon truncate tabular-nums">
                     {formatRupiah(project.paidRevenue)}
                   </p>
                   <p className="text-[10px] text-muted-foreground truncate">
@@ -380,22 +380,22 @@ export function MilestoneManager({
                 </div>
 
                 {/* 3. Invoiced Receivables */}
-                <div className="p-3.5 rounded-2xl bg-sidebar-accent/50 border border-card-border space-y-1">
+                <div className="p-3.5 sm:p-4 rounded-2xl bg-card-inner border border-card-border-subtle space-y-1">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1">
                     <Clock className="w-3 h-3 text-amber-400" /> Piutang Aktif
                   </span>
-                  <p className="text-sm sm:text-base font-extrabold text-amber-400 truncate">
+                  <p className="text-sm sm:text-base font-extrabold text-amber-400 truncate tabular-nums">
                     {formatRupiah(project.invoicedReceivables)}
                   </p>
                   <p className="text-[10px] text-muted-foreground truncate">Tagihan terbit menunggu bayar</p>
                 </div>
 
                 {/* 4. Total Expenses */}
-                <div className="p-3.5 rounded-2xl bg-sidebar-accent/50 border border-card-border space-y-1">
+                <div className="p-3.5 sm:p-4 rounded-2xl bg-card-inner border border-card-border-subtle space-y-1">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-rose-400 flex items-center gap-1">
                     <TrendingDown className="w-3 h-3 text-rose-400" /> Biaya Proyek
                   </span>
-                  <p className="text-sm sm:text-base font-extrabold text-rose-400 truncate">
+                  <p className="text-sm sm:text-base font-extrabold text-rose-400 truncate tabular-nums">
                     {formatRupiah(project.totalExpenses)}
                   </p>
                   <p className="text-[10px] text-muted-foreground truncate">
@@ -404,7 +404,7 @@ export function MilestoneManager({
                 </div>
 
                 {/* 5. Net Profit Margin & Health Gauge */}
-                <div className={`col-span-2 lg:col-span-1 p-3.5 rounded-2xl border space-y-1.5 ${healthBg}`}>
+                <div className={`col-span-2 lg:col-span-1 p-3.5 sm:p-4 rounded-2xl border space-y-1.5 ${healthBg}`}>
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-foreground/80 flex items-center gap-1">
                       <ShieldCheck className="w-3 h-3 text-neon" /> Net Profit Margin
@@ -415,7 +415,7 @@ export function MilestoneManager({
                   </div>
 
                   <div className="flex items-baseline justify-between gap-2">
-                    <p className={`text-sm sm:text-base font-black truncate ${healthColor}`}>
+                    <p className={`text-sm sm:text-base font-black truncate tabular-nums ${healthColor}`}>
                       {formatRupiah(project.netProfitMargin)}
                     </p>
                     <span className="text-xs font-black text-foreground">
@@ -438,29 +438,29 @@ export function MilestoneManager({
 
             {/* Navigation Tabs Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-card-border">
-              <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-sidebar-accent/80 border border-card-border self-start">
+              <div className="inline-flex items-center gap-1.5 p-1 rounded-full bg-card-inner border border-card-border-subtle self-start">
                 <button
                   type="button"
                   onClick={() => setActiveTab("milestones")}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+                  className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-2 ${
                     activeTab === "milestones"
-                      ? "bg-card text-foreground shadow-sm border border-card-border"
+                      ? "bg-neon text-black font-extrabold shadow-sm"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  <Receipt className="w-3.5 h-3.5 text-neon" />
+                  <Receipt className="w-3.5 h-3.5" />
                   Termin Pembayaran ({project.milestones.length})
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveTab("expenses")}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${
+                  className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-2 ${
                     activeTab === "expenses"
-                      ? "bg-card text-foreground shadow-sm border border-card-border"
+                      ? "bg-neon text-black font-extrabold shadow-sm"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  <TrendingDown className="w-3.5 h-3.5 text-rose-400" />
+                  <TrendingDown className="w-3.5 h-3.5" />
                   Biaya Operasional ({project.expenses.length})
                 </button>
               </div>
@@ -471,17 +471,17 @@ export function MilestoneManager({
                   <Button
                     type="button"
                     onClick={() => setIsMilestoneDialogOpen(true)}
-                    className="h-9 text-xs font-bold gap-1.5"
+                    className="h-9 px-4 rounded-full text-xs font-extrabold gap-1.5 bg-neon text-black hover:bg-neon/90 shadow-sm"
                   >
-                    <Plus className="w-4 h-4" /> Tambah Termin
+                    <Plus className="w-4 h-4 stroke-[2.5]" /> Tambah Termin
                   </Button>
                 ) : (
                   <Button
                     type="button"
                     onClick={() => setIsExpenseDialogOpen(true)}
-                    className="h-9 text-xs font-bold gap-1.5 bg-rose-500 hover:bg-rose-600 text-white shadow-none"
+                    className="h-9 px-4 rounded-full text-xs font-bold gap-1.5 border border-card-border bg-card-inner text-foreground hover:bg-card-inner/80 shadow-sm"
                   >
-                    <Plus className="w-4 h-4" /> Catat Biaya Proyek
+                    <Plus className="w-4 h-4 stroke-[2.5]" /> Catat Biaya Proyek
                   </Button>
                 )}
               </div>
@@ -491,8 +491,8 @@ export function MilestoneManager({
             {activeTab === "milestones" && (
               <div className="space-y-3">
                 {project.milestones.length === 0 ? (
-                  <div className="p-8 rounded-3xl bg-sidebar-accent/30 border border-dashed border-card-border text-center space-y-3">
-                    <div className="w-12 h-12 mx-auto rounded-2xl bg-sidebar-accent flex items-center justify-center text-muted-foreground">
+                  <div className="p-8 rounded-[2rem] bg-card-inner/40 border border-dashed border-card-border-subtle text-center space-y-3">
+                    <div className="w-12 h-12 mx-auto rounded-full bg-card-inner flex items-center justify-center text-muted-foreground">
                       <Receipt className="w-6 h-6" />
                     </div>
                     <div>
@@ -507,7 +507,7 @@ export function MilestoneManager({
                       type="button"
                       onClick={() => setIsMilestoneDialogOpen(true)}
                       variant="outline"
-                      className="text-xs font-bold gap-1.5"
+                      className="rounded-full px-5 text-xs font-bold gap-1.5 border-card-border bg-card-inner text-neon hover:bg-card-inner/80"
                     >
                       <Plus className="w-3.5 h-3.5 text-neon" /> Tambah Termin Pertama
                     </Button>
@@ -521,13 +521,13 @@ export function MilestoneManager({
                       return (
                         <div
                           key={m.id}
-                          className="p-4 sm:p-5 rounded-2xl bg-card border border-card-border hover:border-card-border/80 transition-all space-y-3"
+                          className="p-4 sm:p-5 rounded-2xl bg-card-inner border border-card-border-subtle hover:border-card-border transition-all space-y-3"
                         >
                           {/* Row 1: Title, Status, and Amount */}
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <div className="space-y-1">
                               <div className="flex flex-wrap items-center gap-2">
-                                <span className="text-[10px] font-bold text-muted-foreground bg-sidebar-accent px-2 py-0.5 rounded-md">
+                                <span className="text-[10px] font-bold text-muted-foreground bg-card border border-card-border-subtle px-2.5 py-0.5 rounded-full">
                                   #{index + 1}
                                 </span>
                                 <h4 className="text-sm sm:text-base font-bold text-foreground">
@@ -535,7 +535,7 @@ export function MilestoneManager({
                                 </h4>
                                 {renderMilestoneStatusBadge(m.status)}
                                 {m.invoiceNumber && (
-                                  <span className="text-[11px] font-mono font-bold bg-sidebar-accent border border-card-border px-2 py-0.5 rounded-md text-foreground/80 flex items-center gap-1">
+                                  <span className="text-[11px] font-mono font-bold bg-card border border-card-border-subtle px-2.5 py-0.5 rounded-full text-foreground/80 flex items-center gap-1">
                                     <FileText className="w-3 h-3 text-muted-foreground" />
                                     {m.invoiceNumber}
                                   </span>
@@ -564,14 +564,14 @@ export function MilestoneManager({
                               <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">
                                 Nilai Termin
                               </span>
-                              <span className="text-base sm:text-lg font-extrabold text-foreground">
+                              <span className="text-base sm:text-lg font-extrabold text-foreground tabular-nums">
                                 {formatRupiah(m.amount)}
                               </span>
                             </div>
                           </div>
 
                           {/* Row 2: Actions Bar */}
-                          <div className="pt-2 border-t border-card-border flex flex-wrap items-center justify-between gap-2">
+                          <div className="pt-2 border-t border-card-border-subtle flex flex-wrap items-center justify-between gap-2">
                             <div className="flex flex-wrap items-center gap-2">
                               {/* 1-Click Action: Tandai Lunas & Sync ke Money */}
                               {m.status !== "PAID" && (
@@ -579,7 +579,7 @@ export function MilestoneManager({
                                   type="button"
                                   onClick={() => handleMarkPaid(m.id)}
                                   disabled={isActionBusy}
-                                  className="h-8 text-xs font-bold gap-1.5 shadow-sm"
+                                  className="h-8 px-3.5 rounded-full text-xs font-extrabold gap-1.5 bg-neon text-black hover:bg-neon/90 shadow-sm"
                                 >
                                   {isActionBusy ? (
                                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -597,7 +597,7 @@ export function MilestoneManager({
                                   variant="outline"
                                   onClick={() => handleIssueInvoice(m.id)}
                                   disabled={isActionBusy}
-                                  className="h-8 text-xs font-bold gap-1.5 border-amber-500/40 text-amber-400 hover:bg-amber-500/10 hover:text-amber-300"
+                                  className="h-8 px-3.5 rounded-full text-xs font-bold gap-1.5 border-amber-500/40 text-amber-400 bg-card hover:bg-amber-500/10 hover:text-amber-300"
                                 >
                                   {isActionBusy ? (
                                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -609,7 +609,7 @@ export function MilestoneManager({
                               )}
 
                               {m.status === "PAID" && (
-                                <span className="text-[11px] font-semibold text-neon flex items-center gap-1.5 bg-neon/10 px-2.5 py-1 rounded-xl border border-neon/20">
+                                <span className="text-[11px] font-bold text-black flex items-center gap-1.5 bg-[#25dd59] px-3 py-1 rounded-full shadow-sm">
                                   <CheckCircle2 className="w-3.5 h-3.5" />
                                   Tersinkronisasi dengan Money Tracker
                                 </span>
@@ -629,7 +629,7 @@ export function MilestoneManager({
                                     size="sm"
                                     onClick={() => handleDeleteMilestone(m.id)}
                                     disabled={isActionBusy}
-                                    className="h-7 px-2.5 text-[11px] font-bold"
+                                    className="h-7 px-3 rounded-full text-[11px] font-bold"
                                   >
                                     {isActionBusy ? (
                                       <Loader2 className="w-3 h-3 animate-spin" />
@@ -643,7 +643,7 @@ export function MilestoneManager({
                                     size="sm"
                                     onClick={() => setConfirmDeleteMilestoneId(null)}
                                     disabled={isActionBusy}
-                                    className="h-7 px-2 text-[11px]"
+                                    className="h-7 px-2.5 rounded-full text-[11px]"
                                   >
                                     Batal
                                   </Button>
@@ -653,7 +653,7 @@ export function MilestoneManager({
                                   type="button"
                                   onClick={() => setConfirmDeleteMilestoneId(m.id)}
                                   disabled={isActionBusy}
-                                  className="p-1.5 rounded-lg text-muted-foreground hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50"
+                                  className="p-1.5 rounded-full text-muted-foreground hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50"
                                   title="Hapus termin"
                                   aria-label="Hapus termin"
                                 >
@@ -674,8 +674,8 @@ export function MilestoneManager({
             {activeTab === "expenses" && (
               <div className="space-y-3">
                 {project.expenses.length === 0 ? (
-                  <div className="p-8 rounded-3xl bg-sidebar-accent/30 border border-dashed border-card-border text-center space-y-3">
-                    <div className="w-12 h-12 mx-auto rounded-2xl bg-sidebar-accent flex items-center justify-center text-muted-foreground">
+                  <div className="p-8 rounded-[2rem] bg-card-inner/40 border border-dashed border-card-border-subtle text-center space-y-3">
+                    <div className="w-12 h-12 mx-auto rounded-full bg-card-inner flex items-center justify-center text-muted-foreground">
                       <TrendingDown className="w-6 h-6 text-rose-400" />
                     </div>
                     <div>
@@ -689,7 +689,7 @@ export function MilestoneManager({
                     <Button
                       type="button"
                       onClick={() => setIsExpenseDialogOpen(true)}
-                      className="text-xs font-bold gap-1.5 bg-rose-500 hover:bg-rose-600 text-white shadow-none"
+                      className="rounded-full px-5 text-xs font-bold gap-1.5 border border-card-border bg-card-inner text-foreground hover:bg-card-inner/80 shadow-sm"
                     >
                       <Plus className="w-3.5 h-3.5" /> Catat Biaya Pertama
                     </Button>
@@ -699,14 +699,14 @@ export function MilestoneManager({
                     {project.expenses.map((exp) => (
                       <div
                         key={exp.id}
-                        className="p-3.5 sm:p-4 rounded-2xl bg-card border border-card-border flex items-center justify-between gap-3 hover:border-card-border/80 transition-colors"
+                        className="p-3.5 sm:p-4 rounded-2xl bg-card-inner border border-card-border-subtle flex items-center justify-between gap-3 hover:border-card-border transition-colors"
                       >
                         <div className="space-y-1">
                           <div className="flex flex-wrap items-center gap-2">
                             <span className="text-xs sm:text-sm font-bold text-foreground">
                               {exp.description}
                             </span>
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                            <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20">
                               {exp.categoryName || "Biaya Operasional"}
                             </span>
                           </div>
@@ -717,7 +717,7 @@ export function MilestoneManager({
                         </div>
 
                         <div className="text-right">
-                          <span className="text-xs sm:text-sm font-black text-rose-400">
+                          <span className="text-xs sm:text-sm font-black text-rose-400 tabular-nums">
                             -{formatRupiah(exp.amount)}
                           </span>
                         </div>
@@ -741,7 +741,7 @@ export function MilestoneManager({
               variant="outline"
               onClick={onClose}
               disabled={Boolean(loadingActionId)}
-              className="text-xs font-bold"
+              className="rounded-full px-5 text-xs font-bold bg-card-inner border border-card-border hover:bg-card-inner/80"
             >
               Tutup
             </Button>

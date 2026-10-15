@@ -17,7 +17,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { cn, formatDate } from "@/lib/utils";
 import {
   StoredEmploymentTask,
@@ -210,171 +209,169 @@ export function OfficeTasks({
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header and Summary Card */}
-      <Card className="border border-card-border bg-card">
-        <CardHeader className="pb-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-neon/15 text-neon border border-neon/30 flex items-center justify-center font-bold">
-                  <ListTodo className="w-5 h-5" />
-                </div>
-                <div>
-                  <CardTitle className="text-lg sm:text-xl font-bold text-foreground">
-                    Office Sprint Tasks
-                  </CardTitle>
-                  <p className="text-xs text-muted-foreground">
-                    Checklist tugas kantor, sprint backlog, dan pelacakan deadline pekerjaan
-                  </p>
-                </div>
+    <div className="rounded-[2rem] lg:rounded-[2.5rem] bg-card border border-card-border p-6 sm:p-7 shadow-xl space-y-6">
+      {/* Header and Summary Bar */}
+      <div>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2.5">
+              <div className="w-10 h-10 rounded-full bg-neon/15 text-neon border border-neon/30 flex items-center justify-center font-bold shadow-sm">
+                <ListTodo className="w-5 h-5" />
               </div>
-            </div>
-
-            <Button
-              onClick={() => setIsDialogOpen(true)}
-              className="h-10 text-xs font-bold gap-2 shrink-0 rounded-xl"
-            >
-              <Plus className="w-4 h-4" /> Tambah Task
-            </Button>
-          </div>
-
-          {/* Quick Metrics & Progress bar */}
-          <div className="pt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="p-3 rounded-2xl bg-background border border-card-border">
-              <span className="text-[10px] uppercase font-bold text-muted-foreground">
-                Total Tasks
-              </span>
-              <p className="text-lg font-extrabold text-foreground mt-0.5">
-                {metrics.total}
-              </p>
-            </div>
-
-            <div className="p-3 rounded-2xl bg-background border border-card-border">
-              <span className="text-[10px] uppercase font-bold text-blue-400">
-                In Progress
-              </span>
-              <p className="text-lg font-extrabold text-blue-400 mt-0.5">
-                {metrics.inProgress}
-              </p>
-            </div>
-
-            <div className="p-3 rounded-2xl bg-background border border-card-border">
-              <span className="text-[10px] uppercase font-bold text-neon">
-                Selesai (Done)
-              </span>
-              <div className="flex items-center justify-between mt-0.5">
-                <p className="text-lg font-extrabold text-neon">
-                  {metrics.done}
+              <div>
+                <h3 className="text-lg sm:text-xl font-extrabold text-foreground tracking-tight">
+                  Office Sprint Tasks
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  Checklist tugas kantor, sprint backlog, dan pelacakan deadline pekerjaan
                 </p>
-                <span className="text-[11px] font-bold text-muted-foreground">
-                  {metrics.completionPercent}%
-                </span>
               </div>
             </div>
+          </div>
 
-            <div className="p-3 rounded-2xl bg-background border border-card-border">
-              <span className="text-[10px] uppercase font-bold text-red-400">
-                Terlewat (Overdue)
-              </span>
-              <p className="text-lg font-extrabold text-red-400 mt-0.5">
-                {metrics.overdue}
+          <Button
+            onClick={() => setIsDialogOpen(true)}
+            className="h-10 px-5 text-xs font-extrabold gap-2 shrink-0 rounded-full bg-neon text-black hover:bg-neon/90 shadow-sm"
+          >
+            <Plus className="w-4 h-4 stroke-[2.5]" /> Tambah Task
+          </Button>
+        </div>
+
+        {/* Quick Metrics & Progress bar */}
+        <div className="pt-5 grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+          <div className="p-4 rounded-2xl bg-card-inner border border-card-border-subtle shadow-sm space-y-1">
+            <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">
+              Total Tasks
+            </span>
+            <p className="text-xl font-black text-foreground tabular-nums">
+              {metrics.total}
+            </p>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-card-inner border border-card-border-subtle shadow-sm space-y-1">
+            <span className="text-[10px] uppercase font-bold text-blue-500 tracking-wider">
+              In Progress
+            </span>
+            <p className="text-xl font-black text-blue-500 tabular-nums">
+              {metrics.inProgress}
+            </p>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-card-inner border border-card-border-subtle shadow-sm space-y-1">
+            <span className="text-[10px] uppercase font-bold text-neon tracking-wider">
+              Selesai (Done)
+            </span>
+            <div className="flex items-center justify-between">
+              <p className="text-xl font-black text-neon tabular-nums">
+                {metrics.done}
               </p>
+              <span className="text-xs font-bold text-muted-foreground">
+                {metrics.completionPercent}%
+              </span>
             </div>
           </div>
 
-          {/* Progress bar line */}
-          {metrics.total > 0 && (
-            <div className="w-full bg-background/80 rounded-full h-1.5 overflow-hidden border border-card-border/50 mt-3">
-              <div
-                className="bg-neon h-full transition-all duration-500 rounded-full shadow-[0_0_8px_rgba(59,240,41,0.5)]"
-                style={{ width: `${metrics.completionPercent}%` }}
-              />
-            </div>
-          )}
-        </CardHeader>
+          <div className="p-4 rounded-2xl bg-card-inner border border-card-border-subtle shadow-sm space-y-1">
+            <span className="text-[10px] uppercase font-bold text-rose-500 tracking-wider">
+              Terlewat (Overdue)
+            </span>
+            <p className="text-xl font-black text-rose-500 tabular-nums">
+              {metrics.overdue}
+            </p>
+          </div>
+        </div>
 
-        <CardContent className="space-y-4 pt-0">
-          {/* Controls: Search, Status Tabs, Priority Chips */}
-          <div className="space-y-3 pt-2 border-t border-card-border">
-            {/* Status Filter Tabs */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-              {STATUS_FILTER_TABS.map((tab) => {
-                const isSelected = statusFilter === tab.key;
-                let count = metrics.total;
-                if (tab.key === "TODO") count = metrics.todo;
-                if (tab.key === "IN_PROGRESS") count = metrics.inProgress;
-                if (tab.key === "BLOCKED") count = metrics.blocked;
-                if (tab.key === "DONE") count = metrics.done;
+        {/* Progress bar line */}
+        {metrics.total > 0 && (
+          <div className="w-full bg-card-inner border border-card-border-subtle rounded-full h-2 overflow-hidden mt-3.5">
+            <div
+              className="bg-neon h-full transition-all duration-500 rounded-full"
+              style={{ width: `${metrics.completionPercent}%` }}
+            />
+          </div>
+        )}
+      </div>
 
-                return (
-                  <button
-                    key={tab.key}
-                    type="button"
-                    onClick={() => setStatusFilter(tab.key)}
-                    className={cn(
-                      "px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border",
-                      isSelected
-                        ? "bg-neon/15 border-neon/50 text-neon shadow-[0_0_12px_rgba(59,240,41,0.2)]"
-                        : "bg-background border-card-border text-muted-foreground hover:text-foreground hover:border-card-border/80"
-                    )}
-                  >
-                    {tab.label}
-                    <span
-                      className={cn(
-                        "ml-1.5 px-1.5 py-0.2 rounded-md text-[10px] font-bold",
-                        isSelected
-                          ? "bg-neon/30 text-neon"
-                          : "bg-card border border-card-border text-muted-foreground"
-                      )}
-                    >
-                      {count}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+      {/* Controls: Search, Status Tabs, Priority Chips */}
+      <div className="space-y-3.5 pt-3 border-t border-card-border-subtle">
+        {/* Status Filter Tabs (Stitch Pill Style) */}
+        <div className="inline-flex items-center gap-1.5 p-1.5 rounded-full bg-card-inner border border-card-border-subtle overflow-x-auto max-w-full">
+          {STATUS_FILTER_TABS.map((tab) => {
+            const isSelected = statusFilter === tab.key;
+            let count = metrics.total;
+            if (tab.key === "TODO") count = metrics.todo;
+            if (tab.key === "IN_PROGRESS") count = metrics.inProgress;
+            if (tab.key === "BLOCKED") count = metrics.blocked;
+            if (tab.key === "DONE") count = metrics.done;
 
-            {/* Sub-row: Priority Chips & Search Input */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              {/* Priority Chips */}
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-                <span className="text-[11px] font-bold text-muted-foreground uppercase mr-1">
-                  Prioritas:
+            return (
+              <button
+                key={tab.key}
+                type="button"
+                onClick={() => setStatusFilter(tab.key)}
+                className={cn(
+                  "px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all",
+                  isSelected
+                    ? "bg-neon text-black font-extrabold shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {tab.label}
+                <span
+                  className={cn(
+                    "ml-1.5 px-2 py-0.5 rounded-full text-[10px] font-extrabold",
+                    isSelected
+                      ? "bg-black/15 text-black"
+                      : "bg-card text-muted-foreground border border-card-border"
+                  )}
+                >
+                  {count}
                 </span>
-                {PRIORITY_FILTER_CHIPS.map((chip) => {
-                  const isSelected = priorityFilter === chip.key;
-                  return (
-                    <button
-                      key={chip.key}
-                      type="button"
-                      onClick={() => setPriorityFilter(chip.key)}
-                      className={cn(
-                        "px-2.5 py-1 rounded-lg text-[11px] font-semibold border transition-all whitespace-nowrap",
-                        chip.badgeClass,
-                        isSelected
-                          ? "ring-1 ring-neon/80 scale-[1.03] font-bold shadow-[0_0_8px_rgba(59,240,41,0.2)]"
-                          : "opacity-60 hover:opacity-100"
-                      )}
-                    >
-                      {chip.label}
-                    </button>
-                  );
-                })}
-              </div>
+              </button>
+            );
+          })}
+        </div>
 
-              {/* Search Bar */}
-              <div className="relative w-full sm:w-64">
-                <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Cari judul atau rincian..."
-                  className="pl-9 h-8 text-xs bg-background border-card-border focus-visible:ring-neon rounded-xl"
-                />
-              </div>
-            </div>
+        {/* Sub-row: Priority Chips & Search Input */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          {/* Priority Chips */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+            <span className="text-[11px] font-bold text-muted-foreground uppercase mr-1">
+              Prioritas:
+            </span>
+            {PRIORITY_FILTER_CHIPS.map((chip) => {
+              const isSelected = priorityFilter === chip.key;
+              return (
+                <button
+                  key={chip.key}
+                  type="button"
+                  onClick={() => setPriorityFilter(chip.key)}
+                  className={cn(
+                    "px-3 py-1 rounded-full text-[11px] font-semibold border transition-all whitespace-nowrap",
+                    chip.badgeClass,
+                    isSelected
+                      ? "ring-2 ring-neon scale-[1.03] font-bold shadow-sm"
+                      : "opacity-70 hover:opacity-100"
+                  )}
+                >
+                  {chip.label}
+                </button>
+              );
+            })}
           </div>
+
+          {/* Search Bar */}
+          <div className="relative w-full sm:w-64">
+            <Search className="w-3.5 h-3.5 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Cari judul atau rincian..."
+              className="pl-9 pr-4 h-9 text-xs bg-card-inner border-card-border-subtle focus-visible:ring-neon rounded-full text-foreground placeholder:text-muted-foreground"
+            />
+          </div>
+        </div>
+      </div>
 
           {/* Task List Items */}
           <div className="space-y-2.5 pt-2">
@@ -429,10 +426,10 @@ export function OfficeTasks({
                     className={cn(
                       "group p-3.5 sm:p-4 rounded-2xl border transition-all duration-200",
                       isDone
-                        ? "bg-background/40 border-card-border/60 opacity-75 hover:opacity-100"
+                        ? "bg-card-inner/50 border-card-border-subtle opacity-70 hover:opacity-100"
                         : isBlocked
-                        ? "bg-red-500/5 border-red-500/20 hover:border-red-500/40"
-                        : "bg-background border-card-border hover:border-neon/40 hover:shadow-[0_0_15px_rgba(59,240,41,0.06)]"
+                        ? "bg-rose-500/5 border-rose-500/20 hover:border-rose-500/40"
+                        : "bg-card-inner border-card-border-subtle hover:border-card-border hover:bg-emerald-50/20 shadow-sm"
                     )}
                   >
                     <div className="flex items-start gap-3.5">
@@ -579,8 +576,6 @@ export function OfficeTasks({
               })
             )}
           </div>
-        </CardContent>
-      </Card>
 
       {/* Add Task Dialog */}
       <TaskDialog

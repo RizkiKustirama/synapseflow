@@ -16,7 +16,6 @@ import {
   ShieldCheck,
   CheckCircle2,
 } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatRupiah, formatDate, getDaysUntilPayday } from "@/lib/utils";
@@ -140,36 +139,26 @@ export function ContractCard({ employment, onRefresh }: ContractCardProps) {
   if (!employment) {
     return (
       <>
-        <Card className="bg-card border-card-border overflow-hidden shadow-sm">
-          <CardHeader className="pb-3 border-b border-card-border">
-            <div className="flex items-center justify-between">
-              <CardTitle className="flex items-center gap-2 text-foreground">
-                <Briefcase className="w-5 h-5 text-neon" />
-                Profil Kontrak Kerja
-              </CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent className="p-8 sm:p-12 flex flex-col items-center justify-center text-center space-y-4">
-            <div className="w-16 h-16 rounded-3xl bg-neon/10 border border-neon/30 flex items-center justify-center text-neon shadow-[0_0_20px_rgba(59,240,41,0.15)]">
-              <Building2 className="w-8 h-8" />
-            </div>
-            <div className="space-y-1.5 max-w-md">
-              <h3 className="text-base sm:text-lg font-bold text-foreground">
-                Belum Ada Kontrak Kerja Aktif
-              </h3>
-              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                Daftarkan pekerjaan tetap, kontrak, atau magang Anda untuk mulai memantau sprint pekerjaan harian,
-                hitung mundur gajian (payday), serta pencatatan slip gaji dengan auto-sync ke modul Money.
-              </p>
-            </div>
-            <Button
-              onClick={() => setIsModalOpen(true)}
-              className="mt-2 text-xs font-bold gap-2 bg-neon text-black hover:bg-neon/90 shadow-[0_0_15px_rgba(59,240,41,0.25)]"
-            >
-              <Plus className="w-4 h-4" /> Tambah Kontrak Kerja
-            </Button>
-          </CardContent>
-        </Card>
+        <div className="rounded-[2rem] lg:rounded-[2.5rem] bg-card border border-card-border overflow-hidden shadow-xl p-8 sm:p-12 flex flex-col items-center justify-center text-center space-y-4">
+          <div className="w-16 h-16 rounded-full bg-neon/15 text-neon border border-neon/40 flex items-center justify-center shadow-sm">
+            <Building2 className="w-8 h-8" />
+          </div>
+          <div className="space-y-1.5 max-w-md">
+            <h3 className="text-base sm:text-lg font-extrabold text-foreground">
+              Belum Ada Kontrak Kerja Aktif
+            </h3>
+            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+              Daftarkan pekerjaan tetap, kontrak, atau magang Anda untuk mulai memantau sprint pekerjaan harian,
+              hitung mundur gajian (payday), serta pencatatan slip gaji dengan auto-sync ke modul Money.
+            </p>
+          </div>
+          <Button
+            onClick={() => setIsModalOpen(true)}
+            className="mt-2 h-10 px-5 rounded-full text-xs font-extrabold gap-2 bg-neon text-black hover:bg-neon/90 shadow-sm"
+          >
+            <Plus className="w-4 h-4" /> Tambah Kontrak Kerja
+          </Button>
+        </div>
 
         <ContractModal
           isOpen={isModalOpen}
@@ -186,44 +175,42 @@ export function ContractCard({ employment, onRefresh }: ContractCardProps) {
 
   return (
     <>
-      <Card className="bg-card border-card-border overflow-hidden shadow-sm">
+      <div className="rounded-[2rem] lg:rounded-[2.5rem] bg-card border border-card-border overflow-hidden shadow-xl">
         {/* Header Section */}
-        <CardHeader className="pb-4 border-b border-card-border">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-3.5">
-              <div className="w-12 h-12 rounded-2xl bg-neon/15 border border-neon/30 text-neon flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(59,240,41,0.2)]">
-                <Building2 className="w-6 h-6" />
-              </div>
-              <div className="space-y-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="text-base sm:text-lg font-black text-foreground tracking-tight">
-                    {employment.companyName}
-                  </h3>
-                  {renderJobTypeBadge(employment.jobType)}
-                  {renderStatusBadge(employment.status)}
-                </div>
-                <p className="text-xs sm:text-sm font-semibold text-muted-foreground flex items-center gap-1.5">
-                  <Briefcase className="w-3.5 h-3.5 text-neon" />
-                  {employment.role}
-                </p>
-              </div>
+        <div className="p-6 sm:p-7 border-b border-card-border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-full bg-neon/15 border border-neon/40 text-neon flex items-center justify-center font-extrabold shrink-0 shadow-sm">
+              <Building2 className="w-6 h-6" />
             </div>
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsModalOpen(true)}
-              className="h-9 px-3.5 text-xs font-semibold gap-1.5 border-card-border hover:border-neon/40 text-foreground hover:text-neon transition-all shrink-0 self-start sm:self-center"
-            >
-              <Pencil className="w-3.5 h-3.5" />
-              Edit Kontrak
-            </Button>
+            <div className="space-y-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <h3 className="text-base sm:text-lg font-black text-foreground tracking-tight">
+                  {employment.companyName}
+                </h3>
+                {renderJobTypeBadge(employment.jobType)}
+                {renderStatusBadge(employment.status)}
+              </div>
+              <p className="text-xs sm:text-sm font-semibold text-muted-foreground flex items-center gap-1.5">
+                <Briefcase className="w-3.5 h-3.5 text-neon" />
+                {employment.role}
+              </p>
+            </div>
           </div>
-        </CardHeader>
 
-        <CardContent className="p-5 sm:p-6 space-y-6">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsModalOpen(true)}
+            className="h-10 px-5 rounded-full text-xs font-bold gap-2 bg-card-inner border-card-border text-foreground hover:bg-card-inner/80 transition-all shrink-0 self-start sm:self-center shadow-sm"
+          >
+            <Pencil className="w-3.5 h-3.5" />
+            Edit Kontrak
+          </Button>
+        </div>
+
+        <div className="p-6 sm:p-7 space-y-6">
           {/* Payday Countdown Widget */}
-          <div className="p-5 rounded-2xl bg-background/80 border border-card-border flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+          <div className="p-5 sm:p-6 rounded-2xl bg-card-inner border border-card-border-subtle flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden shadow-sm">
             {/* Left: Progress Ring */}
             <div className="flex items-center gap-5 w-full md:w-auto">
               <div className="relative flex items-center justify-center w-24 h-24 shrink-0">
@@ -253,7 +240,7 @@ export function ContractCard({ employment, onRefresh }: ContractCardProps) {
 
                 {/* Ring Center Label */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                  <span className="text-2xl font-black tracking-tight text-neon leading-none">
+                  <span className="text-2xl font-black tracking-tight text-foreground leading-none">
                     {daysRemaining}
                   </span>
                   <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mt-0.5">
@@ -269,7 +256,7 @@ export function ContractCard({ employment, onRefresh }: ContractCardProps) {
                     <Clock className="w-3.5 h-3.5 text-neon" />
                     Hitung Mundur Gajian
                   </span>
-                  <Badge variant="default" className="text-[10px] font-semibold py-0 px-2">
+                  <Badge variant="default" className="text-[10px] font-bold py-0.5 px-2.5 rounded-full">
                     Tgl {paydayDay}
                   </Badge>
                 </div>
@@ -279,7 +266,7 @@ export function ContractCard({ employment, onRefresh }: ContractCardProps) {
                       <Sparkles className="w-4 h-4 animate-spin" /> Hari Ini Hari Gajian!
                     </span>
                   ) : daysRemaining <= 3 ? (
-                    <span className="text-amber-400">
+                    <span className="text-amber-500 font-extrabold">
                       Gajian Segera Tiba ({daysRemaining} Hari Lagi)
                     </span>
                   ) : (
@@ -296,11 +283,11 @@ export function ContractCard({ employment, onRefresh }: ContractCardProps) {
             </div>
 
             {/* Right: Routine note & status banner */}
-            <div className="w-full md:w-auto md:text-right border-t md:border-t-0 border-card-border pt-3 md:pt-0 flex flex-col md:items-end justify-center space-y-1">
+            <div className="w-full md:w-auto md:text-right border-t md:border-t-0 border-card-border-subtle pt-3 md:pt-0 flex flex-col md:items-end justify-center space-y-1">
               <span className="text-[11px] font-medium text-muted-foreground">
                 Siklus Payroll Bulanan
               </span>
-              <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-xl border border-emerald-500/20">
+              <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
                 <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
                 Rutin setiap tanggal {paydayDay} per bulan
               </div>
@@ -321,7 +308,7 @@ export function ContractCard({ employment, onRefresh }: ContractCardProps) {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
               {/* 1. Gaji Pokok */}
-              <div className="p-4 rounded-2xl bg-background border border-card-border space-y-2 hover:border-card-border/80 transition-colors">
+              <div className="p-4 rounded-2xl bg-card-inner border border-card-border-subtle space-y-2 hover:border-card-border transition-colors">
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                     <Banknote className="w-3.5 h-3.5 text-neon" />
@@ -337,10 +324,10 @@ export function ContractCard({ employment, onRefresh }: ContractCardProps) {
               </div>
 
               {/* 2. Tunjangan Tetap */}
-              <div className="p-4 rounded-2xl bg-background border border-card-border space-y-2 hover:border-card-border/80 transition-colors">
+              <div className="p-4 rounded-2xl bg-card-inner border border-card-border-subtle space-y-2 hover:border-card-border transition-colors">
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                    <Gift className="w-3.5 h-3.5 text-emerald-400" />
+                    <Gift className="w-3.5 h-3.5 text-emerald-500" />
                     Tunjangan Tetap
                   </span>
                 </div>
@@ -353,20 +340,20 @@ export function ContractCard({ employment, onRefresh }: ContractCardProps) {
               </div>
 
               {/* 3. Total Take-Home Pay */}
-              <div className="p-4 rounded-2xl bg-neon/10 border border-neon/30 space-y-2 relative overflow-hidden shadow-[0_0_15px_rgba(59,240,41,0.1)]">
+              <div className="p-4 rounded-2xl bg-[#78e354]/15 border border-[#5cd625]/40 space-y-2 relative overflow-hidden shadow-sm">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
-                    <Wallet className="w-3.5 h-3.5 text-neon" />
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-950 flex items-center gap-1.5">
+                    <Wallet className="w-3.5 h-3.5 text-emerald-950" />
                     Total Take-Home Pay
                   </span>
-                  <Badge variant="default" className="text-[10px] font-bold py-0 px-1.5">
+                  <Badge variant="default" className="text-[10px] font-extrabold py-0.5 px-2 rounded-full">
                     Gross THP
                   </Badge>
                 </div>
-                <p className="text-lg sm:text-xl font-black text-neon font-mono">
+                <p className="text-lg sm:text-xl font-black text-emerald-950 font-mono">
                   {formatRupiah(totalTakeHomePay)}
                 </p>
-                <p className="text-[11px] text-muted-foreground">
+                <p className="text-[11px] text-emerald-900 font-medium">
                   Gaji pokok + tunjangan tetap
                 </p>
               </div>
@@ -374,7 +361,7 @@ export function ContractCard({ employment, onRefresh }: ContractCardProps) {
           </div>
 
           {/* Timeline & Contract Metadata */}
-          <div className="pt-3 border-t border-card-border flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
+          <div className="pt-3 border-t border-card-border-subtle flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
             <div className="flex flex-wrap items-center gap-4">
               <span className="flex items-center gap-1.5">
                 <Calendar className="w-3.5 h-3.5 text-neon" />
@@ -398,8 +385,8 @@ export function ContractCard({ employment, onRefresh }: ContractCardProps) {
               <span>Status kontrak terlindungi & tersinkronisasi</span>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Edit Contract Modal */}
       <ContractModal

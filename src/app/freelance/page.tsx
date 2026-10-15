@@ -116,8 +116,8 @@ export default function FreelancePage() {
       {/* 1. Header & Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neon/10 border border-neon/30 text-neon text-xs font-bold mb-2">
-            <Sparkles className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-card border border-card-border text-[11px] font-semibold text-muted-foreground w-fit mb-2 shadow-sm">
+            <Sparkles className="w-3.5 h-3.5 text-neon" />
             Freelance Business & Client CRM Suite
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
@@ -132,7 +132,7 @@ export default function FreelancePage() {
           {/* Refresh Button */}
           <button
             onClick={loadData}
-            className="p-2 rounded-xl bg-card border border-card-border text-muted-foreground hover:text-foreground hover:border-neon/40 transition-colors"
+            className="p-2.5 rounded-full bg-card border border-card-border text-muted-foreground hover:text-foreground hover:border-neon/40 transition-colors shadow-sm"
             title="Refresh Data"
           >
             <RefreshCw className={cn("w-4 h-4", isLoading && "animate-spin")} />
@@ -142,7 +142,7 @@ export default function FreelancePage() {
           <Button
             variant="outline"
             onClick={() => setIsClientModalOpen(true)}
-            className="h-10 text-xs font-bold gap-2"
+            className="h-10 px-5 rounded-full text-xs font-bold gap-2 bg-card-inner border-card-border text-foreground hover:bg-card-inner/80 shadow-sm"
           >
             <Users className="w-4 h-4 text-neon" /> Tambah Klien
           </Button>
@@ -150,7 +150,7 @@ export default function FreelancePage() {
           {/* Add Project CTA */}
           <Button
             onClick={() => setIsProjectDialogOpen(true)}
-            className="h-10 text-xs font-bold gap-2"
+            className="h-10 px-5 rounded-full text-xs font-extrabold gap-2 bg-neon text-black hover:bg-neon/90 shadow-sm"
           >
             <Plus className="w-4 h-4 stroke-[2.5]" /> Proyek Baru
           </Button>
@@ -158,15 +158,15 @@ export default function FreelancePage() {
       </div>
 
       {/* 2. Top KPI Summary Banner */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
         {/* KPI 1: Total Kontrak */}
-        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-card border border-card-border space-y-1.5 shadow-sm">
+        <div className="p-5 sm:p-6 rounded-[2rem] bg-card border border-card-border space-y-2 shadow-sm">
           <div className="flex items-center justify-between text-muted-foreground">
             <span className="text-[11px] font-bold uppercase tracking-wider">
               Total Nilai Proyek
             </span>
-            <div className="w-7 h-7 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center">
-              <FolderKanban className="w-3.5 h-3.5" />
+            <div className="w-8 h-8 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center">
+              <FolderKanban className="w-4 h-4" />
             </div>
           </div>
           <div className="flex items-baseline gap-2">
@@ -180,13 +180,13 @@ export default function FreelancePage() {
         </div>
 
         {/* KPI 2: Paid Revenue */}
-        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-card border border-card-border space-y-1.5 shadow-sm">
+        <div className="p-5 sm:p-6 rounded-[2rem] bg-card border border-card-border space-y-2 shadow-sm">
           <div className="flex items-center justify-between text-muted-foreground">
             <span className="text-[11px] font-bold uppercase tracking-wider">
               Kas Masuk (Lunas)
             </span>
-            <div className="w-7 h-7 rounded-xl bg-neon/15 text-neon flex items-center justify-center">
-              <DollarSign className="w-3.5 h-3.5" />
+            <div className="w-8 h-8 rounded-full bg-neon/15 text-neon flex items-center justify-center">
+              <DollarSign className="w-4 h-4" />
             </div>
           </div>
           <div className="flex items-baseline gap-2">
@@ -200,13 +200,13 @@ export default function FreelancePage() {
         </div>
 
         {/* KPI 3: Piutang Ditagih */}
-        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-card border border-card-border space-y-1.5 shadow-sm">
+        <div className="p-5 sm:p-6 rounded-[2rem] bg-card border border-card-border space-y-2 shadow-sm">
           <div className="flex items-center justify-between text-muted-foreground">
             <span className="text-[11px] font-bold uppercase tracking-wider">
               Piutang Tertagih
             </span>
-            <div className="w-7 h-7 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center">
-              <Clock className="w-3.5 h-3.5" />
+            <div className="w-8 h-8 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center">
+              <Clock className="w-4 h-4" />
             </div>
           </div>
           <div className="flex items-baseline gap-2">
@@ -220,13 +220,13 @@ export default function FreelancePage() {
         </div>
 
         {/* KPI 4: Net Profit Margin */}
-        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl bg-card border border-card-border space-y-1.5 shadow-sm">
+        <div className="p-5 sm:p-6 rounded-[2rem] bg-card border border-card-border space-y-2 shadow-sm">
           <div className="flex items-center justify-between text-muted-foreground">
             <span className="text-[11px] font-bold uppercase tracking-wider">
               Net Profit Margin
             </span>
-            <div className="w-7 h-7 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
-              <TrendingUp className="w-3.5 h-3.5" />
+            <div className="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+              <TrendingUp className="w-4 h-4" />
             </div>
           </div>
           <div className="flex items-baseline gap-2">
@@ -238,25 +238,30 @@ export default function FreelancePage() {
             </span>
           </div>
           <p className="text-[11px] text-muted-foreground">
-            Setelah dikurangi beban biaya proyek
+            Setelah beban operasional proyek
           </p>
         </div>
       </div>
 
-      {/* 3. Sub-Tabs Navigation */}
-      <div className="flex items-center gap-2 border-b border-card-border pb-3">
+      {/* 3. Sub-Tabs Navigation (Stitch Pill Style) */}
+      <div className="inline-flex items-center gap-1.5 p-1.5 rounded-full bg-card border border-card-border shadow-sm">
         <button
           onClick={() => setActiveTab("PROJECTS")}
           className={cn(
-            "flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-bold transition-all",
+            "flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all",
             activeTab === "PROJECTS"
-              ? "bg-card border border-card-border text-neon shadow-sm"
-              : "text-muted-foreground hover:text-foreground hover:bg-card-border/30"
+              ? "bg-neon text-black font-extrabold shadow-sm"
+              : "text-muted-foreground hover:text-foreground hover:bg-card-inner"
           )}
         >
-          <FolderKanban className="w-4 h-4" />
+          <FolderKanban className="w-3.5 h-3.5" />
           <span>Board Proyek</span>
-          <span className="px-1.5 py-0.2 rounded-full bg-card-border text-[10px] text-foreground font-semibold">
+          <span
+            className={cn(
+              "px-2 py-0.5 rounded-full text-[10px] font-bold",
+              activeTab === "PROJECTS" ? "bg-black/20 text-black" : "bg-card-inner text-foreground"
+            )}
+          >
             {projects.length}
           </span>
         </button>
@@ -264,15 +269,20 @@ export default function FreelancePage() {
         <button
           onClick={() => setActiveTab("CLIENTS")}
           className={cn(
-            "flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-bold transition-all",
+            "flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all",
             activeTab === "CLIENTS"
-              ? "bg-card border border-card-border text-neon shadow-sm"
-              : "text-muted-foreground hover:text-foreground hover:bg-card-border/30"
+              ? "bg-neon text-black font-extrabold shadow-sm"
+              : "text-muted-foreground hover:text-foreground hover:bg-card-inner"
           )}
         >
-          <Users className="w-4 h-4" />
+          <Users className="w-3.5 h-3.5" />
           <span>Direktori Klien CRM</span>
-          <span className="px-1.5 py-0.2 rounded-full bg-card-border text-[10px] text-foreground font-semibold">
+          <span
+            className={cn(
+              "px-2 py-0.5 rounded-full text-[10px] font-bold",
+              activeTab === "CLIENTS" ? "bg-black/20 text-black" : "bg-card-inner text-foreground"
+            )}
+          >
             {clients.length}
           </span>
         </button>
@@ -280,16 +290,21 @@ export default function FreelancePage() {
         <button
           onClick={() => setActiveTab("RECEIVABLES")}
           className={cn(
-            "flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-bold transition-all",
+            "flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all",
             activeTab === "RECEIVABLES"
-              ? "bg-card border border-card-border text-neon shadow-sm"
-              : "text-muted-foreground hover:text-foreground hover:bg-card-border/30"
+              ? "bg-neon text-black font-extrabold shadow-sm"
+              : "text-muted-foreground hover:text-foreground hover:bg-card-inner"
           )}
         >
-          <Clock className="w-4 h-4" />
+          <Clock className="w-3.5 h-3.5" />
           <span>Termin & Piutang</span>
           {allReceivables.length > 0 && (
-            <span className="px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-400 text-[10px] font-bold">
+            <span
+              className={cn(
+                "px-2 py-0.5 rounded-full text-[10px] font-extrabold",
+                activeTab === "RECEIVABLES" ? "bg-black text-[#25dd59]" : "bg-amber-500/20 text-amber-400"
+              )}
+            >
               {allReceivables.length}
             </span>
           )}
@@ -317,29 +332,31 @@ export default function FreelancePage() {
 
       {activeTab === "RECEIVABLES" && (
         <div className="space-y-4">
-          <div className="p-4 sm:p-5 rounded-2xl bg-card border border-card-border shadow-sm flex items-center justify-between">
+          <div className="p-6 rounded-[2rem] lg:rounded-[2.5rem] bg-card border border-card-border shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h3 className="text-sm font-bold text-foreground">
+              <h3 className="text-base font-extrabold text-foreground tracking-tight">
                 Rekap Piutang Termin Freelance ({allReceivables.length})
               </h3>
               <p className="text-xs text-muted-foreground mt-0.5">
                 Daftar tagihan termin yang berstatus INVOICED atau OVERDUE. Klik tombol sinkronisasi saat klien melunasi.
               </p>
             </div>
-            <div className="text-right">
-              <span className="text-[11px] font-bold text-muted-foreground uppercase">
+            <div className="sm:text-right">
+              <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
                 Total Ekspektasi Dana
               </span>
-              <p className="text-base font-extrabold text-amber-400">
+              <p className="text-lg font-black text-amber-400">
                 {formatRupiah(summary.totalInvoicedReceivables)}
               </p>
             </div>
           </div>
 
           {allReceivables.length === 0 ? (
-            <div className="py-12 flex flex-col items-center justify-center text-center p-6 rounded-3xl bg-card border border-card-border">
-              <CheckCircle2 className="w-10 h-10 text-neon mb-2" />
-              <p className="text-sm font-bold text-foreground">
+            <div className="py-14 flex flex-col items-center justify-center text-center p-8 rounded-[2rem] lg:rounded-[2.5rem] bg-card border border-card-border shadow-xl">
+              <div className="w-12 h-12 rounded-full bg-neon/15 text-neon flex items-center justify-center mb-3">
+                <CheckCircle2 className="w-6 h-6" />
+              </div>
+              <p className="text-base font-bold text-foreground">
                 Tidak Ada Piutang Tertunda!
               </p>
               <p className="text-xs text-muted-foreground max-w-sm mt-1">
@@ -347,22 +364,22 @@ export default function FreelancePage() {
               </p>
             </div>
           ) : (
-            <div className="rounded-2xl bg-card border border-card-border overflow-hidden">
-              <div className="overflow-x-auto">
+            <div className="rounded-[2rem] lg:rounded-[2.5rem] bg-card border border-card-border p-6 shadow-xl overflow-hidden">
+              <div className="overflow-x-auto rounded-2xl border border-card-border-subtle bg-card-inner">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-background/80 text-muted-foreground border-b border-card-border">
+                  <thead className="bg-card border-b border-card-border text-muted-foreground">
                     <tr>
-                      <th className="py-3 px-4 font-bold">Proyek & Termin</th>
-                      <th className="py-3 px-4 font-bold">Klien</th>
-                      <th className="py-3 px-4 font-bold">Invoice #</th>
-                      <th className="py-3 px-4 font-bold">Jatuh Tempo</th>
-                      <th className="py-3 px-4 font-bold">Nominal</th>
-                      <th className="py-3 px-4 font-bold text-right">Aksi Pelunasan</th>
+                      <th className="py-3.5 px-4 font-bold">Proyek & Termin</th>
+                      <th className="py-3.5 px-4 font-bold">Klien</th>
+                      <th className="py-3.5 px-4 font-bold">Invoice #</th>
+                      <th className="py-3.5 px-4 font-bold">Jatuh Tempo</th>
+                      <th className="py-3.5 px-4 font-bold">Nominal</th>
+                      <th className="py-3.5 px-4 font-bold text-right">Aksi Pelunasan</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-card-border">
+                  <tbody className="divide-y divide-card-border-subtle">
                     {allReceivables.map((rec) => (
-                      <tr key={rec.id} className="hover:bg-card-border/20 transition-colors">
+                      <tr key={rec.id} className="hover:bg-card/50 transition-colors">
                         <td className="py-3.5 px-4">
                           <p className="font-bold text-foreground">{rec.title}</p>
                           <p className="text-[11px] text-muted-foreground">{rec.projectTitle}</p>
@@ -383,7 +400,7 @@ export default function FreelancePage() {
                           <button
                             onClick={() => handleSyncMilestone(rec.id, rec.projectId)}
                             disabled={syncingMilestoneId === rec.id}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-neon/15 hover:bg-neon/25 text-neon border border-neon/40 text-xs font-bold transition-all disabled:opacity-50"
+                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-neon text-black font-extrabold text-xs shadow-sm hover:bg-neon/90 transition-all disabled:opacity-50"
                           >
                             <ExternalLink className="w-3.5 h-3.5" />
                             <span>

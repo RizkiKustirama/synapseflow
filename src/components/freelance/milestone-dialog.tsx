@@ -143,19 +143,19 @@ export function MilestoneDialog({
       />
 
       {/* Modal Dialog Content */}
-      <div className="relative w-full max-w-lg max-h-[92vh] overflow-y-auto bg-card border border-card-border rounded-3xl shadow-2xl p-5 sm:p-6 z-10 space-y-5">
+      <div className="relative w-full max-w-lg max-h-[92vh] overflow-y-auto bg-card border border-card-border rounded-[2rem] lg:rounded-[2.5rem] shadow-2xl p-6 sm:p-8 z-10 space-y-5">
         {/* Header */}
-        <div className="flex items-start justify-between pb-3.5 border-b border-card-border gap-3">
+        <div className="flex items-start justify-between pb-4 border-b border-card-border gap-3">
           <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-neon/10 border border-neon/30 flex items-center justify-center text-neon">
-                <Receipt className="w-4 h-4" />
+            <div className="flex items-center gap-2.5">
+              <div className="w-10 h-10 rounded-full bg-neon/15 border border-neon/30 flex items-center justify-center text-neon font-bold shadow-sm">
+                <Receipt className="w-5 h-5" />
               </div>
               <h2 className="text-lg sm:text-xl font-extrabold text-foreground tracking-tight">
                 Tambah Termin Pembayaran
               </h2>
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground mt-1">
               Tentukan rincian pembayaran bertahap (milestone) dan nomor faktur proyek.
             </p>
           </div>
@@ -164,10 +164,10 @@ export function MilestoneDialog({
             type="button"
             onClick={onClose}
             disabled={isSubmitting}
-            className="p-1.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/50 transition-colors disabled:opacity-50"
+            className="p-2 rounded-full bg-card-inner border border-card-border-subtle text-muted-foreground hover:text-foreground hover:border-card-border transition-colors disabled:opacity-50"
             aria-label="Tutup modal"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
@@ -183,7 +183,7 @@ export function MilestoneDialog({
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Judul Termin */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-foreground flex items-center gap-1.5">
+            <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
               <FileText className="w-3.5 h-3.5 text-muted-foreground" />
               Judul Termin / Milestone <span className="text-red-400">*</span>
             </label>
@@ -193,20 +193,20 @@ export function MilestoneDialog({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               disabled={isSubmitting}
-              className="h-10 text-xs sm:text-sm"
+              className="h-10 text-xs sm:text-sm bg-card-inner border-card-border-subtle rounded-xl"
               required
             />
           </div>
 
           {/* Nominal Termin (Rupiah) */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-foreground flex items-center justify-between">
+            <label className="text-xs font-semibold text-foreground flex items-center justify-between">
               <span className="flex items-center gap-1.5">
                 <DollarSign className="w-3.5 h-3.5 text-neon" />
                 Nominal Termin (IDR) <span className="text-red-400">*</span>
               </span>
               {numericAmount > 0 && (
-                <span className="text-[11px] font-extrabold text-neon bg-neon/10 px-2 py-0.5 rounded-md border border-neon/20">
+                <span className="text-[11px] font-extrabold text-neon bg-neon/10 px-2.5 py-0.5 rounded-full border border-neon/20 tabular-nums">
                   {formatRupiah(numericAmount)}
                 </span>
               )}
@@ -224,7 +224,7 @@ export function MilestoneDialog({
                   setAmount(val ? parseInt(val, 10).toLocaleString("id-ID") : "");
                 }}
                 disabled={isSubmitting}
-                className="pl-10 h-10 text-xs sm:text-sm font-semibold"
+                className="pl-10 h-10 text-xs sm:text-sm font-semibold bg-card-inner border-card-border-subtle rounded-xl"
                 required
               />
             </div>
@@ -237,7 +237,7 @@ export function MilestoneDialog({
                   type="button"
                   onClick={() => handleAddQuickAmount(q)}
                   disabled={isSubmitting}
-                  className="px-2 py-0.5 rounded-lg text-[10px] bg-sidebar-accent border border-card-border hover:border-neon/40 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+                  className="px-2.5 py-0.5 rounded-full text-[10px] bg-card-inner border border-card-border-subtle hover:border-card-border text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
                 >
                   +{formatRupiah(q)}
                 </button>
@@ -247,7 +247,7 @@ export function MilestoneDialog({
 
           {/* Status Termin */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-foreground">
+            <label className="text-xs font-semibold text-foreground">
               Status Awal Termin <span className="text-red-400">*</span>
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -257,10 +257,10 @@ export function MilestoneDialog({
                   type="button"
                   onClick={() => setStatus(opt.value)}
                   disabled={isSubmitting}
-                  className={`p-2.5 rounded-xl border text-left transition-all ${
+                  className={`p-3 rounded-2xl border text-left transition-all ${
                     status === opt.value
-                      ? "bg-neon/10 border-neon/50 text-foreground ring-1 ring-neon/40"
-                      : "bg-card border-card-border text-muted-foreground hover:text-foreground hover:border-card-border"
+                      ? "bg-neon/10 border-neon/50 text-foreground ring-1 ring-neon/40 shadow-sm"
+                      : "bg-card-inner border-card-border-subtle text-muted-foreground hover:text-foreground hover:border-card-border"
                   }`}
                 >
                   <p className="text-xs font-bold text-foreground">{opt.label}</p>
@@ -276,7 +276,7 @@ export function MilestoneDialog({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
                   <Receipt className="w-3.5 h-3.5 text-muted-foreground" />
                   Nomor Faktur / Invoice
                 </label>
@@ -284,7 +284,7 @@ export function MilestoneDialog({
                   type="button"
                   onClick={generateInvoiceNumber}
                   disabled={isSubmitting}
-                  className="text-[10px] text-neon hover:underline flex items-center gap-1 disabled:opacity-50"
+                  className="text-[10px] text-neon hover:underline flex items-center gap-1 disabled:opacity-50 font-bold"
                 >
                   <Sparkles className="w-2.5 h-2.5" /> Auto-gen
                 </button>
@@ -295,12 +295,12 @@ export function MilestoneDialog({
                 value={invoiceNumber}
                 onChange={(e) => setInvoiceNumber(e.target.value)}
                 disabled={isSubmitting}
-                className="h-10 text-xs sm:text-sm uppercase font-mono"
+                className="h-10 text-xs sm:text-sm uppercase font-mono bg-card-inner border-card-border-subtle rounded-xl"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-foreground flex items-center gap-1.5">
+              <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
                 <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
                 Tanggal Jatuh Tempo
               </label>
@@ -309,14 +309,14 @@ export function MilestoneDialog({
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
                 disabled={isSubmitting}
-                className="h-10 text-xs sm:text-sm"
+                className="h-10 text-xs sm:text-sm bg-card-inner border-card-border-subtle rounded-xl"
               />
             </div>
           </div>
 
           {/* Notice info when status is PAID */}
           {status === "PAID" && (
-            <div className="p-3 rounded-xl bg-neon/10 border border-neon/30 text-xs text-neon flex items-center gap-2">
+            <div className="p-3 rounded-2xl bg-neon/10 border border-neon/30 text-xs text-neon flex items-center gap-2">
               <Sparkles className="w-4 h-4 flex-shrink-0" />
               <span>
                 Termin ini akan otomatis tersinkronisasi sebagai pendapatan di modul Money!
@@ -331,14 +331,14 @@ export function MilestoneDialog({
               variant="outline"
               onClick={onClose}
               disabled={isSubmitting}
-              className="text-xs font-semibold"
+              className="h-10 px-5 text-xs font-bold border-card-border bg-card-inner text-foreground hover:bg-card-inner/80 rounded-full"
             >
               Batal
             </Button>
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="text-xs font-bold gap-2"
+              className="h-10 px-6 text-xs font-extrabold gap-2 bg-neon text-black hover:bg-neon/90 shadow-sm rounded-full"
             >
               {isSubmitting ? (
                 <>

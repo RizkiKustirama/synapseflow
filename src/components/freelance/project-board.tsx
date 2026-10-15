@@ -249,7 +249,7 @@ export function ProjectBoard({
       {/* Top Header & Action Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-neon/15 text-neon border border-neon/30 flex items-center justify-center font-bold shadow-[0_0_15px_rgba(59,240,41,0.2)]">
+          <div className="w-10 h-10 rounded-full bg-neon/15 text-neon border border-neon/30 flex items-center justify-center font-bold shadow-sm">
             <Layers className="w-5 h-5" />
           </div>
           <div>
@@ -266,22 +266,24 @@ export function ProjectBoard({
           <Button
             type="button"
             onClick={() => setIsDialogOpen(true)}
-            className="h-10 text-xs font-bold gap-2 bg-neon text-black hover:bg-neon/90 shadow-[0_0_15px_rgba(59,240,41,0.25)]"
+            className="h-10 px-5 rounded-full text-xs font-extrabold gap-2 bg-neon text-black hover:bg-neon/90 shadow-sm"
           >
-            <Plus className="w-4 h-4" />
-            + Proyek Baru
+            <Plus className="w-4 h-4 stroke-[2.5]" />
+            Proyek Baru
           </Button>
         </div>
       </div>
 
       {/* Financial Bar Highlights */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <div className="p-3.5 rounded-2xl bg-card border border-card-border space-y-1">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+        <div className="p-5 rounded-[2rem] bg-card border border-card-border space-y-1.5 shadow-sm">
           <div className="flex items-center justify-between text-muted-foreground text-[11px] font-semibold">
-            <span>Total Nilai Kontrak</span>
-            <Briefcase className="w-3.5 h-3.5 text-blue-400" />
+            <span className="uppercase tracking-wider">Total Nilai Kontrak</span>
+            <div className="w-7 h-7 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center">
+              <Briefcase className="w-3.5 h-3.5" />
+            </div>
           </div>
-          <p className="text-base sm:text-lg font-extrabold text-foreground">
+          <p className="text-base sm:text-lg font-extrabold text-foreground tabular-nums">
             {formatRupiah(boardSummary.totalPipeline)}
           </p>
           <span className="text-[10px] text-muted-foreground">
@@ -289,12 +291,14 @@ export function ProjectBoard({
           </span>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-card border border-card-border space-y-1">
+        <div className="p-5 rounded-[2rem] bg-card border border-card-border space-y-1.5 shadow-sm">
           <div className="flex items-center justify-between text-muted-foreground text-[11px] font-semibold">
-            <span>Kas Masuk (Paid)</span>
-            <Sparkles className="w-3.5 h-3.5 text-neon" />
+            <span className="uppercase tracking-wider">Kas Masuk (Paid)</span>
+            <div className="w-7 h-7 rounded-full bg-neon/15 text-neon flex items-center justify-center">
+              <Sparkles className="w-3.5 h-3.5" />
+            </div>
           </div>
-          <p className="text-base sm:text-lg font-extrabold text-neon">
+          <p className="text-base sm:text-lg font-extrabold text-neon tabular-nums">
             {formatRupiah(boardSummary.totalPaid)}
           </p>
           <span className="text-[10px] text-muted-foreground">
@@ -302,12 +306,14 @@ export function ProjectBoard({
           </span>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-card border border-card-border space-y-1">
+        <div className="p-5 rounded-[2rem] bg-card border border-card-border space-y-1.5 shadow-sm">
           <div className="flex items-center justify-between text-muted-foreground text-[11px] font-semibold">
-            <span>Piutang Ditagih (Invoiced)</span>
-            <Receipt className="w-3.5 h-3.5 text-amber-400" />
+            <span className="uppercase tracking-wider">Piutang Ditagih (Invoiced)</span>
+            <div className="w-7 h-7 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center">
+              <Receipt className="w-3.5 h-3.5" />
+            </div>
           </div>
-          <p className="text-base sm:text-lg font-extrabold text-amber-400">
+          <p className="text-base sm:text-lg font-extrabold text-amber-400 tabular-nums">
             {formatRupiah(boardSummary.totalReceivables)}
           </p>
           <span className="text-[10px] text-muted-foreground">
@@ -315,14 +321,16 @@ export function ProjectBoard({
           </span>
         </div>
 
-        <div className="p-3.5 rounded-2xl bg-card border border-card-border space-y-1">
+        <div className="p-5 rounded-[2rem] bg-card border border-card-border space-y-1.5 shadow-sm">
           <div className="flex items-center justify-between text-muted-foreground text-[11px] font-semibold">
-            <span>Realized Net Margin</span>
-            <TrendingUp className="w-3.5 h-3.5 text-neon" />
+            <span className="uppercase tracking-wider">Realized Net Margin</span>
+            <div className="w-7 h-7 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+              <TrendingUp className="w-3.5 h-3.5" />
+            </div>
           </div>
           <p
             className={cn(
-              "text-base sm:text-lg font-extrabold",
+              "text-base sm:text-lg font-extrabold tabular-nums",
               boardSummary.totalNetProfit >= 0 ? "text-neon" : "text-rose-400"
             )}
           >
@@ -337,12 +345,12 @@ export function ProjectBoard({
       {/* Search Input Filter */}
       <div className="flex items-center gap-3">
         <div className="relative flex-1 max-w-md">
-          <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2" />
           <Input
             placeholder="Cari judul proyek, klien, atau lingkup kerja..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 h-10 text-xs bg-card border-card-border focus-visible:ring-neon rounded-xl"
+            className="pl-10 h-10 text-xs bg-card border-card-border focus-visible:ring-neon rounded-full"
           />
         </div>
         {searchQuery && (
@@ -351,7 +359,7 @@ export function ProjectBoard({
             variant="ghost"
             size="sm"
             onClick={() => setSearchQuery("")}
-            className="text-xs text-muted-foreground hover:text-foreground h-10"
+            className="text-xs text-muted-foreground hover:text-foreground h-10 rounded-full px-4"
           >
             Reset
           </Button>
@@ -368,10 +376,10 @@ export function ProjectBoard({
           return (
             <div
               key={stage.id}
-              className="flex flex-col rounded-3xl bg-card/60 border border-card-border p-3.5 space-y-3.5 min-h-[480px]"
+              className="flex flex-col rounded-[2rem] lg:rounded-[2.5rem] bg-card border border-card-border p-5 space-y-4 min-h-[480px] shadow-sm"
             >
               {/* Stage Column Header */}
-              <div className="flex items-center justify-between pb-2 border-b border-card-border">
+              <div className="flex items-center justify-between pb-3 border-b border-card-border">
                 <div className="flex items-center gap-2">
                   <span className={cn("w-2.5 h-2.5 rounded-full shrink-0", stage.dotColor)} />
                   <div>
@@ -390,7 +398,7 @@ export function ProjectBoard({
                 <div className="flex items-center gap-1.5">
                   <span
                     className={cn(
-                      "px-2 py-0.5 text-[11px] font-extrabold rounded-full border",
+                      "px-2.5 py-0.5 text-[11px] font-extrabold rounded-full border",
                       stage.badgeClass
                     )}
                   >
@@ -410,7 +418,7 @@ export function ProjectBoard({
               {/* Project Cards List */}
               <div className="space-y-3 flex-1">
                 {stageProjects.length === 0 ? (
-                  <div className="h-44 flex flex-col items-center justify-center rounded-2xl border border-dashed border-card-border text-center p-4">
+                  <div className="h-44 flex flex-col items-center justify-center rounded-2xl border border-dashed border-card-border-subtle bg-card-inner/40 text-center p-4">
                     <p className="text-xs text-muted-foreground font-medium">
                       Tidak ada proyek
                     </p>
@@ -422,7 +430,7 @@ export function ProjectBoard({
                       variant="ghost"
                       size="sm"
                       onClick={() => setIsDialogOpen(true)}
-                      className="mt-3 text-[11px] text-neon hover:text-neon hover:bg-neon/10 h-7"
+                      className="mt-3 text-[11px] text-neon hover:text-neon hover:bg-neon/10 h-7 rounded-full"
                     >
                       + Tambah Proyek
                     </Button>
@@ -448,11 +456,11 @@ export function ProjectBoard({
                     return (
                       <div
                         key={project.id}
-                        className="p-4 rounded-2xl bg-card border border-card-border hover:border-card-border/80 transition-all shadow-md space-y-3.5 group"
+                        className="p-4 sm:p-5 rounded-2xl bg-card-inner border border-card-border-subtle hover:border-card-border hover:bg-card-inner/90 transition-all duration-200 shadow-sm space-y-3.5 group"
                       >
                         {/* Top Meta: Client Badge & Delete */}
                         <div className="flex items-start justify-between gap-2">
-                          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-background border border-card-border text-[11px] font-semibold text-foreground truncate max-w-[200px]">
+                          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-card border border-card-border text-[11px] font-semibold text-foreground truncate max-w-[200px]">
                             <Building2 className="w-3 h-3 text-neon shrink-0" />
                             <span className="truncate">{clientBadge}</span>
                           </div>
@@ -461,7 +469,7 @@ export function ProjectBoard({
                             type="button"
                             disabled={deletingId === project.id}
                             onClick={() => handleDelete(project)}
-                            className="p-1 rounded-lg text-muted-foreground/60 hover:text-rose-400 hover:bg-rose-500/10 transition-all disabled:opacity-50"
+                            className="p-1.5 rounded-full text-muted-foreground/60 hover:text-rose-400 hover:bg-rose-500/10 transition-all disabled:opacity-50"
                             title="Hapus proyek"
                             aria-label={`Hapus proyek ${project.title}`}
                           >
@@ -507,7 +515,7 @@ export function ProjectBoard({
                         </div>
 
                         {/* Net Profit Margin Pill */}
-                        <div className="flex items-center justify-between p-2.5 rounded-xl bg-background/80 border border-card-border text-xs">
+                        <div className="flex items-center justify-between p-3 rounded-xl bg-card border border-card-border-subtle text-xs">
                           <div>
                             <span className="text-[10px] uppercase font-semibold text-muted-foreground block">
                               Net Profit Margin
@@ -524,7 +532,7 @@ export function ProjectBoard({
 
                           <div
                             className={cn(
-                              "px-2 py-0.5 rounded-full text-[10px] font-extrabold border flex items-center gap-1",
+                              "px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border flex items-center gap-1",
                               project.marginPercentage >= 70
                                 ? "bg-neon/15 text-neon border-neon/30"
                                 : project.marginPercentage >= 40
@@ -547,7 +555,7 @@ export function ProjectBoard({
                         <button
                           type="button"
                           onClick={() => onOpenMilestones(project)}
-                          className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-background border border-card-border hover:border-neon/40 hover:bg-card text-xs transition-all group/btn"
+                          className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-card border border-card-border hover:border-neon/40 hover:bg-card/80 text-xs transition-all group/btn shadow-sm"
                         >
                           <div className="flex items-center gap-1.5 text-foreground font-semibold">
                             <Receipt className="w-3.5 h-3.5 text-neon group-hover/btn:scale-110 transition-transform" />
@@ -555,9 +563,9 @@ export function ProjectBoard({
                           </div>
                           <span
                             className={cn(
-                              "px-2 py-0.5 text-[10px] font-bold rounded-full border",
+                              "px-2.5 py-0.5 text-[10px] font-bold rounded-full border",
                               invoicedTermin.length > 0
-                                ? "bg-amber-500/15 text-amber-400 border-amber-500/30 font-extrabold"
+                                ? "bg-[#25dd59] text-black font-extrabold border-transparent"
                                 : unpaidTermin.length > 0
                                 ? "bg-blue-500/15 text-blue-400 border-blue-500/30"
                                 : project.milestones.length > 0
@@ -583,7 +591,7 @@ export function ProjectBoard({
                             variant="outline"
                             size="sm"
                             onClick={() => onOpenExpense(project)}
-                            className="h-8 text-[11px] font-semibold border-card-border hover:border-amber-500/40 hover:text-amber-400 hover:bg-amber-500/10 gap-1 px-2.5"
+                            className="h-8 text-[11px] font-semibold rounded-full border-card-border bg-card text-foreground hover:border-amber-500/40 hover:text-amber-400 hover:bg-amber-500/10 gap-1 px-3"
                           >
                             <Coins className="w-3 h-3 text-amber-400" />
                             + Catat Biaya
@@ -596,7 +604,7 @@ export function ProjectBoard({
                               size="sm"
                               disabled={advancingId === project.id}
                               onClick={() => handleAdvance(project)}
-                              className="h-8 text-[11px] font-bold bg-neon/15 hover:bg-neon/25 text-neon border border-neon/30 hover:border-neon/50 gap-1 ml-auto px-2.5"
+                              className="h-8 text-[11px] font-bold rounded-full bg-neon/15 hover:bg-neon text-neon hover:text-black border border-neon/30 hover:border-neon/50 gap-1 ml-auto px-3.5 transition-all"
                             >
                               {advancingId === project.id ? (
                                 <Loader2 className="w-3 h-3 animate-spin" />
@@ -608,8 +616,8 @@ export function ProjectBoard({
                               )}
                             </Button>
                           ) : (
-                            <div className="flex items-center gap-1 text-[10px] font-bold text-neon bg-neon/10 px-2.5 py-1 rounded-lg border border-neon/20 ml-auto">
-                              <CheckCircle2 className="w-3 h-3 text-neon" />
+                            <div className="flex items-center gap-1 text-[10px] font-bold text-black bg-[#25dd59] px-3 py-1 rounded-full ml-auto shadow-sm">
+                              <CheckCircle2 className="w-3 h-3" />
                               <span>Selesai</span>
                             </div>
                           )}

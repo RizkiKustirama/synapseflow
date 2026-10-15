@@ -126,19 +126,19 @@ export function ProjectExpenseDialog({
       />
 
       {/* Modal Dialog Content */}
-      <div className="relative w-full max-w-lg max-h-[92vh] overflow-y-auto bg-card border border-card-border rounded-3xl shadow-2xl p-5 sm:p-6 z-10 space-y-5">
+      <div className="relative w-full max-w-lg max-h-[92vh] overflow-y-auto bg-card border border-card-border rounded-[2rem] lg:rounded-[2.5rem] shadow-2xl p-6 sm:p-8 z-10 space-y-5">
         {/* Header */}
-        <div className="flex items-start justify-between pb-3.5 border-b border-card-border gap-3">
+        <div className="flex items-start justify-between pb-4 border-b border-card-border gap-3">
           <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400">
-                <TrendingDown className="w-4 h-4" />
+            <div className="flex items-center gap-2.5">
+              <div className="w-10 h-10 rounded-full bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 font-bold shadow-sm">
+                <TrendingDown className="w-5 h-5" />
               </div>
               <h2 className="text-lg sm:text-xl font-extrabold text-foreground tracking-tight">
                 Catat Biaya Proyek
               </h2>
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground mt-1">
               Dokumentasikan direct expenses seperti hosting, API, lisensi aset, atau subkontraktor.
             </p>
           </div>
@@ -147,10 +147,10 @@ export function ProjectExpenseDialog({
             type="button"
             onClick={onClose}
             disabled={isSubmitting}
-            className="p-1.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/50 transition-colors disabled:opacity-50"
+            className="p-2 rounded-full bg-card-inner border border-card-border-subtle text-muted-foreground hover:text-foreground hover:border-card-border transition-colors disabled:opacity-50"
             aria-label="Tutup modal"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
@@ -163,7 +163,7 @@ export function ProjectExpenseDialog({
         )}
 
         {/* Info Banner */}
-        <div className="p-3 rounded-2xl bg-sidebar-accent/60 border border-card-border text-xs text-muted-foreground flex items-center gap-2.5">
+        <div className="p-3.5 rounded-2xl bg-card-inner border border-card-border-subtle text-xs text-muted-foreground flex items-center gap-2.5">
           <Sparkles className="w-4 h-4 text-neon flex-shrink-0" />
           <span>
             Biaya ini otomatis tersinkronisasi sebagai <strong className="text-foreground">EXPENSE</strong> di modul Money Tracker dan mengurangi Net Margin proyek secara instan.
@@ -174,7 +174,7 @@ export function ProjectExpenseDialog({
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Deskripsi Biaya */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-foreground flex items-center gap-1.5">
+            <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
               <FileText className="w-3.5 h-3.5 text-muted-foreground" />
               Deskripsi Biaya <span className="text-red-400">*</span>
             </label>
@@ -184,20 +184,20 @@ export function ProjectExpenseDialog({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               disabled={isSubmitting}
-              className="h-10 text-xs sm:text-sm"
+              className="h-10 text-xs sm:text-sm bg-card-inner border-card-border-subtle rounded-xl"
               required
             />
           </div>
 
           {/* Nominal Biaya (Rupiah) */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-foreground flex items-center justify-between">
+            <label className="text-xs font-semibold text-foreground flex items-center justify-between">
               <span className="flex items-center gap-1.5">
                 <DollarSign className="w-3.5 h-3.5 text-rose-400" />
                 Nominal Biaya (IDR) <span className="text-red-400">*</span>
               </span>
               {numericAmount > 0 && (
-                <span className="text-[11px] font-extrabold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded-md border border-rose-500/20">
+                <span className="text-[11px] font-extrabold text-rose-400 bg-rose-500/10 px-2.5 py-0.5 rounded-full border border-rose-500/20 tabular-nums">
                   {formatRupiah(numericAmount)}
                 </span>
               )}
@@ -215,7 +215,7 @@ export function ProjectExpenseDialog({
                   setAmount(val ? parseInt(val, 10).toLocaleString("id-ID") : "");
                 }}
                 disabled={isSubmitting}
-                className="pl-10 h-10 text-xs sm:text-sm font-semibold"
+                className="pl-10 h-10 text-xs sm:text-sm font-semibold bg-card-inner border-card-border-subtle rounded-xl"
                 required
               />
             </div>
@@ -228,7 +228,7 @@ export function ProjectExpenseDialog({
                   type="button"
                   onClick={() => handleAddQuickAmount(q)}
                   disabled={isSubmitting}
-                  className="px-2 py-0.5 rounded-lg text-[10px] bg-sidebar-accent border border-card-border hover:border-rose-500/40 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+                  className="px-2.5 py-0.5 rounded-full text-[10px] bg-card-inner border border-card-border-subtle hover:border-rose-500/40 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
                 >
                   +{formatRupiah(q)}
                 </button>
@@ -238,7 +238,7 @@ export function ProjectExpenseDialog({
 
           {/* Tanggal Biaya */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-foreground flex items-center gap-1.5">
+            <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
               Tanggal Pengeluaran <span className="text-red-400">*</span>
             </label>
@@ -247,14 +247,14 @@ export function ProjectExpenseDialog({
               value={date}
               onChange={(e) => setDate(e.target.value)}
               disabled={isSubmitting}
-              className="h-10 text-xs sm:text-sm"
+              className="h-10 text-xs sm:text-sm bg-card-inner border-card-border-subtle rounded-xl"
               required
             />
           </div>
 
           {/* Catatan Tambahan */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-foreground flex items-center gap-1.5">
+            <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
               <Receipt className="w-3.5 h-3.5 text-muted-foreground" />
               Catatan / Info Vendor (Opsional)
             </label>
@@ -264,7 +264,7 @@ export function ProjectExpenseDialog({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               disabled={isSubmitting}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-card-border bg-card text-xs sm:text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon resize-none"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-card-border-subtle bg-card-inner text-xs sm:text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon resize-none"
             />
           </div>
 
@@ -275,14 +275,14 @@ export function ProjectExpenseDialog({
               variant="outline"
               onClick={onClose}
               disabled={isSubmitting}
-              className="text-xs font-semibold"
+              className="h-10 px-5 text-xs font-bold border-card-border bg-card-inner text-foreground hover:bg-card-inner/80 rounded-full"
             >
               Batal
             </Button>
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="text-xs font-bold gap-2 bg-rose-500 hover:bg-rose-600 text-white shadow-none"
+              className="h-10 px-6 text-xs font-extrabold gap-2 bg-rose-500 hover:bg-rose-600 text-white shadow-sm rounded-full"
             >
               {isSubmitting ? (
                 <>

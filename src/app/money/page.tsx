@@ -15,6 +15,7 @@ import {
   StoredTransaction,
   StoredReceivableItem,
 } from "@/actions/money.actions";
+import { cn } from "@/lib/utils";
 
 export default function MoneyPage() {
   const [transactions, setTransactions] = useState<StoredTransaction[]>([]);
@@ -61,6 +62,10 @@ export default function MoneyPage() {
       {/* Header & Main Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-card border border-card-border text-[11px] font-semibold text-muted-foreground w-fit mb-2 shadow-sm">
+            <Wallet className="w-3.5 h-3.5 text-neon" />
+            Buku Kas Terpadu & Multi-Stream Ledger
+          </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
             Money & Cashflow Ledger
           </h1>
@@ -69,40 +74,46 @@ export default function MoneyPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <button
+            onClick={loadData}
+            className="p-2.5 rounded-full bg-card border border-card-border text-muted-foreground hover:text-foreground hover:border-neon/40 transition-colors shadow-sm"
+            title="Refresh Data"
+          >
+            <RefreshCw className={cn("w-4 h-4", isLoading && "animate-spin")} />
+          </button>
+
           <Link href="/money/budgets">
-            <Button variant="outline" className="h-10 text-xs font-bold gap-2">
+            <Button
+              variant="outline"
+              className="h-10 px-5 rounded-full text-xs font-bold gap-2 bg-card-inner border-card-border text-foreground hover:bg-card-inner/80 shadow-sm"
+            >
               <PieChart className="w-4 h-4 text-neon" /> Kategori & Anggaran
             </Button>
           </Link>
 
           <Button
             onClick={() => setModalOpen(true)}
-            className="h-10 text-xs font-bold gap-2"
+            className="h-10 px-5 rounded-full text-xs font-extrabold gap-2 bg-neon text-black hover:bg-neon/90 shadow-sm"
           >
-            <Plus className="w-4 h-4" /> Catat Transaksi
+            <Plus className="w-4 h-4 stroke-[2.5]" /> Catat Transaksi
           </Button>
         </div>
       </div>
 
-      {/* Navigation Sub-Tabs */}
-      <div className="flex items-center gap-2 border-b border-card-border pb-3">
-        <div className="px-4 py-2 rounded-2xl bg-card border border-card-border text-xs font-bold text-neon shadow-sm flex items-center gap-2">
-          <Wallet className="w-4 h-4" /> Buku Kas Terpadu
+      {/* Navigation Sub-Tabs (Stitch Pill Style) */}
+      <div className="flex items-center justify-between gap-2 border-b border-card-border pb-4">
+        <div className="inline-flex items-center gap-1.5 p-1.5 rounded-full bg-card border border-card-border shadow-sm">
+          <div className="px-4 py-2 rounded-full text-xs font-extrabold bg-neon text-black shadow-sm flex items-center gap-2">
+            <Wallet className="w-4 h-4" /> Buku Kas Terpadu
+          </div>
+          <Link
+            href="/money/budgets"
+            className="px-4 py-2 rounded-full text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-card-border/30 transition-all flex items-center gap-2"
+          >
+            <PieChart className="w-4 h-4" /> Kategori & Budget Limit
+          </Link>
         </div>
-        <Link
-          href="/money/budgets"
-          className="px-4 py-2 rounded-2xl text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-card-border/30 transition-colors flex items-center gap-2"
-        >
-          <PieChart className="w-4 h-4" /> Kategori & Budget Limit
-        </Link>
-        <button
-          onClick={loadData}
-          className="ml-auto p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-card-border/30 transition-colors"
-          title="Refresh Data"
-        >
-          <RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
-        </button>
       </div>
 
       {/* Real-time KPI Cards & Ratio Gauge */}
@@ -112,14 +123,16 @@ export default function MoneyPage() {
       <ReceivablesCard items={receivables} onSettled={loadData} />
 
       {/* TanStack Data Table for Transactions */}
-      <div className="space-y-3">
+      <div className="p-6 sm:p-7 rounded-[2rem] lg:rounded-[2.5rem] bg-card border border-card-border shadow-xl space-y-5">
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-bold text-foreground">
-            Daftar Seluruh Transaksi ({transactions.length})
-          </h2>
-          <span className="text-xs text-muted-foreground">
-            Multi-filter & real-time sorting aktif
-          </span>
+          <div>
+            <h2 className="text-base sm:text-lg font-bold text-foreground">
+              Daftar Seluruh Transaksi ({transactions.length})
+            </h2>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Multi-filter & real-time sorting aktif
+            </p>
+          </div>
         </div>
 
         <TransactionTable data={transactions} onRefresh={loadData} />

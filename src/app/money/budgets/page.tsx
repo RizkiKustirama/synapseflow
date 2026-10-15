@@ -67,7 +67,7 @@ export default function BudgetsPage() {
           <div className="flex items-center gap-2 mb-2">
             <Link
               href="/money"
-              className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-card border border-card-border text-xs font-semibold text-muted-foreground hover:text-foreground hover:border-neon/40 transition-all shadow-sm"
             >
               <ArrowLeft className="w-3.5 h-3.5" /> Kembali ke Buku Kas
             </Link>
@@ -80,18 +80,21 @@ export default function BudgetsPage() {
           </p>
         </div>
 
-        <Button onClick={handleCreate} className="h-10 text-xs font-bold gap-2">
-          <Plus className="w-4 h-4" /> Tambah Kategori
+        <Button
+          onClick={handleCreate}
+          className="h-10 px-5 rounded-full text-xs font-extrabold gap-2 bg-neon text-black hover:bg-neon/90 shadow-sm"
+        >
+          <Plus className="w-4 h-4 stroke-[2.5]" /> Tambah Kategori
         </Button>
       </div>
 
       {/* Aggregate Budget Summary Card */}
-      <div className="p-6 rounded-3xl bg-card border border-card-border shadow-sm grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div>
-          <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider">
+      <div className="p-6 sm:p-7 rounded-[2rem] lg:rounded-[2.5rem] bg-card border border-card-border shadow-xl grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="p-5 rounded-2xl bg-card-inner border border-card-border-subtle space-y-1.5 shadow-sm">
+          <span className="text-[11px] text-muted-foreground uppercase font-bold tracking-wider">
             Total Anggaran Dialokasikan
           </span>
-          <p className="text-xl sm:text-2xl font-black text-foreground mt-1 tabular-nums">
+          <p className="text-xl sm:text-2xl font-black text-foreground tabular-nums">
             {formatRupiah(totalAllocatedBudget)}
           </p>
           <span className="text-[11px] text-muted-foreground">
@@ -99,11 +102,11 @@ export default function BudgetsPage() {
           </span>
         </div>
 
-        <div>
-          <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider">
+        <div className="p-5 rounded-2xl bg-card-inner border border-card-border-subtle space-y-1.5 shadow-sm">
+          <span className="text-[11px] text-muted-foreground uppercase font-bold tracking-wider">
             Realisasi Pengeluaran
           </span>
-          <p className="text-xl sm:text-2xl font-black text-amber-400 mt-1 tabular-nums">
+          <p className="text-xl sm:text-2xl font-black text-amber-400 tabular-nums">
             {formatRupiah(totalSpentAll)}
           </p>
           <span className="text-[11px] text-muted-foreground">
@@ -111,31 +114,35 @@ export default function BudgetsPage() {
           </span>
         </div>
 
-        <div>
-          <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider">
+        <div className="p-5 rounded-2xl bg-card-inner border border-card-border-subtle space-y-1.5 shadow-sm">
+          <span className="text-[11px] text-muted-foreground uppercase font-bold tracking-wider">
             Sisa Kuota Anggaran
           </span>
-          <p className="text-xl sm:text-2xl font-black text-neon mt-1 tabular-nums">
+          <p className="text-xl sm:text-2xl font-black text-neon tabular-nums">
             {formatRupiah(Math.max(0, totalAllocatedBudget - totalSpentAll))}
           </p>
-          <span className="text-[11px] text-neon flex items-center gap-1 mt-0.5">
+          <span className="text-[11px] text-neon flex items-center gap-1">
             <Sparkles className="w-3 h-3" /> Dana aman terkontrol
           </span>
         </div>
       </div>
 
       {/* Expense Categories with Progress Bar */}
-      <div className="space-y-4">
+      <div className="p-6 sm:p-7 rounded-[2rem] lg:rounded-[2.5rem] bg-card border border-card-border shadow-xl space-y-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <PieChart className="w-4 h-4 text-neon" />
-            <h2 className="text-base font-bold text-foreground">
-              Kategori Pengeluaran ({expenseBudgets.length})
-            </h2>
+            <div className="w-8 h-8 rounded-full bg-neon/15 text-neon flex items-center justify-center font-bold">
+              <PieChart className="w-4 h-4" />
+            </div>
+            <div>
+              <h2 className="text-base sm:text-lg font-bold text-foreground">
+                Kategori Pengeluaran ({expenseBudgets.length})
+              </h2>
+              <p className="text-xs text-muted-foreground">
+                Monitor realisasi anggaran per pos belanja
+              </p>
+            </div>
           </div>
-          <span className="text-xs text-muted-foreground">
-            Monitor realisasi anggaran per pos belanja
-          </span>
         </div>
 
         {isLoading ? (
@@ -143,7 +150,7 @@ export default function BudgetsPage() {
             Memuat kategori anggaran...
           </div>
         ) : expenseBudgets.length === 0 ? (
-          <div className="py-12 text-center rounded-3xl bg-card border border-card-border text-xs text-muted-foreground">
+          <div className="py-12 text-center rounded-2xl bg-card-inner border border-card-border-subtle text-xs text-muted-foreground">
             Belum ada kategori pengeluaran. Klik &quot;Tambah Kategori&quot; untuk membuat.
           </div>
         ) : (
@@ -161,40 +168,44 @@ export default function BudgetsPage() {
       </div>
 
       {/* Income Categories */}
-      <div className="space-y-4 pt-4">
+      <div className="p-6 sm:p-7 rounded-[2rem] lg:rounded-[2.5rem] bg-card border border-card-border shadow-xl space-y-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Wallet className="w-4 h-4 text-emerald-400" />
-            <h2 className="text-base font-bold text-foreground">
-              Kategori Pemasukan ({incomeCategories.length})
-            </h2>
+            <div className="w-8 h-8 rounded-full bg-emerald-500/15 text-emerald-400 flex items-center justify-center font-bold">
+              <Wallet className="w-4 h-4" />
+            </div>
+            <div>
+              <h2 className="text-base sm:text-lg font-bold text-foreground">
+                Kategori Pemasukan ({incomeCategories.length})
+              </h2>
+              <p className="text-xs text-muted-foreground">
+                Sumber pendapatan profesional & sampingan
+              </p>
+            </div>
           </div>
-          <span className="text-xs text-muted-foreground">
-            Sumber pendapatan profesional & sampingan
-          </span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {incomeCategories.map((cat) => (
             <div
               key={cat.id}
-              className="p-4 rounded-2xl bg-card border border-card-border flex items-center justify-between"
+              className="p-4 sm:p-5 rounded-2xl bg-card-inner border border-card-border-subtle flex items-center justify-between hover:border-card-border transition-colors shadow-sm"
             >
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-3">
                 <span
-                  className="w-3.5 h-3.5 rounded-full"
+                  className="w-3.5 h-3.5 rounded-full flex-shrink-0"
                   style={{ backgroundColor: cat.color }}
                 />
                 <div>
                   <h4 className="text-sm font-bold text-foreground">{cat.name}</h4>
-                  <span className="text-[10px] text-emerald-400 uppercase font-semibold">
+                  <span className="text-[10px] text-emerald-400 uppercase font-bold tracking-wider">
                     Income Stream
                   </span>
                 </div>
               </div>
               <button
                 onClick={() => handleEdit(cat)}
-                className="text-xs text-muted-foreground hover:text-foreground font-semibold"
+                className="px-3.5 py-1.5 rounded-full bg-card border border-card-border text-xs font-bold text-muted-foreground hover:text-foreground hover:border-neon/40 transition-all shadow-sm"
               >
                 Edit
               </button>

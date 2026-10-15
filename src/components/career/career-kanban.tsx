@@ -250,23 +250,23 @@ export function CareerKanban({
 
   return (
     <div className="space-y-4 w-full">
-      {/* Top Filter and Search Bar */}
-      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 p-3.5 rounded-2xl bg-card border border-card-border">
+      {/* Top Filter and Search Bar (Stitch Pill & Card Style) */}
+      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3.5 p-4 sm:p-5 rounded-[2rem] bg-card border border-card-border shadow-sm">
         {/* Search */}
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
             placeholder="Cari perusahaan, posisi, atau catatan..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 bg-background border border-card-border rounded-xl text-xs sm:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-neon focus:ring-1 focus:ring-neon transition-all"
+            className="w-full pl-10 pr-4 py-2.5 bg-card-inner border border-card-border-subtle rounded-full text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-neon focus:ring-1 focus:ring-neon transition-all"
           />
         </div>
 
         {/* Location Filters */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
-          <span className="text-xs text-muted-foreground font-medium hidden sm:inline mr-1">
+        <div className="inline-flex items-center gap-1.5 p-1.5 rounded-full bg-card-inner border border-card-border-subtle overflow-x-auto">
+          <span className="text-xs text-muted-foreground font-semibold hidden sm:inline ml-2 mr-1">
             Lokasi:
           </span>
           {[
@@ -280,10 +280,10 @@ export function CareerKanban({
               type="button"
               onClick={() => setLocationFilter(item.id)}
               className={cn(
-                "px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap",
+                "px-3.5 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap",
                 locationFilter === item.id
-                  ? "bg-neon text-black shadow-sm font-bold"
-                  : "bg-background/80 text-muted-foreground hover:text-foreground border border-card-border hover:border-card-border/80"
+                  ? "bg-neon text-black shadow-sm font-extrabold"
+                  : "text-muted-foreground hover:text-foreground"
               )}
             >
               {item.label}
@@ -303,10 +303,10 @@ export function CareerKanban({
             return (
               <div
                 key={col.id}
-                className="w-80 min-w-[320px] max-w-[320px] flex-shrink-0 flex flex-col rounded-3xl bg-card border border-card-border shadow-sm overflow-hidden"
+                className="w-80 min-w-[320px] max-w-[320px] flex-shrink-0 flex flex-col rounded-[2rem] lg:rounded-[2.5rem] bg-card border border-card-border shadow-md overflow-hidden"
               >
                 {/* Column Header */}
-                <div className="p-4 border-b border-card-border bg-card/90 flex items-center justify-between">
+                <div className="p-4 sm:p-5 border-b border-card-border bg-card flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-bold text-foreground">
                       {col.title}
@@ -323,9 +323,9 @@ export function CareerKanban({
                 </div>
 
                 {/* Column Body / Cards List */}
-                <div className="p-3 space-y-3 min-h-[480px] max-h-[720px] overflow-y-auto scrollbar-thin bg-background/30">
+                <div className="p-3.5 space-y-3 min-h-[480px] max-h-[720px] overflow-y-auto scrollbar-thin bg-card-inner/50">
                   {colApps.length === 0 ? (
-                    <div className="h-40 flex flex-col items-center justify-center border-2 border-dashed border-card-border/60 rounded-2xl p-4 text-center">
+                    <div className="h-40 flex flex-col items-center justify-center border-2 border-dashed border-card-border-subtle rounded-2xl p-4 text-center">
                       <Briefcase className="w-6 h-6 text-muted-foreground/40 mb-2" />
                       <p className="text-xs font-medium text-muted-foreground/60">
                         Belum ada lamaran
@@ -341,7 +341,7 @@ export function CareerKanban({
                         <div
                           key={app.id}
                           className={cn(
-                            "relative rounded-2xl bg-card border border-card-border p-4 space-y-3 transition-all duration-200 group hover:border-neon/40 hover:shadow-[0_4px_20px_rgba(0,0,0,0.25)]",
+                            "relative rounded-2xl bg-card border border-card-border-subtle p-4 space-y-3 transition-all duration-200 group hover:border-card-border hover:shadow-md",
                             isBusy && "opacity-60 pointer-events-none"
                           )}
                         >
@@ -355,7 +355,7 @@ export function CareerKanban({
                           {/* Card Header: Position, Company, Action Icons */}
                           <div className="flex items-start justify-between gap-2">
                             <div className="space-y-1 flex-1 min-w-0">
-                              <h4 className="text-sm font-bold text-foreground group-hover:text-neon group-hover:drop-shadow-[0_0_8px_rgba(59,240,41,0.35)] transition-all truncate">
+                              <h4 className="text-sm font-bold text-foreground group-hover:text-neon transition-all truncate">
                                 {app.position}
                               </h4>
                               <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-semibold truncate">
@@ -370,7 +370,7 @@ export function CareerKanban({
                                 type="button"
                                 onClick={() => onEdit(app)}
                                 title="Edit lamaran"
-                                className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-card-border/60 transition-colors"
+                                className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-card-inner transition-colors"
                               >
                                 <Pencil className="w-3.5 h-3.5" />
                               </button>
@@ -378,7 +378,7 @@ export function CareerKanban({
                                 type="button"
                                 onClick={() => handleDelete(app)}
                                 title="Hapus lamaran"
-                                className="p-1.5 rounded-lg text-muted-foreground hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                                className="p-1.5 rounded-full text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
                               </button>
@@ -395,7 +395,7 @@ export function CareerKanban({
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 title="Buka tautan lowongan kerja"
-                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-card-border/40 text-muted-foreground hover:text-neon border border-card-border/60 transition-colors"
+                                className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-card-inner text-muted-foreground hover:text-neon border border-card-border-subtle transition-colors"
                               >
                                 <ExternalLink className="w-2.5 h-2.5" />
                                 Link
@@ -405,7 +405,7 @@ export function CareerKanban({
                             {app.cvVersion && (
                               <span
                                 title={app.cvVersion}
-                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-card-border/30 text-muted-foreground border border-card-border/50 max-w-[120px] truncate"
+                                className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-card-inner text-muted-foreground border border-card-border-subtle max-w-[120px] truncate"
                               >
                                 <FileText className="w-2.5 h-2.5 flex-shrink-0" />
                                 <span className="truncate">{app.cvVersion}</span>
@@ -414,7 +414,7 @@ export function CareerKanban({
                           </div>
 
                           {/* Salary Information */}
-                          <div className="p-2.5 rounded-xl bg-background/60 border border-card-border/60 flex items-center justify-between text-xs">
+                          <div className="p-2.5 rounded-xl bg-card-inner border border-card-border-subtle flex items-center justify-between text-xs">
                             <span className="flex items-center gap-1.5 text-muted-foreground text-[11px] font-medium">
                               <Banknote className="w-3.5 h-3.5 text-neon" />
                               Gaji:
@@ -431,7 +431,7 @@ export function CareerKanban({
                               <span>{formatDate(app.appliedDate)}</span>
                             </span>
                             {elapsedText && (
-                              <span className="px-1.5 py-0.5 rounded-md bg-card-border/50 text-[10px] font-medium text-muted-foreground">
+                              <span className="px-2 py-0.5 rounded-full bg-card-inner border border-card-border-subtle text-[10px] font-medium text-muted-foreground">
                                 {elapsedText}
                               </span>
                             )}
@@ -441,13 +441,13 @@ export function CareerKanban({
                           <button
                             type="button"
                             onClick={() => onOpenInterview(app)}
-                            className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-card-border/30 hover:bg-card-border/60 border border-card-border/50 hover:border-neon/30 text-xs font-semibold text-foreground transition-all group/crm"
+                            className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-card-inner hover:bg-card-inner/80 border border-card-border-subtle text-xs font-semibold text-foreground transition-all group/crm"
                           >
                             <span className="flex items-center gap-1.5 text-muted-foreground group-hover/crm:text-foreground">
                               <MessageSquare className="w-3.5 h-3.5 text-neon" />
                               <span>Interview CRM</span>
                             </span>
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-neon/15 text-neon font-bold text-[10px] border border-neon/30">
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-neon/15 text-neon font-bold text-[10px] border border-neon/30">
                               {app.interviewLogs?.length ?? 0} Tahap
                             </span>
                           </button>
@@ -457,7 +457,7 @@ export function CareerKanban({
                             <button
                               type="button"
                               onClick={() => onConvert(app)}
-                              className="w-full py-2.5 px-3 rounded-xl bg-neon text-black text-xs font-extrabold flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(59,240,41,0.35)] hover:shadow-[0_0_20px_rgba(59,240,41,0.55)] hover:bg-neon/90 active:scale-[0.98] transition-all"
+                              className="w-full py-2.5 px-4 rounded-full bg-neon text-black text-xs font-extrabold flex items-center justify-center gap-1.5 shadow-sm hover:bg-neon/90 active:scale-[0.98] transition-all"
                             >
                               <Zap className="w-3.5 h-3.5 fill-black" />
                               <span>Konversi ke Employment</span>
@@ -465,7 +465,7 @@ export function CareerKanban({
                           )}
 
                           {/* Status Management: Quick Advance + Status Dropdown */}
-                          <div className="pt-2 border-t border-card-border/60 flex items-center gap-2">
+                          <div className="pt-2 border-t border-card-border-subtle flex items-center gap-2">
                             {/* Status Selector Dropdown */}
                             <div className="flex-1 min-w-0">
                               <select
@@ -476,7 +476,7 @@ export function CareerKanban({
                                     e.target.value as StoredJobApplication["status"]
                                   )
                                 }
-                                className="w-full px-2 py-1.5 text-[11px] font-semibold bg-background border border-card-border rounded-lg text-foreground focus:outline-none focus:border-neon cursor-pointer transition-colors"
+                                className="w-full px-2.5 py-1.5 text-[11px] font-semibold bg-card-inner border border-card-border-subtle rounded-full text-foreground focus:outline-none focus:border-neon cursor-pointer transition-colors"
                               >
                                 {ALL_STATUSES.map((s) => (
                                   <option key={s.value} value={s.value}>
@@ -494,7 +494,7 @@ export function CareerKanban({
                                   handleStatusChange(app.id, nextStage.next)
                                 }
                                 title={`Lanjut ke ${nextStage.label}`}
-                                className="px-2.5 py-1.5 rounded-lg bg-card-border/50 hover:bg-neon hover:text-black text-foreground border border-card-border/80 text-[11px] font-bold flex items-center gap-1 transition-all flex-shrink-0"
+                                className="px-3 py-1.5 rounded-full bg-card-inner hover:bg-neon hover:text-black text-foreground border border-card-border-subtle text-[11px] font-bold flex items-center gap-1 transition-all flex-shrink-0"
                               >
                                 <span>{nextStage.label}</span>
                                 <ArrowRight className="w-3 h-3" />

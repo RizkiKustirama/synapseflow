@@ -2,8 +2,6 @@
 
 import React from "react";
 import { Edit2, Trash2, AlertTriangle, CheckCircle2 } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { formatRupiah, cn } from "@/lib/utils";
 import { StoredCategory, deleteCategory } from "@/actions/money.actions";
 
@@ -43,29 +41,29 @@ export function BudgetProgressCard({
   const getStatusBadge = () => {
     if (item.status === "OVER_BUDGET") {
       return (
-        <Badge variant="destructive" className="text-[10px] gap-1">
+        <span className="rounded-full px-2.5 py-0.5 text-[10px] font-bold bg-rose-500/15 text-rose-400 border border-rose-500/30 flex items-center gap-1">
           <AlertTriangle className="w-3 h-3" /> Melebihi Anggaran
-        </Badge>
+        </span>
       );
     }
     if (item.status === "WARNING") {
       return (
-        <Badge variant="done" className="text-[10px] gap-1 text-amber-400">
+        <span className="rounded-full px-2.5 py-0.5 text-[10px] font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30 flex items-center gap-1">
           Mendekati Batas ({item.percentage}%)
-        </Badge>
+        </span>
       );
     }
     if (item.budget > 0) {
       return (
-        <Badge variant="default" className="text-[10px] gap-1">
-          <CheckCircle2 className="w-3 h-3" /> Aman ({item.percentage}%)
-        </Badge>
+        <span className="rounded-full px-2.5 py-0.5 text-[10px] font-bold bg-[#25dd59]/15 text-[#25dd59] border border-[#25dd59]/30 flex items-center gap-1">
+          <CheckCircle2 className="w-3 h-3 stroke-[2.5]" /> Aman ({item.percentage}%)
+        </span>
       );
     }
     return (
-      <Badge variant="outline" className="text-[10px]">
+      <span className="rounded-full px-2.5 py-0.5 text-[10px] font-bold bg-card text-muted-foreground border border-card-border">
         Tanpa Batas
-      </Badge>
+      </span>
     );
   };
 
@@ -76,7 +74,7 @@ export function BudgetProgressCard({
   };
 
   return (
-    <Card className="p-4 sm:p-5 border border-card-border hover:border-card-border/80 transition-all space-y-3.5">
+    <div className="p-4 sm:p-5 rounded-2xl bg-card-inner border border-card-border-subtle hover:border-card-border transition-all space-y-3.5 shadow-sm">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
@@ -93,7 +91,7 @@ export function BudgetProgressCard({
           {getStatusBadge()}
           <button
             onClick={() => onEdit(item)}
-            className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-card-border/40 transition-colors"
+            className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-card transition-colors"
             title="Edit Kategori"
           >
             <Edit2 className="w-3.5 h-3.5" />
@@ -101,7 +99,7 @@ export function BudgetProgressCard({
           <button
             onClick={handleDelete}
             disabled={isDeleting}
-            className="p-1.5 rounded-lg text-muted-foreground hover:text-red-400 hover:bg-card-border/40 transition-colors"
+            className="p-1.5 rounded-full text-muted-foreground hover:text-red-400 hover:bg-card transition-colors"
             title="Hapus Kategori"
           >
             <Trash2 className="w-3.5 h-3.5" />
@@ -130,7 +128,7 @@ export function BudgetProgressCard({
       {/* Progress Track */}
       {item.budget > 0 ? (
         <div className="space-y-1">
-          <div className="w-full bg-background h-2 rounded-full overflow-hidden border border-card-border">
+          <div className="w-full bg-card h-2.5 rounded-full overflow-hidden border border-card-border p-0.5">
             <div
               className={cn("h-full rounded-full transition-all duration-500", getProgressBarColor())}
               style={{ width: `${Math.min(100, item.percentage)}%` }}
@@ -150,6 +148,6 @@ export function BudgetProgressCard({
           Kategori ini belum memiliki batas anggaran bulanan.
         </div>
       )}
-    </Card>
+    </div>
   );
 }

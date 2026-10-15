@@ -161,17 +161,17 @@ export function ClientModal({
       />
 
       {/* Modal Card */}
-      <div className="relative w-full max-w-lg bg-card border border-card-border rounded-3xl shadow-2xl z-10 text-foreground my-auto flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative w-full max-w-lg bg-card border border-card-border rounded-[2rem] lg:rounded-[2.5rem] shadow-2xl z-10 text-foreground my-auto flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-card-border bg-card/95 backdrop-blur-md">
+        <div className="flex items-center justify-between px-6 sm:px-8 py-5 border-b border-card-border bg-card/95 backdrop-blur-md">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-neon/15 text-neon border border-neon/30 flex items-center justify-center font-bold shadow-[0_0_15px_rgba(59,240,41,0.2)]">
+            <div className="w-10 h-10 rounded-full bg-neon/15 text-neon border border-neon/30 flex items-center justify-center font-bold shadow-sm">
               {isEditing ? <User className="w-5 h-5" /> : <Sparkles className="w-5 h-5" />}
             </div>
             <div>
               <h3
                 id="client-modal-title"
-                className="text-base sm:text-lg font-bold text-foreground tracking-tight"
+                className="text-base sm:text-lg font-extrabold text-foreground tracking-tight"
               >
                 {isEditing ? "Edit Profil Klien" : "Tambah Klien Baru"}
               </h3>
@@ -187,7 +187,7 @@ export function ClientModal({
             type="button"
             onClick={onClose}
             disabled={isSubmitting}
-            className="p-2 rounded-xl bg-background/60 border border-card-border text-muted-foreground hover:text-foreground hover:border-neon/40 transition-all disabled:opacity-50"
+            className="p-2 rounded-full bg-card-inner border border-card-border-subtle text-muted-foreground hover:text-foreground hover:border-card-border transition-all disabled:opacity-50"
             aria-label="Tutup modal"
           >
             <X className="w-4 h-4" />
@@ -195,7 +195,7 @@ export function ClientModal({
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-4">
           {errorMessage && (
             <div className="flex items-center gap-2.5 p-3.5 rounded-2xl bg-red-500/15 border border-red-500/30 text-red-400 text-xs font-medium">
               <AlertCircle className="w-4 h-4 shrink-0" />
@@ -215,7 +215,7 @@ export function ClientModal({
               value={name}
               onChange={(e) => setName(e.target.value)}
               disabled={isSubmitting}
-              className="bg-background border-card-border focus-visible:ring-neon text-sm"
+              className="bg-card-inner border-card-border-subtle focus-visible:ring-neon text-sm rounded-xl h-10"
               autoFocus
             />
           </div>
@@ -231,7 +231,7 @@ export function ClientModal({
               value={company}
               onChange={(e) => setCompany(e.target.value)}
               disabled={isSubmitting}
-              className="bg-background border-card-border focus-visible:ring-neon text-sm"
+              className="bg-card-inner border-card-border-subtle focus-visible:ring-neon text-sm rounded-xl h-10"
             />
           </div>
 
@@ -248,7 +248,7 @@ export function ClientModal({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isSubmitting}
-                className="bg-background border-card-border focus-visible:ring-neon text-sm"
+                className="bg-card-inner border-card-border-subtle focus-visible:ring-neon text-sm rounded-xl h-10"
               />
             </div>
 
@@ -263,7 +263,7 @@ export function ClientModal({
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 disabled={isSubmitting}
-                className="bg-background border-card-border focus-visible:ring-neon text-sm"
+                className="bg-card-inner border-card-border-subtle focus-visible:ring-neon text-sm rounded-xl h-10"
               />
             </div>
           </div>
@@ -280,7 +280,7 @@ export function ClientModal({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               disabled={isSubmitting}
-              className="flex w-full rounded-xl border border-card-border bg-background px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 resize-y"
+              className="flex w-full rounded-xl border border-card-border-subtle bg-card-inner px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 resize-y"
             />
           </div>
 
@@ -291,14 +291,14 @@ export function ClientModal({
               variant="outline"
               onClick={onClose}
               disabled={isSubmitting}
-              className="h-10 px-4 text-xs font-semibold border-card-border hover:bg-card"
+              className="h-10 px-5 text-xs font-bold border-card-border bg-card-inner text-foreground hover:bg-card-inner/80 rounded-full"
             >
               Batal
             </Button>
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="h-10 px-5 text-xs font-bold gap-2 bg-neon text-black hover:bg-neon/90 shadow-[0_0_15px_rgba(59,240,41,0.25)]"
+              className="h-10 px-6 text-xs font-extrabold gap-2 bg-neon text-black hover:bg-neon/90 shadow-sm rounded-full"
             >
               {isSubmitting ? (
                 <>

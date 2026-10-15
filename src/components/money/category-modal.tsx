@@ -110,11 +110,11 @@ export function CategoryModal({
         onClick={onClose}
       />
 
-      <div className="relative w-full max-w-md bg-card border border-card-border rounded-3xl shadow-2xl p-6 z-10 space-y-4">
+      <div className="relative w-full max-w-md bg-card border border-card-border rounded-[2rem] lg:rounded-[2.5rem] shadow-2xl p-6 sm:p-8 z-10 space-y-4">
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-card-border">
+        <div className="flex items-center justify-between pb-3 border-b border-card-border/60">
           <div>
-            <h3 className="text-base font-bold text-foreground">
+            <h3 className="text-base sm:text-lg font-bold text-foreground">
               {isEditing ? "Edit Kategori" : "Tambah Kategori Baru"}
             </h3>
             <p className="text-xs text-muted-foreground">
@@ -123,7 +123,7 @@ export function CategoryModal({
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl bg-background border border-card-border text-muted-foreground hover:text-foreground"
+            className="p-2 rounded-full bg-card-inner border border-card-border text-muted-foreground hover:text-foreground hover:border-neon/40 transition-all"
           >
             <X className="w-4 h-4" />
           </button>
@@ -131,14 +131,14 @@ export function CategoryModal({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Type Toggle */}
-          <div className="grid grid-cols-2 gap-2 p-1 bg-background rounded-2xl border border-card-border">
+          <div className="grid grid-cols-2 gap-2 p-1 bg-card-inner rounded-full border border-card-border-subtle shadow-sm">
             <button
               type="button"
               onClick={() => setType("EXPENSE")}
               className={cn(
-                "py-2 rounded-xl text-xs font-bold transition-all",
+                "py-2 rounded-full text-xs font-bold transition-all",
                 type === "EXPENSE"
-                  ? "bg-red-500/15 text-red-400 border border-red-500/30"
+                  ? "bg-red-500/20 text-red-400 font-extrabold border border-red-500/30 shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
@@ -148,9 +148,9 @@ export function CategoryModal({
               type="button"
               onClick={() => setType("INCOME")}
               className={cn(
-                "py-2 rounded-xl text-xs font-bold transition-all",
+                "py-2 rounded-full text-xs font-bold transition-all",
                 type === "INCOME"
-                  ? "bg-neon/15 text-neon border border-neon/30"
+                  ? "bg-neon text-black font-extrabold shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
@@ -168,6 +168,7 @@ export function CategoryModal({
               placeholder="Contoh: Belanja Bulanan, Langganan AI..."
               value={name}
               onChange={(e) => setName(e.target.value)}
+              className="rounded-xl bg-card-inner border-card-border focus-visible:ring-neon/30"
               required
             />
           </div>
@@ -187,7 +188,7 @@ export function CategoryModal({
                   placeholder="3000000"
                   value={monthlyBudget}
                   onChange={(e) => setMonthlyBudget(e.target.value)}
-                  className="pl-10 text-sm font-bold tabular-nums"
+                  className="pl-10 text-sm font-bold tabular-nums rounded-xl bg-card-inner border-card-border focus-visible:ring-neon/30"
                 />
               </div>
               <span className="text-[10px] text-muted-foreground mt-1 inline-block">
@@ -231,10 +232,10 @@ export function CategoryModal({
                   type="button"
                   onClick={() => setIcon(item.id)}
                   className={cn(
-                    "p-2 rounded-xl text-[11px] font-medium border text-center transition-all",
+                    "p-2.5 rounded-xl text-[11px] font-medium border text-center transition-all",
                     icon === item.id
-                      ? "bg-card-border/60 border-neon text-neon font-bold"
-                      : "bg-background border-card-border text-muted-foreground hover:text-foreground"
+                      ? "bg-card border-neon text-neon font-bold shadow-sm"
+                      : "bg-card-inner border-card-border-subtle text-muted-foreground hover:text-foreground"
                   )}
                 >
                   {item.label}
@@ -248,7 +249,7 @@ export function CategoryModal({
             <Button
               type="submit"
               disabled={isSubmitting || !name.trim()}
-              className="w-full h-11 text-xs font-bold"
+              className="w-full h-11 rounded-full text-xs font-extrabold bg-neon text-black hover:bg-neon/90 shadow-sm"
             >
               {isSubmitting
                 ? "Menyimpan..."

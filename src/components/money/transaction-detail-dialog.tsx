@@ -2,7 +2,6 @@
 
 import React from "react";
 import { X, ArrowUpRight, ArrowDownRight, Calendar, Tag, Layers, FileText } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { formatRupiah, formatDate } from "@/lib/utils";
 import { StoredTransaction } from "@/actions/money.actions";
 
@@ -24,13 +23,29 @@ export function TransactionDetailDialog({
   const getSourceBadge = () => {
     switch (transaction.sourceType) {
       case "EMPLOYMENT_PAYROLL":
-        return <Badge variant="default">Gaji Kantor (Employment)</Badge>;
+        return (
+          <span className="rounded-full px-2.5 py-0.5 text-[10px] font-bold bg-[#25dd59]/15 text-[#25dd59] border border-[#25dd59]/30">
+            Gaji Kantor (Employment)
+          </span>
+        );
       case "FREELANCE_MILESTONE":
-        return <Badge variant="processing">Termin Freelance</Badge>;
+        return (
+          <span className="rounded-full px-2.5 py-0.5 text-[10px] font-bold bg-blue-500/15 text-blue-400 border border-blue-500/30">
+            Termin Freelance
+          </span>
+        );
       case "PROJECT_EXPENSE":
-        return <Badge variant="destructive">Biaya Proyek</Badge>;
+        return (
+          <span className="rounded-full px-2.5 py-0.5 text-[10px] font-bold bg-[#e28460]/15 text-[#e28460] border border-[#e28460]/30">
+            Biaya Proyek
+          </span>
+        );
       default:
-        return <Badge variant="outline">Pencatatan Manual</Badge>;
+        return (
+          <span className="rounded-full px-2.5 py-0.5 text-[10px] font-bold bg-muted text-muted-foreground border border-card-border">
+            Pencatatan Manual
+          </span>
+        );
     }
   };
 
@@ -41,13 +56,13 @@ export function TransactionDetailDialog({
         onClick={onClose}
       />
 
-      <div className="relative w-full max-w-md bg-card border border-card-border rounded-3xl shadow-2xl p-6 z-10 space-y-5">
+      <div className="relative w-full max-w-md bg-card border border-card-border rounded-[2rem] lg:rounded-[2.5rem] shadow-2xl p-6 sm:p-8 z-10 space-y-5">
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-card-border">
-          <div className="flex items-center gap-2.5">
+        <div className="flex items-center justify-between pb-3 border-b border-card-border/60">
+          <div className="flex items-center gap-3">
             <div
-              className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold ${
-                isIncome ? "bg-neon/20 text-neon" : "bg-red-500/20 text-red-400"
+              className={`w-9 h-9 rounded-full flex items-center justify-center font-bold ${
+                isIncome ? "bg-neon/15 text-neon" : "bg-red-500/15 text-red-400"
               }`}
             >
               {isIncome ? (
@@ -57,7 +72,7 @@ export function TransactionDetailDialog({
               )}
             </div>
             <div>
-              <h3 className="text-sm font-bold text-foreground">
+              <h3 className="text-base font-bold text-foreground">
                 Detail Transaksi
               </h3>
               <p className="text-[11px] text-muted-foreground">
@@ -68,15 +83,15 @@ export function TransactionDetailDialog({
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl bg-background border border-card-border text-muted-foreground hover:text-foreground"
+            className="p-2 rounded-full bg-card-inner border border-card-border text-muted-foreground hover:text-foreground hover:border-neon/40 transition-all"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Amount Card */}
-        <div className="p-4 rounded-2xl bg-background border border-card-border/80 text-center space-y-1">
-          <span className="text-xs text-muted-foreground uppercase font-semibold">
+        <div className="p-5 rounded-2xl bg-card-inner border border-card-border-subtle text-center space-y-1 shadow-sm">
+          <span className="text-[11px] text-muted-foreground uppercase font-bold tracking-wider">
             {isIncome ? "Total Pemasukan" : "Total Pengeluaran"}
           </span>
           <p
@@ -91,7 +106,7 @@ export function TransactionDetailDialog({
 
         {/* Metadata Details */}
         <div className="space-y-2.5 text-xs">
-          <div className="flex justify-between py-2 border-b border-card-border">
+          <div className="flex justify-between items-center py-2 border-b border-card-border-subtle">
             <span className="text-muted-foreground flex items-center gap-1.5">
               <FileText className="w-3.5 h-3.5" /> Deskripsi
             </span>
@@ -100,7 +115,7 @@ export function TransactionDetailDialog({
             </span>
           </div>
 
-          <div className="flex justify-between py-2 border-b border-card-border">
+          <div className="flex justify-between items-center py-2 border-b border-card-border-subtle">
             <span className="text-muted-foreground flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5" /> Tanggal
             </span>
@@ -109,7 +124,7 @@ export function TransactionDetailDialog({
             </span>
           </div>
 
-          <div className="flex justify-between py-2 border-b border-card-border">
+          <div className="flex justify-between items-center py-2 border-b border-card-border-subtle">
             <span className="text-muted-foreground flex items-center gap-1.5">
               <Tag className="w-3.5 h-3.5" /> Kategori
             </span>
@@ -122,7 +137,7 @@ export function TransactionDetailDialog({
             </span>
           </div>
 
-          <div className="flex justify-between py-2 border-b border-card-border">
+          <div className="flex justify-between items-center py-2 border-b border-card-border-subtle">
             <span className="text-muted-foreground flex items-center gap-1.5">
               <Layers className="w-3.5 h-3.5" /> Sumber Relasi
             </span>
@@ -132,7 +147,7 @@ export function TransactionDetailDialog({
           {transaction.notes && (
             <div className="pt-2">
               <span className="text-muted-foreground block mb-1">Catatan Tambahan:</span>
-              <p className="p-3 rounded-xl bg-background border border-card-border text-foreground text-[11px] leading-relaxed">
+              <p className="p-3.5 rounded-2xl bg-card-inner border border-card-border-subtle text-foreground text-[11px] leading-relaxed shadow-sm">
                 {transaction.notes}
               </p>
             </div>

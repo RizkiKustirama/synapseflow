@@ -91,15 +91,15 @@ export function QuickAddModal({ isOpen, onClose, onSuccess }: QuickAddModalProps
       />
 
       {/* Modal Dialog */}
-      <div className="relative w-full max-w-lg bg-card border border-card-border rounded-t-3xl sm:rounded-3xl shadow-2xl p-6 z-10 transition-transform">
+      <div className="relative w-full max-w-lg bg-card border border-card-border rounded-t-[2rem] sm:rounded-[2.5rem] shadow-2xl p-6 sm:p-8 z-10 transition-transform">
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-card-border">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-neon/20 text-neon flex items-center justify-center font-bold">
-              <Sparkles className="w-4 h-4" />
+        <div className="flex items-center justify-between pb-4 border-b border-card-border/60">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-neon/15 text-neon flex items-center justify-center font-bold">
+              <Sparkles className="w-4 h-4 stroke-[2.5]" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-foreground">
+              <h3 className="text-base sm:text-lg font-bold text-foreground">
                 Quick-Add Transaksi
               </h3>
               <p className="text-xs text-muted-foreground">
@@ -110,7 +110,7 @@ export function QuickAddModal({ isOpen, onClose, onSuccess }: QuickAddModalProps
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl bg-background border border-card-border text-muted-foreground hover:text-foreground"
+            className="p-2 rounded-full bg-card-inner border border-card-border text-muted-foreground hover:text-foreground hover:border-neon/40 transition-all"
           >
             <X className="w-4 h-4" />
           </button>
@@ -129,20 +129,20 @@ export function QuickAddModal({ isOpen, onClose, onSuccess }: QuickAddModalProps
             </p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="mt-4 space-y-4">
-            {/* Type Selector (Tabs) */}
-            <div className="grid grid-cols-2 gap-2 p-1 bg-background rounded-2xl border border-card-border">
+          <form onSubmit={handleSubmit} className="mt-5 space-y-4">
+            {/* Type Selector (Pills) */}
+            <div className="grid grid-cols-2 gap-2 p-1 bg-card-inner rounded-full border border-card-border-subtle shadow-sm">
               <button
                 type="button"
                 onClick={() => setType("EXPENSE")}
                 className={cn(
-                  "flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-bold transition-all",
+                  "flex items-center justify-center gap-2 py-2 rounded-full text-xs font-bold transition-all",
                   type === "EXPENSE"
-                    ? "bg-red-500/15 text-red-400 border border-red-500/30 shadow-sm"
+                    ? "bg-red-500/20 text-red-400 font-extrabold border border-red-500/30 shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
-                <ArrowDownRight className="w-4 h-4" />
+                <ArrowDownRight className="w-4 h-4 stroke-[2.5]" />
                 Pengeluaran
               </button>
 
@@ -150,13 +150,13 @@ export function QuickAddModal({ isOpen, onClose, onSuccess }: QuickAddModalProps
                 type="button"
                 onClick={() => setType("INCOME")}
                 className={cn(
-                  "flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-bold transition-all",
+                  "flex items-center justify-center gap-2 py-2 rounded-full text-xs font-bold transition-all",
                   type === "INCOME"
-                    ? "bg-neon/15 text-neon border border-neon/30 shadow-sm"
+                    ? "bg-neon text-black font-extrabold shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
-                <ArrowUpRight className="w-4 h-4" />
+                <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
                 Pemasukan
               </button>
             </div>
@@ -167,7 +167,7 @@ export function QuickAddModal({ isOpen, onClose, onSuccess }: QuickAddModalProps
                 Nominal (IDR)
               </label>
               <div className="relative">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-muted-foreground">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-muted-foreground">
                   Rp
                 </span>
                 <Input
@@ -175,7 +175,7 @@ export function QuickAddModal({ isOpen, onClose, onSuccess }: QuickAddModalProps
                   placeholder="0"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  className="pl-11 text-lg font-extrabold tabular-nums tracking-wide h-12"
+                  className="pl-12 text-lg font-extrabold tabular-nums tracking-wide h-12 rounded-2xl bg-card-inner border-card-border focus-visible:ring-neon/30"
                   autoFocus
                   required
                 />
@@ -188,7 +188,7 @@ export function QuickAddModal({ isOpen, onClose, onSuccess }: QuickAddModalProps
                     key={q}
                     type="button"
                     onClick={() => handleAddQuickAmount(q)}
-                    className="px-2.5 py-1 rounded-lg bg-background hover:bg-card-border/40 border border-card-border text-[11px] font-semibold text-muted-foreground hover:text-foreground transition-colors"
+                    className="px-3 py-1.5 rounded-full bg-card-inner hover:bg-card border border-card-border-subtle text-[11px] font-semibold text-muted-foreground hover:text-foreground transition-colors shadow-sm"
                   >
                     +{formatRupiah(q).replace("Rp", "").trim()}
                   </button>
@@ -207,6 +207,7 @@ export function QuickAddModal({ isOpen, onClose, onSuccess }: QuickAddModalProps
                   placeholder="Contoh: Kopi susu, Server AWS..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
+                  className="rounded-xl bg-card-inner border-card-border focus-visible:ring-neon/30"
                   required
                 />
               </div>
@@ -219,6 +220,7 @@ export function QuickAddModal({ isOpen, onClose, onSuccess }: QuickAddModalProps
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
+                  className="rounded-xl bg-card-inner border-card-border focus-visible:ring-neon/30"
                   required
                 />
               </div>
@@ -229,7 +231,7 @@ export function QuickAddModal({ isOpen, onClose, onSuccess }: QuickAddModalProps
               <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
                 Kategori
               </label>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-32 overflow-y-auto p-1">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-36 overflow-y-auto p-1">
                 {categories.map((cat) => {
                   const isSelected = selectedCategory === cat.id;
                   return (
@@ -238,10 +240,10 @@ export function QuickAddModal({ isOpen, onClose, onSuccess }: QuickAddModalProps
                       type="button"
                       onClick={() => setSelectedCategory(cat.id)}
                       className={cn(
-                        "flex items-center gap-2 p-2 rounded-xl text-xs font-medium border text-left transition-all",
+                        "flex items-center gap-2 p-2.5 rounded-xl text-xs font-medium border text-left transition-all",
                         isSelected
-                          ? "bg-card-border/60 border-neon text-foreground font-semibold shadow-sm"
-                          : "bg-background border-card-border text-muted-foreground hover:text-foreground"
+                          ? "bg-card border-neon text-foreground font-bold shadow-sm"
+                          : "bg-card-inner border-card-border-subtle text-muted-foreground hover:text-foreground"
                       )}
                     >
                       <span
@@ -260,7 +262,7 @@ export function QuickAddModal({ isOpen, onClose, onSuccess }: QuickAddModalProps
               <Button
                 type="submit"
                 disabled={isSubmitting || !amount || !description.trim() || !selectedCategory}
-                className="w-full h-12 text-sm font-bold"
+                className="w-full h-12 rounded-full text-xs font-extrabold bg-neon text-black hover:bg-neon/90 shadow-sm"
               >
                 {isSubmitting ? "Menyimpan Transaksi..." : "Catat Transaksi Sekarang"}
               </Button>

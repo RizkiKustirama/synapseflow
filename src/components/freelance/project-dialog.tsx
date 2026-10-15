@@ -159,15 +159,15 @@ export function ProjectDialog({
       />
 
       {/* Modal Dialog Card */}
-      <div className="relative w-full max-w-xl max-h-[92vh] overflow-y-auto bg-card border border-card-border rounded-3xl shadow-2xl z-10 text-foreground my-auto flex flex-col">
+      <div className="relative w-full max-w-xl max-h-[92vh] overflow-y-auto bg-card border border-card-border rounded-[2rem] lg:rounded-[2.5rem] shadow-2xl z-10 text-foreground my-auto flex flex-col">
         {/* Header */}
-        <div className="sticky top-0 z-10 flex items-center justify-between px-6 py-5 border-b border-card-border bg-card/95 backdrop-blur-md">
+        <div className="sticky top-0 z-10 flex items-center justify-between px-6 sm:px-8 py-5 border-b border-card-border bg-card/95 backdrop-blur-md">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-neon/15 text-neon border border-neon/30 flex items-center justify-center font-bold shadow-[0_0_15px_rgba(59,240,41,0.2)]">
+            <div className="w-10 h-10 rounded-full bg-neon/15 text-neon border border-neon/30 flex items-center justify-center font-bold shadow-sm">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base sm:text-lg font-bold text-foreground tracking-tight">
+              <h3 className="text-base sm:text-lg font-extrabold text-foreground tracking-tight">
                 Tambah Proyek Freelance Baru
               </h3>
               <p className="text-xs text-muted-foreground">
@@ -180,7 +180,7 @@ export function ProjectDialog({
             type="button"
             onClick={onClose}
             disabled={isSubmitting}
-            className="p-2 rounded-xl bg-background/60 border border-card-border text-muted-foreground hover:text-foreground hover:border-neon/40 transition-all disabled:opacity-50"
+            className="p-2 rounded-full bg-card-inner border border-card-border-subtle text-muted-foreground hover:text-foreground hover:border-card-border transition-all disabled:opacity-50"
             aria-label="Tutup modal"
           >
             <X className="w-4 h-4" />
@@ -188,7 +188,7 @@ export function ProjectDialog({
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+        <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-5">
           {errorMessage && (
             <div className="flex items-center gap-2.5 p-3.5 rounded-2xl bg-red-500/15 border border-red-500/30 text-red-400 text-xs font-medium">
               <AlertCircle className="w-4 h-4 shrink-0" />
@@ -207,7 +207,7 @@ export function ProjectDialog({
               placeholder="e.g. Redesign Web Platform SaaS & CMS Dashboard"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="bg-background border-card-border focus-visible:ring-neon"
+              className="bg-card-inner border-card-border-subtle focus-visible:ring-neon rounded-xl h-10"
             />
           </div>
 
@@ -221,7 +221,7 @@ export function ProjectDialog({
               <select
                 value={clientId}
                 onChange={(e) => setClientId(e.target.value)}
-                className="flex h-10 w-full rounded-xl border border-card-border bg-background px-3 py-2 text-xs sm:text-sm font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon focus-visible:ring-offset-1"
+                className="flex h-10 w-full rounded-xl border border-card-border-subtle bg-card-inner px-3.5 py-2 text-xs sm:text-sm font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon focus-visible:ring-offset-1"
               >
                 <option value="" className="bg-card text-muted-foreground">
                   — Tanpa Klien / Klien Mandiri —
@@ -242,7 +242,7 @@ export function ProjectDialog({
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value as ProjectStatusOption)}
-                className="flex h-10 w-full rounded-xl border border-card-border bg-background px-3 py-2 text-xs sm:text-sm font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon focus-visible:ring-offset-1"
+                className="flex h-10 w-full rounded-xl border border-card-border-subtle bg-card-inner px-3.5 py-2 text-xs sm:text-sm font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon focus-visible:ring-offset-1"
               >
                 {STATUS_CONFIG.map((opt) => (
                   <option key={opt.value} value={opt.value} className="bg-card text-foreground">
@@ -254,13 +254,13 @@ export function ProjectDialog({
           </div>
 
           {/* Row 3: Total Budget with Rupiah Formatter */}
-          <div className="space-y-2 p-3.5 rounded-2xl bg-background/60 border border-card-border">
+          <div className="space-y-2 p-4 rounded-2xl bg-card-inner border border-card-border-subtle">
             <div className="flex items-center justify-between">
               <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
                 <DollarSign className="w-3.5 h-3.5 text-neon" />
                 Total Budget Kontrak (IDR)
               </label>
-              <span className="text-xs font-extrabold text-neon">
+              <span className="text-xs font-extrabold text-neon tabular-nums">
                 {formatRupiah(numericBudget)}
               </span>
             </div>
@@ -270,7 +270,7 @@ export function ProjectDialog({
               placeholder="e.g. 25000000"
               value={totalBudget ? Number(totalBudget).toLocaleString("id-ID") : ""}
               onChange={handleBudgetChange}
-              className="bg-card border-card-border focus-visible:ring-neon font-mono font-bold"
+              className="bg-card border-card-border focus-visible:ring-neon font-mono font-bold rounded-xl h-10"
             />
             {/* Quick Presets */}
             <div className="flex flex-wrap items-center gap-1.5 pt-1">
@@ -281,10 +281,10 @@ export function ProjectDialog({
                   type="button"
                   onClick={() => handleApplyPreset(amount)}
                   className={cn(
-                    "px-2 py-0.5 text-[11px] rounded-lg border transition-all",
+                    "px-2.5 py-0.5 text-[11px] rounded-full border transition-all",
                     numericBudget === amount
                       ? "bg-neon/20 border-neon/50 text-neon font-bold"
-                      : "bg-background border-card-border text-muted-foreground hover:text-foreground hover:border-card-border/80"
+                      : "bg-card border-card-border-subtle text-muted-foreground hover:text-foreground hover:border-card-border"
                   )}
                 >
                   {formatRupiah(amount)}
@@ -304,7 +304,7 @@ export function ProjectDialog({
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="bg-background border-card-border focus-visible:ring-neon"
+                className="bg-card-inner border-card-border-subtle focus-visible:ring-neon rounded-xl h-10"
               />
             </div>
 
@@ -317,7 +317,7 @@ export function ProjectDialog({
                 type="date"
                 value={deadline}
                 onChange={(e) => setDeadline(e.target.value)}
-                className="bg-background border-card-border focus-visible:ring-neon"
+                className="bg-card-inner border-card-border-subtle focus-visible:ring-neon rounded-xl h-10"
               />
             </div>
           </div>
@@ -333,7 +333,7 @@ export function ProjectDialog({
               placeholder="Jelaskan ruang lingkup pekerjaan, stack teknologi, atau perjanjian deliverable khusus..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="flex w-full rounded-xl border border-card-border bg-background px-3 py-2 text-xs sm:text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon focus-visible:ring-offset-1 resize-y"
+              className="flex w-full rounded-xl border border-card-border-subtle bg-card-inner px-3.5 py-2.5 text-xs sm:text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon focus-visible:ring-offset-1 resize-y"
             />
           </div>
 
@@ -344,14 +344,14 @@ export function ProjectDialog({
               variant="outline"
               onClick={onClose}
               disabled={isSubmitting}
-              className="border-card-border text-foreground hover:bg-background"
+              className="rounded-full px-5 border-card-border bg-card-inner text-foreground hover:bg-card-inner/80 text-xs font-bold"
             >
               Batal
             </Button>
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="bg-neon text-black hover:bg-neon/90 font-bold px-5 shadow-[0_0_15px_rgba(59,240,41,0.25)] flex items-center gap-2"
+              className="bg-neon text-black hover:bg-neon/90 font-extrabold px-6 rounded-full shadow-sm flex items-center gap-2 text-xs"
             >
               {isSubmitting ? (
                 <>

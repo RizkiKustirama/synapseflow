@@ -21,7 +21,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 import { formatRupiah, formatDate, getCompanyWorkspaceStats, cn } from "@/lib/utils";
 import {
   getEmploymentById,
@@ -162,14 +161,14 @@ export default function CompanyDetailPage() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1.5">
             <div className="flex items-center gap-2.5 flex-wrap">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neon/10 border border-neon/30 text-neon text-xs font-bold">
-                <Sparkles className="w-3.5 h-3.5" />
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-card border border-card-border text-[11px] font-semibold text-muted-foreground shadow-sm">
+                <Sparkles className="w-3.5 h-3.5 text-neon" />
                 Workspace Perusahaan
               </span>
-              <Badge variant={getStatusBadgeVariant(employment.status)} className="text-[10px]">
+              <Badge variant={getStatusBadgeVariant(employment.status)} className="text-[10px] rounded-full px-2.5 py-0.5">
                 {getStatusLabel(employment.status)}
               </Badge>
-              <Badge variant="outline" className="text-[10px]">
+              <Badge variant="outline" className="text-[10px] rounded-full px-2.5 py-0.5 bg-card-inner border-card-border-subtle">
                 {getJobTypeLabel(employment.jobType)}
               </Badge>
             </div>
@@ -180,7 +179,7 @@ export default function CompanyDetailPage() {
             </h1>
 
             <p className="text-xs sm:text-sm text-muted-foreground flex items-center gap-2">
-              <Briefcase className="w-3.5 h-3.5 text-muted-foreground" />
+              <Briefcase className="w-3.5 h-3.5 text-neon" />
               <strong className="text-foreground">{employment.role}</strong>
               <span>•</span>
               <span>Mulai {formatDate(employment.startDate)}</span>
@@ -188,10 +187,10 @@ export default function CompanyDetailPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2.5 flex-wrap">
             <button
               onClick={loadData}
-              className="p-2.5 rounded-xl bg-card border border-card-border text-muted-foreground hover:text-foreground hover:border-neon/40 transition-colors"
+              className="p-2.5 rounded-full bg-card border border-card-border text-muted-foreground hover:text-foreground hover:border-neon/40 transition-colors shadow-sm"
               title="Refresh Data"
             >
               <RefreshCw className={cn("w-4 h-4", isLoading && "animate-spin")} />
@@ -200,7 +199,7 @@ export default function CompanyDetailPage() {
             <Button
               onClick={() => setIsEditModalOpen(true)}
               variant="outline"
-              className="h-10 text-xs font-bold gap-2 border-card-border hover:border-neon/40"
+              className="h-10 px-5 rounded-full text-xs font-bold gap-2 bg-card-inner border-card-border text-foreground hover:bg-card-inner/80 shadow-sm"
             >
               <Pencil className="w-3.5 h-3.5" /> Edit Kontrak
             </Button>
@@ -208,106 +207,98 @@ export default function CompanyDetailPage() {
         </div>
       </div>
 
-      {/* 2. Top Card Analysis (4 Bento KPI Cards) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* 2. Top Card Analysis (4 Stitch Light Mode KPI Cards) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
         {/* KPI 1: Tenure (Masa Kerja) */}
-        <Card className="hover:border-neon/30 transition-all duration-200">
-          <CardContent className="p-4 sm:p-5 flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-neon/15 text-neon flex items-center justify-center shrink-0">
-              <Clock className="w-6 h-6" />
-            </div>
-            <div className="min-w-0">
-              <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider block">
-                Masa Kerja (Tenure)
-              </span>
-              <p className="text-lg sm:text-xl font-extrabold text-foreground truncate">
-                {stats.tenure}
-              </p>
-              <span className="text-[10px] text-muted-foreground block truncate">
-                Sejak {formatDate(employment.startDate)}
-              </span>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="p-5 sm:p-6 rounded-[2rem] bg-card border border-card-border shadow-sm flex items-center gap-4 hover:border-neon/30 transition-all">
+          <div className="w-12 h-12 rounded-full bg-neon/15 text-neon flex items-center justify-center shrink-0">
+            <Clock className="w-5 h-5" />
+          </div>
+          <div className="min-w-0">
+            <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block">
+              Masa Kerja
+            </span>
+            <p className="text-lg sm:text-xl font-black text-foreground truncate">
+              {stats.tenure}
+            </p>
+            <span className="text-[11px] text-muted-foreground block truncate">
+              Sejak {formatDate(employment.startDate)}
+            </span>
+          </div>
+        </div>
 
         {/* KPI 2: Payday Countdown */}
-        <Card className="hover:border-neon/30 transition-all duration-200">
-          <CardContent className="p-4 sm:p-5 flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0">
-              <Calendar className="w-6 h-6" />
-            </div>
-            <div className="min-w-0">
-              <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider block">
-                Gajian Berikutnya
-              </span>
-              <p className="text-lg sm:text-xl font-extrabold text-emerald-400 tabular-nums truncate">
-                {stats.daysUntilPayday} Hari Lagi
-              </p>
-              <span className="text-[10px] text-muted-foreground block truncate">
-                Tanggal {employment.payday} setiap bulan
-              </span>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="p-5 sm:p-6 rounded-[2rem] bg-card border border-card-border shadow-sm flex items-center gap-4 hover:border-emerald-500/30 transition-all">
+          <div className="w-12 h-12 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
+            <Calendar className="w-5 h-5" />
+          </div>
+          <div className="min-w-0">
+            <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block">
+              Gajian Berikutnya
+            </span>
+            <p className="text-lg sm:text-xl font-black text-emerald-500 tabular-nums truncate">
+              {stats.daysUntilPayday} Hari Lagi
+            </p>
+            <span className="text-[11px] text-muted-foreground block truncate">
+              Tanggal {employment.payday} setiap bulan
+            </span>
+          </div>
+        </div>
 
         {/* KPI 3: Total Gaji Diterima dari Perusahaan Ini */}
-        <Card className="hover:border-neon/30 transition-all duration-200">
-          <CardContent className="p-4 sm:p-5 flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-blue-500/15 text-blue-400 flex items-center justify-center shrink-0">
-              <Wallet className="w-6 h-6" />
-            </div>
-            <div className="min-w-0">
-              <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider block">
-                Total Gaji Diterima
-              </span>
-              <p className="text-lg sm:text-xl font-extrabold text-blue-400 tabular-nums truncate">
-                {formatRupiah(stats.totalPaidAmount)}
-              </p>
-              <span className="text-[10px] text-muted-foreground block truncate">
-                {employment.payrollRecords.length} slip gaji tercatat
-              </span>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="p-5 sm:p-6 rounded-[2rem] bg-card border border-card-border shadow-sm flex items-center gap-4 hover:border-blue-500/30 transition-all">
+          <div className="w-12 h-12 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0">
+            <Wallet className="w-5 h-5" />
+          </div>
+          <div className="min-w-0">
+            <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block">
+              Total Gaji Diterima
+            </span>
+            <p className="text-lg sm:text-xl font-black text-blue-500 tabular-nums truncate">
+              {formatRupiah(stats.totalPaidAmount)}
+            </p>
+            <span className="text-[11px] text-muted-foreground block truncate">
+              {employment.payrollRecords.length} slip gaji tercatat
+            </span>
+          </div>
+        </div>
 
         {/* KPI 4: Task Completion Ratio */}
-        <Card className="hover:border-neon/30 transition-all duration-200">
-          <CardContent className="p-4 sm:p-5 flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-amber-500/15 text-amber-400 flex items-center justify-center shrink-0">
-              <CheckSquare className="w-6 h-6" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider block">
-                Task Selesai
+        <div className="p-5 sm:p-6 rounded-[2rem] bg-card border border-card-border shadow-sm flex items-center gap-4 hover:border-amber-500/30 transition-all">
+          <div className="w-12 h-12 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0">
+            <CheckSquare className="w-5 h-5" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block">
+              Task Selesai
+            </span>
+            <div className="flex items-baseline justify-between gap-1">
+              <p className="text-lg sm:text-xl font-black text-foreground tabular-nums">
+                {stats.completedTasksCount}/{stats.totalTasksCount}
+              </p>
+              <span className="text-xs font-bold text-amber-500 tabular-nums">
+                {stats.taskCompletionRatio}%
               </span>
-              <div className="flex items-baseline justify-between gap-1">
-                <p className="text-lg sm:text-xl font-extrabold text-foreground tabular-nums">
-                  {stats.completedTasksCount}/{stats.totalTasksCount}
-                </p>
-                <span className="text-xs font-bold text-amber-400 tabular-nums">
-                  {stats.taskCompletionRatio}%
-                </span>
-              </div>
-              <div className="w-full bg-card-border h-1.5 rounded-full overflow-hidden mt-1">
-                <div
-                  className="bg-amber-400 h-full rounded-full transition-all duration-500"
-                  style={{ width: `${stats.taskCompletionRatio}%` }}
-                />
-              </div>
             </div>
-          </CardContent>
-        </Card>
+            <div className="w-full bg-card-inner border border-card-border-subtle h-2 rounded-full overflow-hidden mt-1.5">
+              <div
+                className="bg-amber-400 h-full rounded-full transition-all duration-500"
+                style={{ width: `${stats.taskCompletionRatio}%` }}
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* 3. Sub-Tab Navigation Bar */}
-      <div className="flex items-center gap-2 border-b border-card-border pb-px overflow-x-auto">
+      {/* 3. Sub-Tab Navigation Bar (Stitch Pill Style) */}
+      <div className="inline-flex items-center gap-1.5 p-1.5 rounded-full bg-card border border-card-border shadow-sm overflow-x-auto">
         <button
           onClick={() => setActiveTab("CONTRACT")}
           className={cn(
-            "flex items-center gap-2 py-3 px-4 text-xs font-bold rounded-t-2xl border-b-2 transition-all whitespace-nowrap",
+            "flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-full transition-all whitespace-nowrap",
             activeTab === "CONTRACT"
-              ? "border-neon text-neon bg-neon/5"
-              : "border-transparent text-muted-foreground hover:text-foreground hover:bg-card/40"
+              ? "bg-neon text-black font-extrabold shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
           )}
         >
           <FileText className="w-4 h-4" />
@@ -317,20 +308,20 @@ export default function CompanyDetailPage() {
         <button
           onClick={() => setActiveTab("TASKS")}
           className={cn(
-            "flex items-center gap-2 py-3 px-4 text-xs font-bold rounded-t-2xl border-b-2 transition-all whitespace-nowrap",
+            "flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-full transition-all whitespace-nowrap",
             activeTab === "TASKS"
-              ? "border-neon text-neon bg-neon/5"
-              : "border-transparent text-muted-foreground hover:text-foreground hover:bg-card/40"
+              ? "bg-neon text-black font-extrabold shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
           )}
         >
           <ListTodo className="w-4 h-4" />
           Daily Sprint Tasks
           <span
             className={cn(
-              "px-2 py-0.5 rounded-full text-[10px]",
+              "px-2 py-0.5 rounded-full text-[10px] font-bold",
               activeTab === "TASKS"
-                ? "bg-neon/20 text-neon"
-                : "bg-card-border text-muted-foreground"
+                ? "bg-black/15 text-black"
+                : "bg-card-inner text-muted-foreground"
             )}
           >
             {employment.tasks.length}
@@ -340,20 +331,20 @@ export default function CompanyDetailPage() {
         <button
           onClick={() => setActiveTab("PAYROLL")}
           className={cn(
-            "flex items-center gap-2 py-3 px-4 text-xs font-bold rounded-t-2xl border-b-2 transition-all whitespace-nowrap",
+            "flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-full transition-all whitespace-nowrap",
             activeTab === "PAYROLL"
-              ? "border-neon text-neon bg-neon/5"
-              : "border-transparent text-muted-foreground hover:text-foreground hover:bg-card/40"
+              ? "bg-neon text-black font-extrabold shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
           )}
         >
           <Receipt className="w-4 h-4" />
           Payroll & Slip Gaji
           <span
             className={cn(
-              "px-2 py-0.5 rounded-full text-[10px]",
+              "px-2 py-0.5 rounded-full text-[10px] font-bold",
               activeTab === "PAYROLL"
-                ? "bg-neon/20 text-neon"
-                : "bg-card-border text-muted-foreground"
+                ? "bg-black/15 text-black"
+                : "bg-card-inner text-muted-foreground"
             )}
           >
             {employment.payrollRecords.length}

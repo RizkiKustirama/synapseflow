@@ -12,6 +12,9 @@ import { HeroWelcomeCard } from "@/components/dashboard/hero-welcome-card";
 import { FinancialAnalytics } from "@/components/dashboard/financial-analytics";
 import { BentoWidgetGrid } from "@/components/dashboard/bento-widget-grid";
 import { DashboardSkeleton } from "@/components/dashboard/dashboard-skeleton";
+import { StitchHighlightRow } from "@/components/dashboard/stitch-highlight-row";
+import { StitchCalendarStrip } from "@/components/dashboard/stitch-calendar-strip";
+import { StitchWorkstreams } from "@/components/dashboard/stitch-workstreams";
 
 export default function DashboardPage() {
   const [data, setData] = useState<ExecutiveDashboardData | null>(null);
@@ -101,15 +104,62 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6 sm:space-y-8 animate-in fade-in duration-300">
-      {/* 1. High-Contrast Hero Welcome Banner & 3D Cyber Mascot */}
-      <HeroWelcomeCard
-        user={data.user}
-        metrics={data.metrics}
-        upcomingInterviewsCount={data.upcomingInterviews.length}
-        pendingMilestonesCount={data.activeDeliverables.length}
-      />
+      {/* =======================================================================
+          STITCH 2-COLUMN MAIN DASHBOARD GRID (xl:grid-cols-12)
+         ======================================================================= */}
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+        {/* =====================================================================
+            LEFT COLUMN (xl:col-span-7): Hero Welcome Banner + Office Tasks
+           ===================================================================== */}
+        <div className="xl:col-span-7 flex flex-col gap-6">
+          {/* 1. Hero Greeting Banner */}
+          <HeroWelcomeCard
+            user={data.user}
+            metrics={data.metrics}
+            upcomingInterviewsCount={data.upcomingInterviews.length}
+            pendingMilestonesCount={data.activeDeliverables.length}
+          />
 
-      {/* 2. Recharts Financial Analytics Suite */}
+          {/* 2. Office Tasks & Deliverables Card */}
+          <BentoWidgetGrid
+            fourPillars={data.fourPillars}
+            todaysTasks={data.todaysTasks}
+            upcomingInterviews={data.upcomingInterviews}
+            activeDeliverables={data.activeDeliverables}
+            recentTransactions={data.recentTransactions}
+            onTaskToggle={handleTaskToggle}
+          />
+        </div>
+
+        {/* =====================================================================
+            RIGHT COLUMN (xl:col-span-5): 3 Highlight Cards + Calendar + Workstreams
+           ===================================================================== */}
+        <div className="xl:col-span-5 flex flex-col gap-6">
+          {/* 3. Row of 3 Highlight Cards */}
+          <StitchHighlightRow
+            savingsRate={data.metrics.savingsRate}
+            netCashflow={data.metrics.netCashflow}
+            freelanceReceivables={data.metrics.freelanceReceivables}
+            activeProjectsCount={data.fourPillars.freelance.activeProjectsCount}
+            activeInterviewsCount={data.fourPillars.career.activeInterviews}
+            totalApplicationsCount={data.fourPillars.career.totalApplications}
+            topTargetRole={data.fourPillars.career.topTarget}
+          />
+
+          {/* 4. Calendar Strip Widget */}
+          <StitchCalendarStrip
+            payday={data.metrics.nextPayday?.payday || 25}
+            daysRemaining={data.metrics.nextPayday?.daysRemaining}
+          />
+
+          {/* 5. Synapse Workstreams (4 Core Pillars Active) */}
+          <StitchWorkstreams fourPillars={data.fourPillars} />
+        </div>
+      </div>
+
+      {/* =======================================================================
+          FINANCIAL ANALYTICS SUITE (6-Month Cashflow History & Revenue Streams)
+         ======================================================================= */}
       <FinancialAnalytics
         cashflowHistory={data.cashflowHistory}
         revenueStreams={data.revenueStreams}
@@ -117,16 +167,6 @@ export default function DashboardPage() {
         netCashflow={data.metrics.netCashflow}
         totalIncomeMonth={data.metrics.currentMonthIncome}
         totalExpenseMonth={data.metrics.currentMonthExpense}
-      />
-
-      {/* 3. The 4 Core Pillars Bento Grid & Operational Streams */}
-      <BentoWidgetGrid
-        fourPillars={data.fourPillars}
-        todaysTasks={data.todaysTasks}
-        upcomingInterviews={data.upcomingInterviews}
-        activeDeliverables={data.activeDeliverables}
-        recentTransactions={data.recentTransactions}
-        onTaskToggle={handleTaskToggle}
       />
     </div>
   );

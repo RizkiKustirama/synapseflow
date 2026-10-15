@@ -19,7 +19,6 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { formatRupiah, formatDate, cn } from "@/lib/utils";
@@ -109,13 +108,29 @@ export function TransactionTable({ data, onRefresh }: TransactionTableProps) {
         cell: ({ row }) => {
           switch (row.original.sourceType) {
             case "EMPLOYMENT_PAYROLL":
-              return <Badge variant="default" className="text-[9px]">Gaji Kantor</Badge>;
+              return (
+                <span className="rounded-full px-2.5 py-0.5 text-[9px] font-bold bg-[#25dd59]/15 text-[#25dd59] border border-[#25dd59]/30">
+                  Gaji Kantor
+                </span>
+              );
             case "FREELANCE_MILESTONE":
-              return <Badge variant="processing" className="text-[9px]">Milestone Freelance</Badge>;
+              return (
+                <span className="rounded-full px-2.5 py-0.5 text-[9px] font-bold bg-blue-500/15 text-blue-400 border border-blue-500/30">
+                  Milestone Freelance
+                </span>
+              );
             case "PROJECT_EXPENSE":
-              return <Badge variant="destructive" className="text-[9px]">Biaya Proyek</Badge>;
+              return (
+                <span className="rounded-full px-2.5 py-0.5 text-[9px] font-bold bg-[#e28460]/15 text-[#e28460] border border-[#e28460]/30">
+                  Biaya Proyek
+                </span>
+              );
             default:
-              return <Badge variant="outline" className="text-[9px]">Manual</Badge>;
+              return (
+                <span className="rounded-full px-2.5 py-0.5 text-[9px] font-bold bg-muted text-muted-foreground border border-card-border">
+                  Manual
+                </span>
+              );
           }
         },
       },
@@ -155,14 +170,14 @@ export function TransactionTable({ data, onRefresh }: TransactionTableProps) {
                 setSelectedTransaction(row.original);
                 setDetailOpen(true);
               }}
-              className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-card-border/40 transition-colors"
+              className="p-1.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-card transition-colors"
               title="Lihat Detail"
             >
               <Eye className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => handleDelete(row.original.id, row.original.description)}
-              className="p-1.5 rounded-lg text-muted-foreground hover:text-red-400 hover:bg-card-border/40 transition-colors"
+              className="p-1.5 rounded-full text-muted-foreground hover:text-red-400 hover:bg-card transition-colors"
               title="Hapus Transaksi"
             >
               <Trash2 className="w-3.5 h-3.5" />
@@ -197,15 +212,15 @@ export function TransactionTable({ data, onRefresh }: TransactionTableProps) {
   return (
     <div className="space-y-4">
       {/* Table Toolbar & Multi-filters */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-4 rounded-3xl bg-card border border-card-border">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-4 sm:p-5 rounded-2xl bg-card-inner border border-card-border-subtle shadow-sm">
         {/* Type Filter Pills */}
-        <div className="inline-flex p-1 rounded-2xl bg-background border border-card-border">
+        <div className="inline-flex p-1 rounded-full bg-card border border-card-border shadow-sm">
           <button
             onClick={() => setTypeFilter("ALL")}
             className={cn(
-              "px-3 py-1.5 rounded-xl text-xs font-bold transition-all",
+              "px-3.5 py-1.5 rounded-full text-xs font-bold transition-all",
               typeFilter === "ALL"
-                ? "bg-card-border/70 text-foreground shadow-sm"
+                ? "bg-card-border text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
@@ -214,9 +229,9 @@ export function TransactionTable({ data, onRefresh }: TransactionTableProps) {
           <button
             onClick={() => setTypeFilter("INCOME")}
             className={cn(
-              "px-3 py-1.5 rounded-xl text-xs font-bold transition-all",
+              "px-3.5 py-1.5 rounded-full text-xs font-bold transition-all",
               typeFilter === "INCOME"
-                ? "bg-neon/15 text-neon shadow-sm"
+                ? "bg-neon text-black font-extrabold shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
@@ -225,9 +240,9 @@ export function TransactionTable({ data, onRefresh }: TransactionTableProps) {
           <button
             onClick={() => setTypeFilter("EXPENSE")}
             className={cn(
-              "px-3 py-1.5 rounded-xl text-xs font-bold transition-all",
+              "px-3.5 py-1.5 rounded-full text-xs font-bold transition-all",
               typeFilter === "EXPENSE"
-                ? "bg-red-500/15 text-red-400 shadow-sm"
+                ? "bg-red-500/20 text-red-400 font-extrabold border border-red-500/30 shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
@@ -243,25 +258,25 @@ export function TransactionTable({ data, onRefresh }: TransactionTableProps) {
             placeholder="Cari transaksi..."
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
-            className="pl-10 h-10 text-xs rounded-2xl"
+            className="pl-10 h-10 text-xs rounded-full bg-card border border-card-border text-foreground placeholder:text-muted-foreground focus-visible:ring-neon/30"
           />
         </div>
       </div>
 
       {/* Table Canvas */}
-      <div className="rounded-3xl border border-card-border bg-card overflow-hidden shadow-sm">
+      <div className="rounded-2xl border border-card-border-subtle bg-card-inner overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr
                   key={headerGroup.id}
-                  className="border-b border-card-border bg-background/50"
+                  className="border-b border-card-border-subtle bg-card/60"
                 >
                   {headerGroup.headers.map((header) => (
                     <th
                       key={header.id}
-                      className="px-4 py-3 text-xs font-bold text-muted-foreground uppercase tracking-wider"
+                      className="px-4 py-3 text-[11px] font-bold text-muted-foreground uppercase tracking-wider"
                     >
                       {header.isPlaceholder
                         ? null
@@ -274,12 +289,12 @@ export function TransactionTable({ data, onRefresh }: TransactionTableProps) {
                 </tr>
               ))}
             </thead>
-            <tbody className="divide-y divide-card-border/60">
+            <tbody className="divide-y divide-card-border-subtle/60">
               {table.getRowModel().rows.length > 0 ? (
                 table.getRowModel().rows.map((row) => (
                   <tr
                     key={row.id}
-                    className="hover:bg-card-border/20 transition-colors"
+                    className="hover:bg-card/40 transition-colors"
                   >
                     {row.getVisibleCells().map((cell) => (
                       <td key={cell.id} className="px-4 py-3.5">
@@ -306,7 +321,7 @@ export function TransactionTable({ data, onRefresh }: TransactionTableProps) {
         </div>
 
         {/* Pagination Controls */}
-        <div className="flex items-center justify-between px-4 py-3 border-t border-card-border bg-background/30 text-xs text-muted-foreground">
+        <div className="flex items-center justify-between px-4 py-3 border-t border-card-border-subtle bg-card/40 text-xs text-muted-foreground">
           <span>
             Halaman {table.getState().pagination.pageIndex + 1} dari{" "}
             {Math.max(1, table.getPageCount())}
@@ -317,7 +332,7 @@ export function TransactionTable({ data, onRefresh }: TransactionTableProps) {
               size="sm"
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
-              className="h-8 px-2.5 text-xs"
+              className="h-8 px-3 rounded-full text-xs bg-card border border-card-border hover:bg-card/80"
             >
               <ChevronLeft className="w-4 h-4" />
             </Button>
@@ -326,7 +341,7 @@ export function TransactionTable({ data, onRefresh }: TransactionTableProps) {
               size="sm"
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
-              className="h-8 px-2.5 text-xs"
+              className="h-8 px-3 rounded-full text-xs bg-card border border-card-border hover:bg-card/80"
             >
               <ChevronRight className="w-4 h-4" />
             </Button>
