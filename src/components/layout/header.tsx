@@ -117,7 +117,7 @@ export function Header({ onToggleMobileMenu, onOpenQuickAdd, className }: Header
       <div className="flex items-center gap-3">
         <button
           onClick={onToggleMobileMenu}
-          className="lg:hidden p-2 rounded-xl text-foreground hover:bg-card border border-card-border transition-colors"
+          className="lg:hidden p-2.5 rounded-full text-foreground hover:bg-card border border-card-border transition-colors"
           aria-label="Open menu"
         >
           <Menu className="w-5 h-5" />
@@ -148,7 +148,7 @@ export function Header({ onToggleMobileMenu, onOpenQuickAdd, className }: Header
             }}
             onFocus={() => setIsSearchOpen(true)}
             placeholder="Cari modul, proyek, kas (Ctrl+K)..."
-            className="w-64 lg:w-80 h-9 pl-10 pr-12 text-xs rounded-full bg-card border border-card-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-neon/40 transition-all"
+            className="w-64 lg:w-80 h-10 pl-10 pr-12 text-xs rounded-full bg-card border border-card-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-neon/40 shadow-sm transition-all"
           />
           <kbd className="absolute right-3 hidden lg:inline-block px-1.5 py-0.5 bg-card-border/60 text-[10px] font-mono text-muted-foreground rounded border border-card-border">
             Ctrl+K
@@ -156,14 +156,14 @@ export function Header({ onToggleMobileMenu, onOpenQuickAdd, className }: Header
 
           {/* Quick Search Palette Dropdown */}
           {isSearchOpen && (
-            <div className="absolute top-11 left-0 w-80 lg:w-96 rounded-2xl bg-card border border-card-border shadow-2xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+            <div className="absolute top-12 left-0 w-80 lg:w-96 rounded-[1.5rem] bg-card border border-card-border shadow-2xl p-2.5 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
               <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground border-b border-card-border/60 flex items-center justify-between">
                 <span>Navigasi Cepat</span>
                 <span className="text-neon flex items-center gap-1">
                   <Sparkles className="w-3 h-3" /> SynapseFlow
                 </span>
               </div>
-              <div className="py-1 max-h-64 overflow-y-auto space-y-0.5">
+              <div className="py-1.5 max-h-64 overflow-y-auto space-y-1">
                 {filteredItems.length > 0 ? (
                   filteredItems.map((item) => {
                     const Icon = item.icon;
@@ -171,11 +171,11 @@ export function Header({ onToggleMobileMenu, onOpenQuickAdd, className }: Header
                       <button
                         key={item.href}
                         onClick={() => handleSelectItem(item.href)}
-                        className="w-full flex items-center justify-between p-2 rounded-xl text-left hover:bg-neon/10 hover:border-neon/30 border border-transparent transition-all group"
+                        className="w-full flex items-center justify-between p-2.5 rounded-xl text-left hover:bg-card-inner hover:border-card-border-subtle border border-transparent transition-all group"
                       >
                         <div className="flex items-center gap-2.5">
-                          <div className="w-7 h-7 rounded-lg bg-card-border/40 flex items-center justify-center text-neon group-hover:bg-neon/20 transition-colors">
-                            <Icon className="w-3.5 h-3.5" />
+                          <div className="w-8 h-8 rounded-lg bg-card-border/40 flex items-center justify-center text-neon group-hover:bg-neon/20 transition-colors">
+                            <Icon className="w-4 h-4" />
                           </div>
                           <div>
                             <div className="text-xs font-bold text-foreground group-hover:text-neon transition-colors">
@@ -204,12 +204,12 @@ export function Header({ onToggleMobileMenu, onOpenQuickAdd, className }: Header
         {onOpenQuickAdd && (
           <button
             onClick={onOpenQuickAdd}
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neon/15 hover:bg-neon/25 text-neon border border-neon/40 text-xs font-bold transition-all"
+            className="hidden sm:flex items-center gap-1.5 px-4 py-2 rounded-full bg-neon hover:bg-neon/90 text-black text-xs font-bold shadow-sm hover:shadow-[0_0_15px_rgba(43,240,98,0.35)] transition-all cursor-pointer"
             title="Catat Cepat Transaksi (Alt+N)"
           >
             <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
             <span>Catat Cepat</span>
-            <kbd className="hidden lg:inline-block ml-1 px-1.5 py-0.2 bg-black/40 text-[9px] font-mono text-neon/80 rounded border border-neon/30">
+            <kbd className="hidden lg:inline-block ml-1 px-1.5 py-0.2 bg-black/20 text-[9px] font-mono text-black/80 rounded border border-black/20">
               Alt+N
             </kbd>
           </button>
@@ -219,7 +219,7 @@ export function Header({ onToggleMobileMenu, onOpenQuickAdd, className }: Header
         {mounted && (
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-xl bg-card border border-card-border text-foreground hover:border-neon/40 hover:text-neon transition-all"
+            className="w-10 h-10 rounded-full flex items-center justify-center bg-card border border-card-border text-foreground hover:border-neon/40 hover:text-neon shadow-sm transition-all cursor-pointer"
             title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
           >
             {isDark ? (
@@ -232,11 +232,11 @@ export function Header({ onToggleMobileMenu, onOpenQuickAdd, className }: Header
 
         {/* Notification Bell */}
         <button
-          className="relative p-2 rounded-xl bg-card border border-card-border text-foreground hover:border-neon/40 hover:text-neon transition-all"
+          className="relative w-10 h-10 rounded-full flex items-center justify-center bg-card border border-card-border text-foreground hover:border-neon/40 hover:text-neon shadow-sm transition-all cursor-pointer"
           title="Notifications"
         >
           <Bell className="w-4 h-4" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-neon animate-pulse" />
+          <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-neon animate-pulse" />
         </button>
       </div>
     </header>

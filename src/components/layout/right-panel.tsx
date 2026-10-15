@@ -68,7 +68,7 @@ export function RightPanel({ className }: RightPanelProps) {
       )}
     >
       {/* 1. Weekly Horizontal Calendar Strip */}
-      <div className="p-4 rounded-3xl bg-card border border-card-border shadow-sm">
+      <div className="p-5 rounded-[2rem] bg-card border border-card-border shadow-md">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4 text-neon" />
@@ -79,7 +79,7 @@ export function RightPanel({ className }: RightPanelProps) {
           </span>
         </div>
 
-        <div className="grid grid-cols-7 gap-1.5 text-center">
+        <div className="grid grid-cols-7 gap-1 text-center">
           {weekDays.map((w) => {
             const isSelected = selectedDay === w.dayNumber;
             return (
@@ -87,12 +87,12 @@ export function RightPanel({ className }: RightPanelProps) {
                 key={w.dayNumber}
                 onClick={() => setSelectedDay(w.dayNumber)}
                 className={cn(
-                  "flex flex-col items-center py-2 px-1 rounded-2xl transition-all duration-200",
+                  "flex flex-col items-center py-2 px-1 rounded-2xl transition-all duration-200 cursor-pointer",
                   isSelected
-                    ? "bg-neon text-black font-extrabold shadow-[0_0_12px_rgba(59,240,41,0.4)]"
+                    ? "bg-neon text-black font-extrabold shadow-[0_0_12px_rgba(43,240,98,0.4)]"
                     : w.isToday
                     ? "bg-neon/15 text-neon font-bold"
-                    : "text-muted-foreground hover:bg-card-border/40 hover:text-foreground"
+                    : "text-muted-foreground hover:bg-card-inner hover:text-foreground"
                 )}
               >
                 <span className="text-[10px] uppercase font-semibold">{w.dayName}</span>
@@ -104,7 +104,7 @@ export function RightPanel({ className }: RightPanelProps) {
       </div>
 
       {/* 2. Payday Countdown Circular Card */}
-      <div className="p-4 rounded-3xl bg-card border border-card-border shadow-sm">
+      <div className="p-5 rounded-[2rem] bg-card border border-card-border shadow-md">
         <div className="flex items-center justify-between mb-2">
           <span className="text-xs font-bold text-foreground">Payday Countdown</span>
           <Badge variant="processing" className="text-[10px]">
@@ -114,7 +114,7 @@ export function RightPanel({ className }: RightPanelProps) {
 
         <div className="flex items-center gap-4 mt-3">
           {/* Circular Countdown Progress */}
-          <div className="relative flex items-center justify-center">
+          <div className="relative flex items-center justify-center shrink-0">
             <svg className="w-16 h-16 transform -rotate-90">
               <circle
                 cx="32"
@@ -148,8 +148,8 @@ export function RightPanel({ className }: RightPanelProps) {
             </div>
           </div>
 
-          <div className="flex flex-col">
-            <span className="text-xs font-semibold text-foreground truncate max-w-[150px]">
+          <div className="flex flex-col min-w-0">
+            <span className="text-xs font-semibold text-foreground truncate">
               {companyName}
             </span>
             <span className="text-[11px] text-muted-foreground mt-0.5">
@@ -163,21 +163,21 @@ export function RightPanel({ className }: RightPanelProps) {
       </div>
 
       {/* 3. Active Deliverable Milestones */}
-      <div className="p-4 rounded-3xl bg-card border border-card-border shadow-sm space-y-3">
+      <div className="p-5 rounded-[2rem] bg-card border border-card-border shadow-md space-y-3">
         <div className="flex items-center justify-between">
           <span className="text-xs font-bold text-foreground">Proyek & Milestones</span>
           <span className="text-[10px] text-neon font-semibold">{deliverables.length} Aktif</span>
         </div>
 
         {deliverables.length === 0 ? (
-          <div className="p-4 rounded-2xl bg-background/50 border border-card-border/40 text-center space-y-1">
+          <div className="p-4 rounded-2xl bg-card-inner border border-dashed border-card-border-subtle text-center space-y-1">
             <CheckCircle2 className="w-6 h-6 text-neon mx-auto opacity-70" />
             <p className="text-xs font-semibold text-foreground">Semua Termin Selesai</p>
             <p className="text-[10px] text-muted-foreground">Tidak ada piutang jatuh tempo</p>
           </div>
         ) : (
           deliverables.slice(0, 3).map((item) => (
-            <div key={item.id} className="p-3 rounded-2xl bg-background border border-card-border/60 space-y-2">
+            <div key={item.id} className="p-3.5 rounded-2xl bg-card-inner border border-card-border-subtle hover:border-card-border hover:bg-card-inner/90 transition-all duration-200 space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold text-foreground truncate max-w-[150px]">
                   {item.projectName}
@@ -189,11 +189,11 @@ export function RightPanel({ className }: RightPanelProps) {
                   {item.status === "PAID" ? "Lunas" : item.status === "INVOICED" ? "Invoiced" : "Draft"}
                 </Badge>
               </div>
-              <div className="w-full bg-card-border h-1.5 rounded-full overflow-hidden">
+              <div className="w-full bg-card-border-subtle h-1.5 rounded-full overflow-hidden">
                 <div
                   className={cn(
                     "h-full rounded-full transition-all",
-                    item.status === "PAID" ? "bg-neon w-full" : "bg-amber-400 w-3/4"
+                    item.status === "PAID" ? "bg-neon w-full" : "bg-[#e28460] w-3/4"
                   )}
                 />
               </div>

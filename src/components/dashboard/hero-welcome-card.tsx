@@ -60,16 +60,10 @@ export function HeroWelcomeCard({
   className,
 }: HeroWelcomeCardProps) {
   const [greeting, setGreeting] = useState<string>(() => getGreeting());
-  const [isWinking, setIsWinking] = useState(false);
 
   useEffect(() => {
     setGreeting(getGreeting());
   }, []);
-
-  const handleMascotClick = () => {
-    setIsWinking(true);
-    setTimeout(() => setIsWinking(false), 800);
-  };
 
   const isSurplus = metrics.netCashflow >= 0;
   const cashflowStatus = isSurplus ? "surplus" : "defisit";
@@ -79,122 +73,186 @@ export function HeroWelcomeCard({
   return (
     <section
       className={cn(
-        "bg-white text-slate-900 border border-slate-200 shadow-xl rounded-3xl p-6 sm:p-8 relative overflow-hidden transition-all",
+        "relative rounded-[2.5rem] p-7 md:p-8 overflow-hidden shadow-xl border text-[#07240f] select-none transition-all",
         className
       )}
+      style={{
+        background:
+          "linear-gradient(135deg, rgb(164, 246, 83) 0%, rgb(117, 231, 48) 65%, rgb(98, 220, 33) 100%)",
+        borderColor: "rgb(136, 239, 64)",
+      }}
     >
-      {/* Ambient Neon Glow */}
-      <div className="absolute -right-20 -top-20 w-80 h-80 rounded-full bg-emerald-400/20 blur-3xl pointer-events-none" />
+      <div className="relative z-10 max-w-[70%] sm:max-w-[65%]">
+        {/* Dynamic Greeting Heading */}
+        <h2
+          suppressHydrationWarning
+          className="text-3xl md:text-4xl font-extrabold tracking-tight leading-tight text-[#072510]"
+        >
+          {greeting},
+          <br />
+          {user.name || "User"}
+        </h2>
 
-      <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-        <div className="space-y-3 max-w-xl">
-          {/* Header Pill Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-200/50 shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
-            Semi-ERP Multi-User Engine • Active
-          </div>
+        {/* Dynamic Summary Text */}
+        <p className="text-xs md:text-sm font-semibold text-[#0d3d19] mt-2.5 leading-relaxed">
+          Arus kas bulan ini {cashflowStatus}{" "}
+          <span className="font-black text-[#072510]">{formattedNetCashflow}</span>.
+          Anda memiliki{" "}
+          <span className="font-black text-[#072510]">
+            {upcomingInterviewsCount} agenda interview
+          </span>{" "}
+          dan{" "}
+          <span className="font-black text-[#072510]">
+            {pendingMilestonesCount} termin piutang freelance
+          </span>{" "}
+          siap ditagihkan.
+        </p>
+      </div>
 
-          {/* Dynamic Greeting Heading */}
-          <h1
-            suppressHydrationWarning
-            className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900"
-          >
-            {greeting},{" "}
-            <span className="text-emerald-600">{user.name || "User"}</span>!
-          </h1>
+      {/* Stylized Cybernetic Mascot Visual Graphic (SVG Vector from Stitch) */}
+      <div className="absolute right-2 -bottom-2 sm:right-6 sm:bottom-0 w-44 h-48 md:w-56 md:h-60 z-10 pointer-events-none select-none">
+        <svg
+          className="w-full h-full drop-shadow-2xl animate-float"
+          fill="none"
+          viewBox="0 0 220 240"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          {/* Pedestal */}
+          <rect
+            fill="#0c4a1e"
+            height="42"
+            rx="10"
+            stroke="#2bf062"
+            strokeWidth="2"
+            width="80"
+            x="70"
+            y="195"
+          />
+          <path
+            d="M75 210h70M80 225h60"
+            stroke="#38e54d"
+            strokeDasharray="4 3"
+            strokeWidth="1.5"
+          />
+          {/* Legs & Torso */}
+          <rect
+            fill="#0d1b11"
+            height="48"
+            rx="16"
+            stroke="#2bf062"
+            strokeWidth="2.5"
+            width="50"
+            x="85"
+            y="150"
+          />
+          <circle cx="110" cy="174" fill="#2bf062" fillOpacity="0.8" r="8" />
+          <line
+            stroke="#38e54d"
+            strokeWidth="2"
+            x1="94"
+            x2="126"
+            y1="188"
+            y2="188"
+          />
+          {/* Head with Visor */}
+          <rect
+            fill="#08140c"
+            height="98"
+            rx="36"
+            stroke="#25e85d"
+            strokeWidth="3"
+            width="116"
+            x="52"
+            y="45"
+          />
+          {/* Ears / Antennas */}
+          <rect
+            fill="#133d1e"
+            height="32"
+            rx="8"
+            stroke="#2bf062"
+            strokeWidth="2"
+            width="16"
+            x="36"
+            y="78"
+          />
+          <rect
+            fill="#133d1e"
+            height="32"
+            rx="8"
+            stroke="#2bf062"
+            strokeWidth="2"
+            width="16"
+            x="168"
+            y="78"
+          />
+          <circle cx="110" cy="38" fill="#2bf062" r="6" />
+          <rect fill="#133d1e" height="6" width="4" x="108" y="42" />
+          {/* Visor Digital Screen */}
+          <rect fill="#051c0b" height="72" rx="22" width="92" x="64" y="58" />
+          {/* Glowing Diamond Cyber Eyes */}
+          <polygon
+            className="animate-pulse"
+            fill="#2bf062"
+            points="88,86 96,75 104,86 96,97"
+          />
+          <polygon
+            className="animate-pulse"
+            fill="#2bf062"
+            points="120,86 128,75 136,86 128,97"
+          />
+          {/* Circuit Lines */}
+          <path
+            d="M72 70h12v15M148 70h-12v15M96 110v12M128 110v12M74 114h20M126 114h20"
+            stroke="#1f8a41"
+            strokeLinecap="round"
+            strokeWidth="2"
+          />
+        </svg>
+      </div>
 
-          {/* Dynamic Summary Text */}
-          <p className="text-sm text-slate-600 leading-relaxed">
-            Arus kas bulan ini {cashflowStatus}{" "}
-            <strong className="text-slate-900">{formattedNetCashflow}</strong>. Anda
-            memiliki{" "}
-            <strong className="text-slate-900">
-              {upcomingInterviewsCount} jadwal interview
-            </strong>{" "}
-            dan{" "}
-            <strong className="text-slate-900">
-              {pendingMilestonesCount} termin piutang freelance
-            </strong>{" "}
-            yang siap ditagihkan.
+      {/* Bottom Floating KPI Metric Ribbon (Stitch exact layout) */}
+      <div className="mt-8 bg-white rounded-2xl md:rounded-[1.5rem] p-4 md:p-5 shadow-lg flex items-center justify-between text-gray-800 z-10 relative">
+        {/* KPI 1: Total Kas Likuid */}
+        <div className="flex-1 border-r border-gray-200/80 pr-3 sm:pr-4">
+          <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+            <Wallet className="w-3.5 h-3.5 text-gray-400" />
+            Total Kas Likuid
           </p>
-
-          {/* 3 Quick KPI Cards inside Banner */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 pt-2">
-            {/* KPI 1: Total Kas Likuid */}
-            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
-              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-                <Wallet className="w-3.5 h-3.5 text-slate-400" />
-                Total Kas Likuid
-              </span>
-              <p className="text-lg sm:text-xl font-black text-slate-900 tabular-nums mt-1">
-                {formatRupiah(metrics.totalLiquidCash)}
-              </p>
-              <p className="text-[11px] text-slate-500 font-medium truncate mt-0.5">
-                Saldo siap pakai
-              </p>
-            </div>
-
-            {/* KPI 2: Piutang Freelance */}
-            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
-              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-amber-500" />
-                Piutang Freelance
-              </span>
-              <p className="text-lg sm:text-xl font-black text-amber-600 tabular-nums mt-1">
-                {formatRupiah(metrics.freelanceReceivables)}
-              </p>
-              <p className="text-[11px] text-slate-500 font-medium truncate mt-0.5">
-                Menunggu pencairan
-              </p>
-            </div>
-
-            {/* KPI 3: Gajian Berikutnya */}
-            <div className="col-span-2 sm:col-span-1 p-3 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
-              <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-                <Calendar className="w-3.5 h-3.5 text-emerald-600" />
-                Gajian Berikutnya
-              </span>
-              <p className="text-lg sm:text-xl font-black text-emerald-600 tabular-nums mt-1">
-                {metrics.nextPayday.daysRemaining} Hari Lagi
-              </p>
-              <p className="text-[11px] text-slate-500 font-medium truncate mt-0.5">
-                {paydayCompany}
-              </p>
-            </div>
+          <div className="flex items-baseline gap-1.5 mt-0.5">
+            <span className="text-xl sm:text-2xl md:text-3xl font-black text-gray-900 tracking-tight tabular-nums">
+              {formatRupiah(metrics.totalLiquidCash)}
+            </span>
           </div>
         </div>
 
-        {/* 3D Cyber Mascot Asset (visible on lg screens) */}
-        <div className="hidden lg:flex flex-col items-center justify-center relative select-none">
-          <div className="relative w-40 h-40 flex items-center justify-center animate-float">
-            <div
-              onClick={handleMascotClick}
-              className="w-32 h-32 rounded-3xl bg-gradient-to-tr from-emerald-500 via-lime-400 to-green-600 shadow-2xl flex items-center justify-center transform rotate-6 hover:rotate-12 transition-transform duration-500 cursor-pointer group"
-              title="SynapseBot AI Companion"
-            >
-              {/* Cyber Visor */}
-              <div className="w-20 h-20 rounded-2xl bg-slate-900 flex flex-col items-center justify-center p-2 shadow-inner transition-transform group-hover:scale-105 duration-300">
-                {/* Neon Pulsing Eyes */}
-                <div className="flex gap-2 mb-1.5 items-center h-4">
-                  {isWinking ? (
-                    <>
-                      <span className="w-3 h-0.5 rounded-full bg-neon shadow-[0_0_8px_var(--neon-accent,#3BF029)]" />
-                      <span className="w-3 h-3 rounded-full bg-neon animate-pulse shadow-[0_0_8px_var(--neon-accent,#3BF029)]" />
-                    </>
-                  ) : (
-                    <>
-                      <span className="w-3 h-3 rounded-full bg-neon animate-pulse shadow-[0_0_8px_var(--neon-accent,#3BF029)]" />
-                      <span className="w-3 h-3 rounded-full bg-neon animate-pulse shadow-[0_0_8px_var(--neon-accent,#3BF029)]" />
-                    </>
-                  )}
-                </div>
-                {/* Mouth Line */}
-                <div className="w-8 h-1 rounded-full bg-white/40 group-hover:bg-neon/80 transition-colors" />
-              </div>
-            </div>
+        {/* KPI 2: Piutang Freelance */}
+        <div className="flex-1 border-r border-gray-200/80 px-3 sm:px-4">
+          <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+            <Clock className="w-3.5 h-3.5 text-amber-500" />
+            Piutang Freelance
+          </p>
+          <div className="flex items-baseline gap-1.5 mt-0.5">
+            <span className="text-xl sm:text-2xl md:text-3xl font-black text-amber-600 tracking-tight tabular-nums">
+              {formatRupiah(metrics.freelanceReceivables)}
+            </span>
           </div>
-          {/* Ambient Shadow Glow Below */}
-          <div className="w-24 h-4 rounded-full bg-emerald-300/40 blur-md -mt-2 animate-pulse-glow" />
+        </div>
+
+        {/* KPI 3: Gajian Berikutnya */}
+        <div className="flex-1 pl-3 sm:pl-4">
+          <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+            <Calendar className="w-3.5 h-3.5 text-emerald-600" />
+            Gajian Berikutnya
+          </p>
+          <div className="flex items-baseline gap-1.5 mt-0.5">
+            <span className="text-xl sm:text-2xl md:text-3xl font-black text-emerald-600 tracking-tight tabular-nums">
+              {metrics.nextPayday.daysRemaining} Hari Lagi
+            </span>
+            <span className="hidden sm:inline text-[11px] font-bold text-gray-400 truncate max-w-[120px]">
+              {paydayCompany}
+            </span>
+          </div>
         </div>
       </div>
     </section>

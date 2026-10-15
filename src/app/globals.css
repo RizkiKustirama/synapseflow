@@ -4,41 +4,45 @@
 
 @layer base {
   :root {
-    /* Light Mode (Ivory Charcoal & Neon Lime) */
-    --background: #F5F6F8;
-    --foreground: #0F172A;
-    --sidebar-background: #0C0E12;
+    /* Light Mode (Stitch Light Dashboard) */
+    --background: #F6F5F1;
+    --foreground: #111827;
+    --sidebar-background: #0C1A11;
     --sidebar-foreground: #FFFFFF;
-    --sidebar-accent: rgba(255, 255, 255, 0.12);
+    --sidebar-accent: #F6F5F1;
     --card: #FFFFFF;
-    --card-foreground: #0F172A;
-    --card-border: #E2E8F0;
-    --hero-card-bg: linear-gradient(135deg, #EAFCE3 0%, #FFFFFF 100%);
-    --hero-card-fg: #0F172A;
-    --muted-text: #64748B;
-    --neon-accent: #22C55E;
-    --badge-processing: #86EF3C;
-    --badge-done: #FED7AA;
-    --badge-pending: #E2E8F0;
+    --card-foreground: #111827;
+    --card-inner: #F8FAF9;
+    --card-border: #E5E7EB;
+    --card-border-subtle: #E2E8F0;
+    --hero-card-bg: linear-gradient(135deg, rgb(164, 246, 83) 0%, rgb(117, 231, 48) 65%, rgb(98, 220, 33) 100%);
+    --hero-card-fg: #072510;
+    --muted-text: #6B7280;
+    --neon-accent: #25DD59;
+    --badge-processing: #25DD59;
+    --badge-done: #FEF3C7;
+    --badge-pending: #E5E7EB;
   }
 
   .dark {
-    /* Dark Mode (Cyber-Forest Obsidian & Neon Glow) */
-    --background: #081308;
+    /* Dark Mode (Stitch Dark Dashboard) */
+    --background: #0B140D;
     --foreground: #FFFFFF;
-    --sidebar-background: #227C0E;
+    --sidebar-background: #187413;
     --sidebar-foreground: #FFFFFF;
-    --sidebar-accent: #175B09;
-    --card: #112111;
+    --sidebar-accent: #0B140D;
+    --card: #0F2214;
     --card-foreground: #FFFFFF;
-    --card-border: #1D381D;
-    --hero-card-bg: #FFFFFF;
-    --hero-card-fg: #0C180B;
-    --muted-text: #7DA37B;
-    --neon-accent: #3BF029;
-    --badge-processing: #86EF3C;
-    --badge-done: #D97706;
-    --badge-pending: #233B23;
+    --card-inner: rgba(11, 37, 19, 0.65);
+    --card-border: #18371F;
+    --card-border-subtle: #184523;
+    --hero-card-bg: linear-gradient(135deg, rgb(164, 246, 83) 0%, rgb(117, 231, 48) 65%, rgb(98, 220, 33) 100%);
+    --hero-card-fg: #072510;
+    --muted-text: #7FA38A;
+    --neon-accent: #2BF062;
+    --badge-processing: #25DD59;
+    --badge-done: #E28460;
+    --badge-pending: #184523;
   }
 
   * {

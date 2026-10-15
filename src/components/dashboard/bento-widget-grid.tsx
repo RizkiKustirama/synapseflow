@@ -379,7 +379,7 @@ export function BentoWidgetGrid({
             </CardHeader>
             <CardContent className="space-y-2.5">
               {recentTransactions.length === 0 ? (
-                <div className="p-8 rounded-2xl bg-background/50 border border-dashed border-card-border flex flex-col items-center justify-center text-center space-y-2">
+                <div className="p-8 rounded-2xl bg-card-inner border border-dashed border-card-border-subtle flex flex-col items-center justify-center text-center space-y-2">
                   <div className="w-10 h-10 rounded-xl bg-card border border-card-border text-muted-foreground flex items-center justify-center">
                     <Receipt className="w-5 h-5 opacity-40" />
                   </div>
@@ -398,7 +398,7 @@ export function BentoWidgetGrid({
                   return (
                     <div
                       key={tx.id}
-                      className="flex items-center justify-between p-3 sm:p-3.5 rounded-2xl bg-background border border-card-border/60 hover:border-neon/30 transition-all duration-150"
+                      className="flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-card-inner border border-card-border-subtle hover:border-card-border hover:bg-card-inner/90 transition-all duration-200"
                     >
                       <div className="flex items-center gap-3 min-w-0 pr-3">
                         <div
@@ -483,7 +483,7 @@ export function BentoWidgetGrid({
             </CardHeader>
             <CardContent className="space-y-2.5">
               {activeDeliverables.length === 0 ? (
-                <div className="p-8 rounded-2xl bg-background/50 border border-dashed border-card-border flex flex-col items-center justify-center text-center space-y-2">
+                <div className="p-8 rounded-2xl bg-card-inner border border-dashed border-card-border-subtle flex flex-col items-center justify-center text-center space-y-2">
                   <div className="w-10 h-10 rounded-xl bg-card border border-card-border text-muted-foreground flex items-center justify-center">
                     <CheckCircle2 className="w-5 h-5 text-neon opacity-70" />
                   </div>
@@ -501,7 +501,7 @@ export function BentoWidgetGrid({
                   return (
                     <div
                       key={item.id}
-                      className="flex items-center justify-between p-3 sm:p-3.5 rounded-2xl bg-background border border-card-border/60 hover:border-amber-500/30 transition-all duration-150"
+                      className="flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-card-inner border border-card-border-subtle hover:border-card-border hover:bg-card-inner/90 transition-all duration-200"
                     >
                       <div className="min-w-0 pr-3 space-y-1">
                         <div className="flex items-center gap-2 flex-wrap">
@@ -510,7 +510,7 @@ export function BentoWidgetGrid({
                           </p>
                           <Badge
                             variant={statusMeta.variant}
-                            className="text-[9px] px-1.5 py-0"
+                            className="text-[9px] px-2 py-0.5"
                           >
                             {statusMeta.label}
                           </Badge>
@@ -528,7 +528,7 @@ export function BentoWidgetGrid({
                         </div>
                       </div>
                       <div className="text-right shrink-0">
-                        <span className="text-xs sm:text-sm font-black text-amber-400 tabular-nums">
+                        <span className="text-xs sm:text-sm font-black text-neon tabular-nums">
                           {formatRupiah(item.amount)}
                         </span>
                       </div>
@@ -570,7 +570,7 @@ export function BentoWidgetGrid({
             </CardHeader>
             <CardContent className="space-y-2.5">
               {todaysTasks.length === 0 ? (
-                <div className="p-8 rounded-2xl bg-background/50 border border-dashed border-card-border flex flex-col items-center justify-center text-center space-y-2">
+                <div className="p-8 rounded-2xl bg-card-inner border border-dashed border-card-border-subtle flex flex-col items-center justify-center text-center space-y-2">
                   <div className="w-10 h-10 rounded-xl bg-card border border-card-border text-muted-foreground flex items-center justify-center">
                     <CheckCircle2 className="w-5 h-5 text-neon opacity-70" />
                   </div>
@@ -593,10 +593,10 @@ export function BentoWidgetGrid({
                     <div
                       key={task.id}
                       className={cn(
-                        "flex items-start gap-3 p-3 sm:p-3.5 rounded-2xl border transition-all duration-150",
+                        "flex items-start gap-3 p-3.5 sm:p-4 rounded-2xl border transition-all duration-200",
                         isDone
-                          ? "bg-background/40 border-card-border/50 opacity-75"
-                          : "bg-background border-card-border/80 hover:border-neon/30"
+                          ? "bg-card-inner/50 border-card-border-subtle/50 opacity-60"
+                          : "bg-card-inner border-card-border-subtle hover:border-card-border hover:bg-card-inner/90"
                       )}
                     >
                       <button
@@ -606,7 +606,7 @@ export function BentoWidgetGrid({
                         className={cn(
                           "mt-0.5 w-5 h-5 rounded-lg flex items-center justify-center transition-all shrink-0 border cursor-pointer",
                           isDone
-                            ? "bg-neon border-neon text-black shadow-[0_0_10px_rgba(59,240,41,0.4)]"
+                            ? "bg-neon border-neon text-black shadow-[0_0_10px_rgba(43,240,98,0.4)]"
                             : "bg-card border-card-border text-transparent hover:border-neon/60 hover:text-neon/40",
                           isUpdating && "opacity-50 cursor-not-allowed"
                         )}
@@ -635,7 +635,7 @@ export function BentoWidgetGrid({
                           </p>
                           <span
                             className={cn(
-                              "px-1.5 py-0.2 rounded-full text-[9px] font-bold border",
+                              "px-2 py-0.5 rounded-full text-[9px] font-bold border",
                               priorityMeta.className
                             )}
                           >
@@ -690,7 +690,7 @@ export function BentoWidgetGrid({
             </CardHeader>
             <CardContent className="space-y-2.5">
               {upcomingInterviews.length === 0 ? (
-                <div className="p-8 rounded-2xl bg-background/50 border border-dashed border-card-border flex flex-col items-center justify-center text-center space-y-2">
+                <div className="p-8 rounded-2xl bg-card-inner border border-dashed border-card-border-subtle flex flex-col items-center justify-center text-center space-y-2">
                   <div className="w-10 h-10 rounded-xl bg-card border border-card-border text-muted-foreground flex items-center justify-center">
                     <Calendar className="w-5 h-5 opacity-40" />
                   </div>
@@ -710,7 +710,7 @@ export function BentoWidgetGrid({
                   return (
                     <div
                       key={interview.id}
-                      className="p-3 sm:p-3.5 rounded-2xl bg-background border border-card-border/60 hover:border-neon/30 transition-all duration-150 space-y-2.5"
+                      className="p-3.5 sm:p-4 rounded-2xl bg-card-inner border border-card-border-subtle hover:border-card-border hover:bg-card-inner/90 transition-all duration-200 space-y-2.5"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0 space-y-0.5">
@@ -736,7 +736,7 @@ export function BentoWidgetGrid({
                             }
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-neon text-black text-xs font-bold hover:bg-neon/90 hover:shadow-[0_0_12px_rgba(59,240,41,0.35)] transition-all shrink-0"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-neon text-black text-xs font-bold hover:bg-neon/90 hover:shadow-[0_0_12px_rgba(43,240,98,0.35)] transition-all shrink-0"
                           >
                             <span>Meeting</span>
                             <ExternalLink className="w-3.5 h-3.5" />
@@ -744,7 +744,7 @@ export function BentoWidgetGrid({
                         )}
                       </div>
 
-                      <div className="flex items-center gap-3 text-[11px] text-muted-foreground pt-1 border-t border-card-border/40">
+                      <div className="flex items-center gap-3 text-[11px] text-muted-foreground pt-2 border-t border-card-border-subtle">
                         <div className="flex items-center gap-1.5">
                           <Calendar className="w-3 h-3 text-muted-foreground" />
                           <span>{dateStr}</span>

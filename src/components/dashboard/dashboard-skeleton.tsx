@@ -15,7 +15,7 @@ export function DashboardSkeleton({ className }: { className?: string }) {
       {/* =======================================================================
           1. HERO WELCOME CARD SKELETON
          ======================================================================= */}
-      <section className="relative overflow-hidden rounded-3xl bg-card/60 border border-card-border shadow-sm p-6 sm:p-8 animate-pulse">
+      <section className="relative overflow-hidden rounded-[2rem] lg:rounded-[2.5rem] bg-card/60 border border-card-border shadow-sm p-6 sm:p-8 animate-pulse">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
           <div className="space-y-3.5 max-w-xl w-full">
             {/* Status Pill Badge */}

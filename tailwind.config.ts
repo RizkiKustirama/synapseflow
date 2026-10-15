@@ -22,6 +22,8 @@ const config: Config = {
           DEFAULT: "var(--card)",
           foreground: "var(--card-foreground)",
           border: "var(--card-border)",
+          inner: "var(--card-inner)",
+          "border-subtle": "var(--card-border-subtle)",
         },
         hero: {
           bg: "var(--hero-card-bg)",
@@ -29,7 +31,7 @@ const config: Config = {
         },
         neon: {
           DEFAULT: "var(--neon-accent)",
-          glow: "rgba(59, 240, 41, 0.35)",
+          glow: "rgba(43, 240, 98, 0.35)",
         },
         muted: {
           DEFAULT: "var(--muted-text)",
@@ -43,8 +45,10 @@ const config: Config = {
       },
       borderRadius: {
         "2xl": "1rem",
+        "2.5xl": "1.25rem",
         "3xl": "1.5rem",
         "4xl": "2rem",
+        "5xl": "2.5rem",
       },
       keyframes: {
         float: {

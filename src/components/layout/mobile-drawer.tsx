@@ -47,36 +47,62 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
         {/* Header */}
         <div className="flex items-center justify-between pb-5 border-b border-white/10">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-emerald-600 via-lime-500 to-neon flex items-center justify-center">
-              <div className="w-4 h-4 rounded-full border-2 border-white/90" />
+            <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center shadow-md">
+              <span className="text-black font-black text-xl leading-none">S</span>
             </div>
             <div>
-              <span className="text-lg font-black tracking-tight">
-                Synapse<span className="text-neon">Flow</span>
+              <span className="text-base font-black tracking-wider text-white uppercase font-sans">
+                SYNAPSEFLOW
               </span>
-              <p className="text-[10px] text-white/50 uppercase font-semibold">
-                Semi-ERP Operating System
+              <p className="text-[10px] text-white/60 font-semibold tracking-wide">
+                OPERATING SYSTEM
               </p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors"
+            className="p-1.5 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* User Card */}
-        <div className="my-5 p-3 rounded-2xl bg-white/5 border border-white/10">
+        <div className="my-5 p-3 rounded-2xl bg-white/10 border border-white/10 backdrop-blur-sm">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-neon/20 border border-neon/40 flex items-center justify-center font-bold text-neon text-sm">
-              AP
+            <div className="relative flex items-center justify-center">
+              <svg className="w-11 h-11 transform -rotate-90" viewBox="0 0 48 48">
+                <circle
+                  cx="24"
+                  cy="24"
+                  r="20"
+                  stroke="rgba(255,255,255,0.2)"
+                  strokeWidth="3"
+                  fill="transparent"
+                />
+                <circle
+                  cx="24"
+                  cy="24"
+                  r="20"
+                  stroke="#2bf062"
+                  strokeWidth="3"
+                  strokeDasharray="125.6"
+                  strokeDashoffset="31.4"
+                  fill="transparent"
+                  strokeLinecap="round"
+                />
+              </svg>
+              <div className="absolute inset-0 m-auto w-8 h-8 rounded-full bg-white/20 border border-white/40 flex items-center justify-center font-bold text-white text-xs">
+                AP
+              </div>
+              <div className="absolute -bottom-1 -right-1 px-1.5 py-0.2 rounded-full bg-white text-black text-[9px] font-black shadow-sm">
+                ★ 7.5
+              </div>
             </div>
-            <div>
-              <p className="text-xs font-bold text-white">Alex Pratama</p>
-              <p className="text-[11px] text-white/60">Level 7 • Fullstack Pro</p>
+            <div className="min-w-0">
+              <p className="text-xs font-black text-white truncate">Alex Pratama</p>
+              <p className="text-[11px] text-white/70 truncate">Fullstack Pro</p>
             </div>
           </div>
         </div>
