@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
@@ -14,6 +15,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getCurrentUser, logoutUser, AuthUser } from "@/actions/auth.actions";
+import { BrandLogo } from "@/components/ui/brand-logo";
 
 interface SidebarProps {
   className?: string;
@@ -89,13 +91,8 @@ export function Sidebar({ className }: SidebarProps) {
       )}
     >
       {/* Brand Logo Header */}
-      <div className="flex items-center gap-2.5 px-1 pr-6 mb-4">
-        <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center font-black text-[#187413] dark:text-[#187413] text-lg tracking-tighter shadow-sm">
-          S
-        </div>
-        <span className="text-xl font-extrabold tracking-wider text-white uppercase">
-          SYNAPSEFLOW
-        </span>
+      <div className="px-1 pr-6 mb-4">
+        <BrandLogo variant="emblem-sidebar" size="md" showText={true} href="/" />
       </div>
 
       {/* User Profile Card with Circular Progress Meter */}
@@ -226,14 +223,32 @@ export function Sidebar({ className }: SidebarProps) {
       {/* Bottom Card: Workspace Connected Info & Logout */}
       <div className="mt-auto pt-3 pr-6 border-t border-white/15 flex flex-col items-center text-center">
         <div className="flex items-center -space-x-1.5 mb-1.5">
-          <div className="w-7 h-7 rounded-full bg-emerald-200 border-2 border-[#187413] dark:border-[#187413] flex items-center justify-center text-[10px] font-bold text-emerald-900">
-            SF
+          <div className="w-7 h-7 rounded-full overflow-hidden border-2 border-white/20 shadow">
+            <Image
+              src="/logo/green-bg-black-logo.png"
+              alt="Module Sync"
+              width={28}
+              height={28}
+              className="w-full h-full object-cover"
+            />
           </div>
-          <div className="w-8 h-8 rounded-full bg-white border-2 border-[#187413] dark:border-[#187413] flex items-center justify-center text-[11px] font-bold text-emerald-900 shadow">
-            OS
+          <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-white/30 shadow-md">
+            <Image
+              src="/logo/black-bg-green-logo.png"
+              alt="SynapseFlow Core"
+              width={32}
+              height={32}
+              className="w-full h-full object-cover"
+            />
           </div>
-          <div className="w-7 h-7 rounded-full bg-emerald-950 text-white border-2 border-[#187413] dark:border-[#187413] flex items-center justify-center text-[10px] font-bold">
-            4
+          <div className="w-7 h-7 rounded-full overflow-hidden border-2 border-white/20 shadow">
+            <Image
+              src="/logo/white-bg-green-logo.png"
+              alt="Cloud Sync"
+              width={28}
+              height={28}
+              className="w-full h-full object-cover"
+            />
           </div>
         </div>
 

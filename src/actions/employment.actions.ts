@@ -209,6 +209,17 @@ export async function createEmployment(formData: EmploymentFormInput) {
   const userId = await getCurrentUserId();
   const validated = employmentSchema.parse(formData);
 
+  // Enforce multi-tenant foreign key ownership
+  if (validated.jobApplicationId) {
+    const app = await prisma.jobApplication.findFirst({
+      where: { id: validated.jobApplicationId, userId },
+      select: { id: true },
+    });
+    if (!app) {
+      throw new Error("Akses ditolak: Lamaran kerja tidak ditemukan atau bukan milik Anda");
+    }
+  }
+
   const created = await prisma.employment.create({
     data: {
       userId,

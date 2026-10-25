@@ -14,6 +14,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { BrandLogo } from "@/components/ui/brand-logo";
 
 interface MobileDrawerProps {
   isOpen: boolean;
@@ -46,18 +47,8 @@ export function MobileDrawer({ isOpen, onClose }: MobileDrawerProps) {
       <div className="relative flex flex-col w-4/5 max-w-sm h-full bg-sidebar text-sidebar-foreground p-5 shadow-2xl z-10 transition-transform">
         {/* Header */}
         <div className="flex items-center justify-between pb-5 border-b border-white/10">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center shadow-md">
-              <span className="text-black font-black text-xl leading-none">S</span>
-            </div>
-            <div>
-              <span className="text-base font-black tracking-wider text-white uppercase font-sans">
-                SYNAPSEFLOW
-              </span>
-              <p className="text-[10px] text-white/60 font-semibold tracking-wide">
-                OPERATING SYSTEM
-              </p>
-            </div>
+          <div onClick={onClose}>
+            <BrandLogo variant="emblem-sidebar" size="md" showText={true} href="/" />
           </div>
 
           <button

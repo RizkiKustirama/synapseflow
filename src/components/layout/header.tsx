@@ -19,6 +19,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { BrandLogo } from "@/components/ui/brand-logo";
 
 interface HeaderProps {
   onToggleMobileMenu?: () => void;
@@ -37,7 +38,7 @@ const SEARCH_ITEMS = [
 
 export function Header({ onToggleMobileMenu, onOpenQuickAdd, className }: HeaderProps) {
   const router = useRouter();
-  const [isDark, setIsDark] = useState(true);
+  const [isDark, setIsDark] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -46,10 +47,13 @@ export function Header({ onToggleMobileMenu, onOpenQuickAdd, className }: Header
 
   useEffect(() => {
     setMounted(true);
-    const isDarkMode = document.documentElement.classList.contains("dark");
-    setIsDark(isDarkMode || true);
-    if (!document.documentElement.classList.contains("dark")) {
+    const storedTheme = localStorage.getItem("synapseflow-theme");
+    if (storedTheme === "dark") {
       document.documentElement.classList.add("dark");
+      setIsDark(true);
+    } else {
+      document.documentElement.classList.remove("dark");
+      setIsDark(false);
     }
 
     // Keyboard shortcut: Ctrl+K or / to focus search
@@ -83,8 +87,10 @@ export function Header({ onToggleMobileMenu, onOpenQuickAdd, className }: Header
     setIsDark(nextDark);
     if (nextDark) {
       document.documentElement.classList.add("dark");
+      localStorage.setItem("synapseflow-theme", "dark");
     } else {
       document.documentElement.classList.remove("dark");
+      localStorage.setItem("synapseflow-theme", "light");
     }
   };
 
@@ -113,15 +119,21 @@ export function Header({ onToggleMobileMenu, onOpenQuickAdd, className }: Header
         className
       )}
     >
-      {/* Left: Mobile Menu Trigger + Date badge */}
+      {/* Left: Mobile Menu Trigger + Brand + Date badge */}
       <div className="flex items-center gap-3">
         <button
           onClick={onToggleMobileMenu}
-          className="lg:hidden p-2.5 rounded-full text-foreground hover:bg-card border border-card-border transition-colors"
+          className="lg:hidden p-2.5 rounded-full text-foreground hover:bg-card border border-card-border transition-colors shadow-sm"
           aria-label="Open menu"
         >
           <Menu className="w-5 h-5" />
         </button>
+
+        {/* Mobile Brand Emblem next to Hamburger */}
+        <div className="lg:hidden flex items-center gap-2">
+          <BrandLogo variant="white-bg" size="xs" showText={false} href="/" className="dark:hidden" />
+          <BrandLogo variant="black-bg" size="xs" showText={false} href="/" className="hidden dark:flex" />
+        </div>
 
         <div className="flex flex-col">
           <span className="text-xs text-muted-foreground font-medium hidden sm:inline-block">

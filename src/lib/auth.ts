@@ -3,14 +3,35 @@ import bcrypt from "bcryptjs";
 
 export const COOKIE_NAME = "sf_session";
 export const SESSION_MAX_AGE = 7 * 24 * 60 * 60; // 7 days in seconds
+export const SESSION_REFRESH_THRESHOLD = 2 * 24 * 60 * 60; // 2 days in seconds
 
-const JWT_SECRET_STRING = process.env.JWT_SECRET || "synapseflow-super-secret-jwt-key-minimum-32-chars-long";
-const JWT_SECRET = new TextEncoder().encode(JWT_SECRET_STRING);
+if (process.env.NODE_ENV === "production" && !process.env.JWT_SECRET) {
+  console.warn(
+    "[SECURITY WARNING] process.env.JWT_SECRET is not set in production. Using a fallback secret is insecure!"
+  );
+}
+
+export const JWT_SECRET_STRING =
+  process.env.JWT_SECRET || "synapseflow-super-secret-jwt-key-minimum-32-chars-long";
+export const JWT_SECRET = new TextEncoder().encode(JWT_SECRET_STRING);
 
 export interface SessionPayload {
   userId: string;
   email: string;
   fullName: string;
+  exp?: number;
+}
+
+/**
+ * Checks whether an active session is within the refresh threshold (sliding window).
+ */
+export function shouldRefreshSession(expTimestamp?: number): boolean {
+  if (!expTimestamp || typeof expTimestamp !== "number") {
+    return false;
+  }
+  const currentEpochSeconds = Math.floor(Date.now() / 1000);
+  const remainingSeconds = expTimestamp - currentEpochSeconds;
+  return remainingSeconds > 0 && remainingSeconds <= SESSION_REFRESH_THRESHOLD;
 }
 
 /**

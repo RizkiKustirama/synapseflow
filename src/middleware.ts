@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { jwtVerify } from "jose";
-
-const COOKIE_NAME = "sf_session";
-const JWT_SECRET_STRING = process.env.JWT_SECRET || "synapseflow-super-secret-jwt-key-minimum-32-chars-long";
-const JWT_SECRET = new TextEncoder().encode(JWT_SECRET_STRING);
+import { SignJWT, jwtVerify } from "jose";
+import {
+  COOKIE_NAME,
+  SESSION_MAX_AGE,
+  JWT_SECRET,
+  shouldRefreshSession,
+  SessionPayload,
+} from "@/lib/auth";
+import { getSafeRedirectUrl } from "@/lib/security";
 
 // Paths accessible without authentication
 const PUBLIC_PATHS = ["/login", "/register"];
@@ -16,6 +20,7 @@ export async function middleware(request: NextRequest) {
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
+    pathname.startsWith("/logo") ||
     pathname.includes(".") ||
     pathname === "/favicon.ico"
   ) {
@@ -24,12 +29,28 @@ export async function middleware(request: NextRequest) {
 
   const token = request.cookies.get(COOKIE_NAME)?.value;
   let isAuthenticated = false;
+  let refreshedToken: string | null = null;
 
   if (token) {
     try {
       const { payload } = await jwtVerify(token, JWT_SECRET);
       if (payload && payload.userId) {
         isAuthenticated = true;
+
+        // Sliding Session: Auto-refresh JWT if expiration is within 2 days
+        if (payload.exp && shouldRefreshSession(payload.exp)) {
+          const newSessionPayload: SessionPayload = {
+            userId: payload.userId as string,
+            email: (payload.email as string) || "",
+            fullName: (payload.fullName as string) || "",
+          };
+
+          refreshedToken = await new SignJWT({ ...newSessionPayload })
+            .setProtectedHeader({ alg: "HS256" })
+            .setIssuedAt()
+            .setExpirationTime("7d")
+            .sign(JWT_SECRET);
+        }
       }
     } catch {
       isAuthenticated = false;
@@ -42,7 +63,7 @@ export async function middleware(request: NextRequest) {
   if (!isAuthenticated && !isPublicPath) {
     const loginUrl = new URL("/login", request.url);
     if (pathname !== "/") {
-      loginUrl.searchParams.set("redirect", pathname);
+      loginUrl.searchParams.set("redirect", getSafeRedirectUrl(pathname));
     }
     return NextResponse.redirect(loginUrl);
   }
@@ -52,7 +73,21 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  return NextResponse.next();
+  // 3. Authenticated request - attach refreshed cookie if sliding window was triggered
+  const response = NextResponse.next();
+  if (refreshedToken) {
+    response.cookies.set({
+      name: COOKIE_NAME,
+      value: refreshedToken,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: SESSION_MAX_AGE,
+    });
+  }
+
+  return response;
 }
 
 export const config = {

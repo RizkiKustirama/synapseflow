@@ -15,6 +15,12 @@ import {
   Loader2,
   AlertCircle,
   Globe,
+  ChevronDown,
+  ChevronUp,
+  ClipboardPaste,
+  CheckCircle2,
+  RotateCcw,
+  Wand2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +30,7 @@ import {
   updateJobApplication,
   StoredJobApplication,
 } from "@/actions/career.actions";
+import { parseJobDescriptionAction } from "@/actions/career-parser.actions";
 
 export interface ApplicationDialogProps {
   isOpen: boolean;
@@ -83,6 +90,13 @@ export function ApplicationDialog({
   const [appliedDate, setAppliedDate] = useState(() => new Date().toISOString().split("T")[0]);
   const [notes, setNotes] = useState("");
 
+  // Smart Auto-Fill states
+  const [rawJobText, setRawJobText] = useState("");
+  const [isParsing, setIsParsing] = useState(false);
+  const [isAutofillOpen, setIsAutofillOpen] = useState(!isEditing);
+  const [parseNotice, setParseNotice] = useState<string | null>(null);
+  const [autofilledFields, setAutofilledFields] = useState<string[]>([]);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successNotice, setSuccessNotice] = useState(false);
@@ -92,6 +106,10 @@ export function ApplicationDialog({
     if (isOpen) {
       setErrorMsg(null);
       setSuccessNotice(false);
+      setRawJobText("");
+      setParseNotice(null);
+      setAutofilledFields([]);
+      setIsAutofillOpen(!applicationToEdit);
 
       if (applicationToEdit) {
         setCompanyName(applicationToEdit.companyName || "");
@@ -138,6 +156,84 @@ export function ApplicationDialog({
   }, [isOpen, applicationToEdit]);
 
   if (!isOpen) return null;
+
+  const handlePasteClipboard = async () => {
+    try {
+      if (typeof navigator !== "undefined" && navigator.clipboard && navigator.clipboard.readText) {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          setRawJobText(text);
+          setErrorMsg(null);
+        }
+      }
+    } catch {
+      // Browser permission blocked, user can still paste manually
+    }
+  };
+
+  const handleParseAutoFill = async () => {
+    if (!rawJobText.trim()) {
+      setErrorMsg("Tempel teks deskripsi lowongan atau thread X terlebih dahulu.");
+      return;
+    }
+
+    setErrorMsg(null);
+    setParseNotice(null);
+    setIsParsing(true);
+
+    try {
+      const res = await parseJobDescriptionAction(rawJobText);
+      if (res.success && res.data) {
+        const detected = res.data;
+        const filled: string[] = [];
+
+        if (detected.companyName) {
+          setCompanyName(detected.companyName);
+          filled.push("companyName");
+        }
+        if (detected.position) {
+          setPosition(detected.position);
+          filled.push("position");
+        }
+        if (detected.workLocation) {
+          setWorkLocation(detected.workLocation);
+          filled.push("workLocation");
+        }
+        if (detected.salaryOfferedMin !== null && detected.salaryOfferedMin !== undefined) {
+          setSalaryOfferedMin(detected.salaryOfferedMin.toString());
+          filled.push("salary");
+        }
+        if (detected.salaryOfferedMax !== null && detected.salaryOfferedMax !== undefined) {
+          setSalaryOfferedMax(detected.salaryOfferedMax.toString());
+          if (!filled.includes("salary")) filled.push("salary");
+        }
+        if (detected.jobUrl) {
+          setJobUrl(detected.jobUrl);
+          filled.push("jobUrl");
+        }
+        if (detected.notes) {
+          setNotes(detected.notes);
+          filled.push("notes");
+        }
+
+        setAutofilledFields(filled);
+        const engineLabel = res.source === "AI_GEMINI" ? "AI Gemini Flash" : "Smart Local Parser";
+        setParseNotice(
+          `${filled.length} data lowongan berhasil diekstrak via ${engineLabel}. Silakan masukkan versi CV dan lengkapi catatan.`
+        );
+      } else {
+        setErrorMsg(res.error || "Gagal mengekstrak rincian lowongan kerja.");
+      }
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setErrorMsg(err.message || "Terjadi kesalahan saat memproses ekstraksi.");
+      } else {
+        setErrorMsg("Gagal menjalankan smart parser.");
+      }
+    } finally {
+      setIsParsing(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -266,12 +362,115 @@ export function ApplicationDialog({
               </div>
             )}
 
+            {/* Smart Auto-Fill Panel */}
+            <div className="rounded-2xl border border-neon/30 bg-neon/5 p-4 space-y-3 shadow-[0_0_15px_rgba(59,240,41,0.08)]">
+              <div className="flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => setIsAutofillOpen(!isAutofillOpen)}
+                  className="flex items-center gap-2 text-left group"
+                >
+                  <div className="w-7 h-7 rounded-lg bg-neon/20 text-neon flex items-center justify-center">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-foreground group-hover:text-neon transition-colors flex items-center gap-1.5">
+                      Smart Auto-Fill dari Lowongan / Thread X
+                      <span className="text-[10px] font-semibold text-neon bg-neon/15 px-2 py-0.5 rounded-full border border-neon/30">
+                        AI Powered
+                      </span>
+                    </span>
+                    <p className="text-[11px] text-muted-foreground">
+                      Tempel deskripsi lowongan kerja atau cuitan X untuk mengisi form otomatis
+                    </p>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsAutofillOpen(!isAutofillOpen)}
+                  className="p-1 rounded-lg text-muted-foreground hover:text-foreground"
+                >
+                  {isAutofillOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                </button>
+              </div>
+
+              {isAutofillOpen && (
+                <div className="space-y-3 pt-2 border-t border-card-border/60 animate-in fade-in duration-200">
+                  <textarea
+                    rows={4}
+                    placeholder="Tempel rincian lowongan kerja dari LinkedIn, Glints, Jobstreet, atau thread X di sini (contoh: 'Hiring Senior Backend di PT XYZ, WFH Remote, Gaji 20-30jt, Link: https://...')..."
+                    value={rawJobText}
+                    onChange={(e) => setRawJobText(e.target.value)}
+                    className="flex w-full rounded-xl border border-card-border bg-background/80 px-3.5 py-2.5 text-xs text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon resize-none font-mono"
+                  />
+
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handlePasteClipboard}
+                        className="h-8 px-2.5 text-xs rounded-lg border-card-border gap-1.5 hover:bg-card-border/40"
+                      >
+                        <ClipboardPaste className="w-3.5 h-3.5 text-muted-foreground" />
+                        Tempel Clipboard
+                      </Button>
+                      {rawJobText && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setRawJobText("")}
+                          className="h-8 px-2.5 text-xs rounded-lg text-muted-foreground hover:text-foreground gap-1.5"
+                        >
+                          <RotateCcw className="w-3.5 h-3.5" />
+                          Hapus
+                        </Button>
+                      )}
+                    </div>
+
+                    <Button
+                      type="button"
+                      onClick={handleParseAutoFill}
+                      disabled={isParsing || !rawJobText.trim()}
+                      className="h-8 px-4 text-xs font-bold rounded-lg gap-1.5 shadow-[0_0_12px_rgba(59,240,41,0.25)]"
+                    >
+                      {isParsing ? (
+                        <>
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          Menganalisis...
+                        </>
+                      ) : (
+                        <>
+                          <Wand2 className="w-3.5 h-3.5" />
+                          Ekstrak & Isi Otomatis
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {parseNotice && (
+                <div className="flex items-center gap-2 p-2.5 rounded-xl bg-neon/15 border border-neon/30 text-neon text-xs font-medium">
+                  <CheckCircle2 className="w-4 h-4 shrink-0" />
+                  <span>{parseNotice}</span>
+                </div>
+              )}
+            </div>
+
             {/* Row 1: Company & Position */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
                   <Building2 className="w-3.5 h-3.5 text-neon" />
                   Nama Perusahaan <span className="text-neon">*</span>
+                  {autofilledFields.includes("companyName") && (
+                    <span className="text-[10px] text-neon bg-neon/15 px-2 py-0.5 rounded-full font-medium ml-auto">
+                      Terisi Otomatis
+                    </span>
+                  )}
                 </label>
                 <Input
                   required
@@ -286,6 +485,11 @@ export function ApplicationDialog({
                 <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
                   <Briefcase className="w-3.5 h-3.5 text-neon" />
                   Posisi / Role <span className="text-neon">*</span>
+                  {autofilledFields.includes("position") && (
+                    <span className="text-[10px] text-neon bg-neon/15 px-2 py-0.5 rounded-full font-medium ml-auto">
+                      Terisi Otomatis
+                    </span>
+                  )}
                 </label>
                 <Input
                   required
@@ -304,6 +508,11 @@ export function ApplicationDialog({
                 <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
                   <MapPin className="w-3.5 h-3.5 text-neon" />
                   Work Location
+                  {autofilledFields.includes("workLocation") && (
+                    <span className="text-[10px] text-neon bg-neon/15 px-2 py-0.5 rounded-full font-medium ml-auto">
+                      Terisi Otomatis
+                    </span>
+                  )}
                 </label>
                 <div className="grid grid-cols-3 gap-1 p-1 bg-background/80 rounded-2xl border border-card-border">
                   {LOCATION_OPTIONS.map((loc) => {
@@ -353,6 +562,11 @@ export function ApplicationDialog({
               <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
                 <DollarSign className="w-3.5 h-3.5 text-neon" />
                 Estimasi Gaji & Ekspektasi (IDR)
+                {autofilledFields.includes("salary") && (
+                  <span className="text-[10px] text-neon bg-neon/15 px-2 py-0.5 rounded-full font-medium ml-auto">
+                    Terisi Otomatis
+                  </span>
+                )}
               </label>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1">
@@ -400,6 +614,11 @@ export function ApplicationDialog({
                 <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
                   <LinkIcon className="w-3.5 h-3.5 text-neon" />
                   Link Lowongan (Job Post URL)
+                  {autofilledFields.includes("jobUrl") && (
+                    <span className="text-[10px] text-neon bg-neon/15 px-2 py-0.5 rounded-full font-medium ml-auto">
+                      Terisi Otomatis
+                    </span>
+                  )}
                 </label>
                 <Input
                   type="url"
@@ -414,6 +633,9 @@ export function ApplicationDialog({
                 <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
                   <FileText className="w-3.5 h-3.5 text-neon" />
                   Versi CV yang Dikirim
+                  <span className="text-[10px] text-amber-400 bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 rounded-full font-medium ml-auto">
+                    Perlu Diisi Manual
+                  </span>
                 </label>
                 <Input
                   type="text"
@@ -444,6 +666,11 @@ export function ApplicationDialog({
               <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
                 <FileText className="w-3.5 h-3.5 text-neon" />
                 Catatan Lamaran / Persiapan
+                {autofilledFields.includes("notes") && (
+                  <span className="text-[10px] text-neon bg-neon/15 px-2 py-0.5 rounded-full font-medium ml-auto">
+                    Terisi Otomatis
+                  </span>
+                )}
               </label>
               <textarea
                 rows={3}

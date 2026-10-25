@@ -5,11 +5,13 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Lock, Mail, Eye, EyeOff, ArrowRight, ShieldCheck, AlertCircle } from "lucide-react";
 import { loginUser } from "@/actions/auth.actions";
+import { BrandLogo } from "@/components/ui/brand-logo";
+import { getSafeRedirectUrl } from "@/lib/security";
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectPath = searchParams.get("redirect") || "/";
+  const redirectPath = getSafeRedirectUrl(searchParams.get("redirect"));
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -141,15 +143,13 @@ export default function LoginPage() {
 
       <div className="w-full max-w-md relative z-10">
         {/* Brand Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neon/10 border border-neon/30 text-neon text-xs font-semibold uppercase tracking-wider mb-3">
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>Multi-Tenant Enterprise OS</span>
+        <div className="text-center mb-8 flex flex-col items-center">
+          <BrandLogo variant="landscape" size="lg" href="/" className="mb-4" priority />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-card border border-card-border text-[11px] font-semibold text-muted-foreground shadow-sm">
+            <ShieldCheck className="w-3.5 h-3.5 text-neon" />
+            <span>Multi-Tenant Enterprise Operating System</span>
           </div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
-            Synapse<span className="text-neon">Flow</span>
-          </h1>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-2">
+          <p className="text-xs sm:text-sm text-muted-foreground mt-2 max-w-sm">
             Masuk ke personal operating system untuk mengelola karier, pekerjaan kantor, freelance, dan arus kas.
           </p>
         </div>

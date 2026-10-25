@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { sanitizeSafeUrl } from "@/lib/security";
 import {
   jobApplicationSchema,
   interviewLogSchema,
@@ -111,7 +112,7 @@ export async function createJobApplication(formData: JobApplicationFormInput) {
       salaryOfferedMin: validated.salaryOfferedMin ?? null,
       salaryOfferedMax: validated.salaryOfferedMax ?? null,
       expectedSalary: validated.expectedSalary ?? null,
-      jobUrl: validated.jobUrl ?? null,
+      jobUrl: sanitizeSafeUrl(validated.jobUrl),
       cvVersion: validated.cvVersion ?? null,
       appliedDate: new Date(validated.appliedDate),
       notes: validated.notes ?? null,
@@ -162,7 +163,7 @@ export async function updateJobApplication(
       ...(formData.salaryOfferedMin !== undefined ? { salaryOfferedMin: formData.salaryOfferedMin } : {}),
       ...(formData.salaryOfferedMax !== undefined ? { salaryOfferedMax: formData.salaryOfferedMax } : {}),
       ...(formData.expectedSalary !== undefined ? { expectedSalary: formData.expectedSalary } : {}),
-      ...(formData.jobUrl !== undefined ? { jobUrl: formData.jobUrl } : {}),
+      ...(formData.jobUrl !== undefined ? { jobUrl: sanitizeSafeUrl(formData.jobUrl) } : {}),
       ...(formData.cvVersion !== undefined ? { cvVersion: formData.cvVersion } : {}),
       ...(formData.appliedDate ? { appliedDate: new Date(formData.appliedDate) } : {}),
       ...(formData.notes !== undefined ? { notes: formData.notes } : {}),
@@ -208,7 +209,7 @@ export async function addInterviewLog(formData: InterviewLogFormInput) {
       applicationId: validated.applicationId,
       roundName: validated.roundName,
       scheduledAt: new Date(validated.scheduledAt),
-      meetingLink: validated.meetingLink ?? null,
+      meetingLink: sanitizeSafeUrl(validated.meetingLink),
       interviewerInfo: validated.interviewerInfo ?? null,
       questionsAsked: validated.questionsAsked ?? null,
       feedbackNotes: validated.feedbackNotes ?? null,
@@ -242,6 +243,15 @@ export async function deleteInterviewLog(id: string, applicationId: string) {
 export async function convertApplicationToEmployment(data: ConvertToEmploymentInput) {
   const userId = await getCurrentUserId();
   const validated = convertToEmploymentSchema.parse(data);
+
+  // Enforce multi-tenant foreign key ownership
+  const app = await prisma.jobApplication.findFirst({
+    where: { id: validated.applicationId, userId },
+    select: { id: true },
+  });
+  if (!app) {
+    throw new Error("Akses ditolak: Lamaran kerja tidak ditemukan atau bukan milik Anda");
+  }
 
   const employment = await prisma.$transaction(async (tx) => {
     // 1. Create active Employment

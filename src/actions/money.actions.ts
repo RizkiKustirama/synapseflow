@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { sanitizeSafeUrl } from "@/lib/security";
 import {
   categorySchema,
   transactionSchema,
@@ -115,6 +116,30 @@ export async function createCategory(formData: CategoryFormInput) {
   const userId = await getCurrentUserId();
   const validated = categorySchema.parse(formData);
 
+  // Check if identical category already exists for this tenant to prevent unique constraint conflict
+  const existing = await prisma.category.findFirst({
+    where: {
+      userId,
+      name: { equals: validated.name, mode: "insensitive" },
+      type: validated.type,
+    },
+  });
+
+  if (existing) {
+    return {
+      success: true,
+      data: {
+        id: existing.id,
+        userId: existing.userId,
+        name: existing.name,
+        type: existing.type,
+        icon: existing.icon,
+        color: existing.color,
+        monthlyBudget: existing.monthlyBudget ? Number(existing.monthlyBudget) : null,
+      },
+    };
+  }
+
   const created = await prisma.category.create({
     data: {
       userId,
@@ -213,6 +238,37 @@ export async function createTransaction(formData: TransactionFormInput) {
     targetCategoryId = fallbackCategory.id;
   }
 
+  // Verify multi-tenant ownership of optional linked foreign keys to prevent IDOR injection
+  if (validated.employmentId) {
+    const emp = await prisma.employment.findFirst({
+      where: { id: validated.employmentId, userId },
+      select: { id: true },
+    });
+    if (!emp) {
+      throw new Error("Akses ditolak: Data pekerjaan tidak ditemukan atau bukan milik Anda");
+    }
+  }
+
+  if (validated.projectId) {
+    const proj = await prisma.freelanceProject.findFirst({
+      where: { id: validated.projectId, userId },
+      select: { id: true },
+    });
+    if (!proj) {
+      throw new Error("Akses ditolak: Data proyek tidak ditemukan atau bukan milik Anda");
+    }
+  }
+
+  if (validated.milestoneId) {
+    const ms = await prisma.projectMilestone.findFirst({
+      where: { id: validated.milestoneId, userId },
+      select: { id: true },
+    });
+    if (!ms) {
+      throw new Error("Akses ditolak: Data termin tidak ditemukan atau bukan milik Anda");
+    }
+  }
+
   const created = await prisma.transaction.create({
     data: {
       userId,
@@ -221,12 +277,12 @@ export async function createTransaction(formData: TransactionFormInput) {
       amount: Number(validated.amount),
       date: new Date(validated.date),
       description: validated.description,
-      notes: validated.notes,
-      receiptUrl: validated.receiptUrl,
+      notes: validated.notes ?? null,
+      receiptUrl: sanitizeSafeUrl(validated.receiptUrl),
       sourceType: validated.sourceType,
-      employmentId: validated.employmentId,
-      projectId: validated.projectId,
-      milestoneId: validated.milestoneId,
+      employmentId: validated.employmentId ?? null,
+      projectId: validated.projectId ?? null,
+      milestoneId: validated.milestoneId ?? null,
     },
     include: {
       category: true,

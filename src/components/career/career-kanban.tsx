@@ -23,6 +23,7 @@ import {
   deleteJobApplication,
 } from "@/actions/career.actions";
 import { formatRupiah, formatDate, cn } from "@/lib/utils";
+import { sanitizeSafeUrl } from "@/lib/security";
 
 export interface CareerKanbanProps {
   applications: StoredJobApplication[];
@@ -389,18 +390,21 @@ export function CareerKanban({
                           <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
                             {renderLocationBadge(app.workLocation)}
 
-                            {app.jobUrl && (
-                              <a
-                                href={app.jobUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                title="Buka tautan lowongan kerja"
-                                className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-card-inner text-muted-foreground hover:text-neon border border-card-border-subtle transition-colors"
-                              >
-                                <ExternalLink className="w-2.5 h-2.5" />
-                                Link
-                              </a>
-                            )}
+                            {(() => {
+                              const safeUrl = sanitizeSafeUrl(app.jobUrl);
+                              return safeUrl ? (
+                                <a
+                                  href={safeUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  title="Buka tautan lowongan kerja"
+                                  className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-card-inner text-muted-foreground hover:text-neon border border-card-border-subtle transition-colors"
+                                >
+                                  <ExternalLink className="w-2.5 h-2.5" />
+                                  Link
+                                </a>
+                              ) : null;
+                            })()}
 
                             {app.cvVersion && (
                               <span

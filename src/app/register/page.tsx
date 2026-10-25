@@ -15,6 +15,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { registerUser } from "@/actions/auth.actions";
+import { BrandLogo } from "@/components/ui/brand-logo";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -79,15 +80,13 @@ export default function RegisterPage() {
 
       <div className="w-full max-w-md relative z-10 py-6">
         {/* Brand Header */}
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neon/10 border border-neon/30 text-neon text-xs font-semibold uppercase tracking-wider mb-3">
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>Multi-Tenant Enterprise OS</span>
+        <div className="text-center mb-6 flex flex-col items-center">
+          <BrandLogo variant="landscape" size="lg" href="/" className="mb-4" priority />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-card border border-card-border text-[11px] font-semibold text-muted-foreground shadow-sm">
+            <ShieldCheck className="w-3.5 h-3.5 text-neon" />
+            <span>Multi-Tenant Enterprise Operating System</span>
           </div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
-            Synapse<span className="text-neon">Flow</span>
-          </h1>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-2">
+          <p className="text-xs sm:text-sm text-muted-foreground mt-2 max-w-sm">
             Daftarkan akun personal operating system baru untuk mengelola seluruh pilar karier dan finansial Anda.
           </p>
         </div>

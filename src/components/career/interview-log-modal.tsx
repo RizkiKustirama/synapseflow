@@ -26,6 +26,7 @@ import {
   StoredJobApplication,
   StoredInterviewLog,
 } from "@/actions/career.actions";
+import { sanitizeSafeUrl } from "@/lib/security";
 
 export interface InterviewLogModalProps {
   isOpen: boolean;
@@ -299,18 +300,21 @@ export function InterviewLogModal({
                             </span>
                           )}
 
-                          {log.meetingLink && (
-                            <a
-                              href={log.meetingLink}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-[11px] font-bold bg-neon/15 text-neon border border-neon/30 hover:bg-neon hover:text-black transition-all shadow-[0_0_10px_rgba(59,240,41,0.2)]"
-                            >
-                              <Video className="w-3 h-3" />
-                              <span>Buka Meeting</span>
-                              <ExternalLink className="w-3 h-3" />
-                            </a>
-                          )}
+                          {(() => {
+                            const safeLink = sanitizeSafeUrl(log.meetingLink);
+                            return safeLink ? (
+                              <a
+                                href={safeLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-[11px] font-bold bg-neon/15 text-neon border border-neon/30 hover:bg-neon hover:text-black transition-all shadow-[0_0_10px_rgba(59,240,41,0.2)]"
+                              >
+                                <Video className="w-3 h-3" />
+                                <span>Buka Meeting</span>
+                                <ExternalLink className="w-3 h-3" />
+                              </a>
+                            ) : null;
+                          })()}
                         </div>
 
                         {/* Questions & Preparation Notes */}

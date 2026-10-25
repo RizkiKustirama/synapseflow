@@ -28,6 +28,19 @@ export const jobApplicationSchema = z.object({
 
 export type JobApplicationFormInput = z.infer<typeof jobApplicationSchema>;
 
+export const parsedJobDataSchema = z.object({
+  companyName: z.string().default(""),
+  position: z.string().default(""),
+  workLocation: z.enum(["REMOTE", "HYBRID", "ONSITE"]).default("REMOTE"),
+  salaryOfferedMin: z.number().nullable().optional(),
+  salaryOfferedMax: z.number().nullable().optional(),
+  jobUrl: z.string().nullable().optional(),
+  notes: z.string().default(""),
+  source: z.enum(["AI_GEMINI", "LOCAL_FALLBACK"]).default("AI_GEMINI"),
+});
+
+export type ParsedJobData = z.infer<typeof parsedJobDataSchema>;
+
 export const interviewLogSchema = z.object({
   applicationId: z.string().min(1, "ID lamaran wajib ada"),
   roundName: z.string().min(1, "Nama tahapan interview wajib diisi").max(100),

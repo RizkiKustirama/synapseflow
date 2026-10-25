@@ -255,6 +255,17 @@ export async function createProject(formData: FreelanceProjectFormInput) {
   const userId = await getCurrentUserId();
   const validated = freelanceProjectSchema.parse(formData);
 
+  // Enforce multi-tenant foreign key ownership
+  if (validated.clientId) {
+    const client = await prisma.client.findFirst({
+      where: { id: validated.clientId, userId },
+      select: { id: true },
+    });
+    if (!client) {
+      throw new Error("Akses ditolak: Klien tidak ditemukan atau bukan milik Anda");
+    }
+  }
+
   const created = await prisma.freelanceProject.create({
     data: {
       userId,
