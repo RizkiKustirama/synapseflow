@@ -1,5 +1,4 @@
 import { SignJWT, jwtVerify } from "jose";
-import bcrypt from "bcryptjs";
 
 export const COOKIE_NAME = "sf_session";
 export const SESSION_MAX_AGE = 7 * 24 * 60 * 60; // 7 days in seconds
@@ -32,20 +31,6 @@ export function shouldRefreshSession(expTimestamp?: number): boolean {
   const currentEpochSeconds = Math.floor(Date.now() / 1000);
   const remainingSeconds = expTimestamp - currentEpochSeconds;
   return remainingSeconds > 0 && remainingSeconds <= SESSION_REFRESH_THRESHOLD;
-}
-
-/**
- * Hash plain password using bcrypt with salt rounds 10
- */
-export async function hashPassword(password: string): Promise<string> {
-  return bcrypt.hash(password, 10);
-}
-
-/**
- * Compare plain password against stored hash
- */
-export async function comparePassword(password: string, hash: string): Promise<boolean> {
-  return bcrypt.compare(password, hash);
 }
 
 /**

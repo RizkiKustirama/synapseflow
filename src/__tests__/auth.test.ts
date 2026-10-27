@@ -17,9 +17,8 @@ import {
   registerSchema,
   loginSchema,
 } from "@/lib/validations/auth.schema";
+import { hashPassword, comparePassword } from "@/lib/password";
 import {
-  hashPassword,
-  comparePassword,
   signSessionToken,
   verifySessionToken,
 } from "@/lib/auth";

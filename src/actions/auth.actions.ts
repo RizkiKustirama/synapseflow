@@ -9,9 +9,8 @@ import {
   RegisterFormInput,
   LoginFormInput,
 } from "@/lib/validations/auth.schema";
+import { hashPassword, comparePassword } from "@/lib/password";
 import {
-  hashPassword,
-  comparePassword,
   signSessionToken,
   verifySessionToken,
   COOKIE_NAME,

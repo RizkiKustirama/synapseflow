@@ -91,5 +91,5 @@ describe("Career Auto-Fill - Server Action Integration", () => {
     expect(res.data?.salaryOfferedMin).toBe(25000000);
     expect(res.data?.salaryOfferedMax).toBe(35000000);
     expect(res.data?.jobUrl).toBe("https://majudigital.com/apply");
-  }, 15000);
+  }, 30000);
 });

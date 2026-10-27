@@ -141,7 +141,7 @@ PENTING: Output HANYA berupa JSON valid tanpa markdown fence.`;
       },
       source: "AI_GEMINI",
     };
-  } catch (error) {
+  } catch {
     // If Gemini parsing fails or JSON invalid, gracefully fallback to local parser
     const fallbackUserId = await getCurrentUserId();
     const userCategories = fallbackUserId ? await getCategories() : [];

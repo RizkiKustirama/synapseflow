@@ -73,6 +73,10 @@ describe("Security Patches and Injection Defenses", () => {
   });
 
   describe("Sliding Session Refresh", () => {
+    it("should define session refresh threshold as 2 days", () => {
+      expect(SESSION_REFRESH_THRESHOLD).toBe(2 * 24 * 60 * 60);
+    });
+
     it("should identify tokens needing refresh when remaining lifespan is under threshold", () => {
       const nowInSeconds = Math.floor(Date.now() / 1000);
       // Expiring in 1 day (less than 2 days threshold)

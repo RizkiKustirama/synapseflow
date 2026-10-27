@@ -64,9 +64,7 @@ export function QuickAddModal({ isOpen, onClose, onSuccess }: QuickAddModalProps
   useEffect(() => {
     if (isOpen) {
       loadCategories().then((list) => {
-        if (!selectedCategory && list.length > 0) {
-          setSelectedCategory(list[0].id);
-        }
+        setSelectedCategory((prev) => (!prev && list.length > 0 ? list[0].id : prev));
       });
       setNaturalText("");
       setParseNotice(null);
@@ -120,7 +118,7 @@ export function QuickAddModal({ isOpen, onClose, onSuccess }: QuickAddModalProps
         }
 
         // Fetch categories matching detected type
-        const updatedCats = await loadCategories(d.type);
+        await loadCategories(d.type);
 
         if (d.categoryId) {
           setSelectedCategory(d.categoryId);
