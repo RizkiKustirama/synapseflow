@@ -359,7 +359,7 @@ export function QuickAddModal({ isOpen, onClose, onSuccess }: QuickAddModalProps
                   <Input
                     type="text"
                     inputMode="decimal"
-                    placeholder="0 (contoh: 2.249.291,86)"
+                    placeholder="0"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                     onBlur={() => {
@@ -375,7 +375,7 @@ export function QuickAddModal({ isOpen, onClose, onSuccess }: QuickAddModalProps
                   />
                 </div>
                 <p className="text-[10px] text-muted-foreground mt-1.5 px-0.5">
-                  Aturan format: Gunakan titik (.) untuk kelipatan ribuan dan koma (,) untuk desimal/sen (contoh: 2.249.291,86).
+                  Aturan format: Gunakan titik (.) untuk kelipatan ribuan dan koma (,) untuk desimal/sen.
                 </p>
 
                 {/* Quick Chip Adders */}
