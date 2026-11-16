@@ -55,6 +55,17 @@ describe("Money Smart Natural Language Parser", () => {
       expect(result.amount).toBe(350000);
       expect(result.categoryId).toBe("cat-3");
     });
+
+    it("should parse financial amount with dots and comma decimals accurately without ballooning to hundreds of millions", () => {
+      // User bug reproduction: '2.249.291,86' must be ~2.25 million, NEVER 224 million
+      const result = parseTransactionWithLocalHeuristics(
+        "beli perlengkapan kantor 2.249.291,86",
+        mockCategories
+      );
+      expect(result.type).toBe("EXPENSE");
+      expect(result.amount).toBe(2249291.86);
+      expect(result.amount).not.toBe(224929186);
+    });
   });
 
   describe("Income Parsing", () => {
@@ -67,6 +78,16 @@ describe("Money Smart Natural Language Parser", () => {
       expect(result.amount).toBe(3500000);
       expect(result.categoryId).toBe("cat-6");
       expect(result.categoryName).toBe("Termin Freelance");
+    });
+
+    it("should parse US formatted currency with comma thousands and dot decimals", () => {
+      const result = parseTransactionWithLocalHeuristics(
+        "terima fee termin freelance 2,249,291.86",
+        mockCategories
+      );
+      expect(result.type).toBe("INCOME");
+      expect(result.amount).toBe(2249291.86);
+      expect(result.categoryId).toBe("cat-6");
     });
 
     it("should parse income with 'juta' comma notation", () => {

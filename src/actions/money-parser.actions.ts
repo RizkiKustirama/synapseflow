@@ -66,7 +66,12 @@ Tugas Anda: Analisis kalimat transaksi dan ekstrak menjadi format JSON murni.
 
 Aturan Ekstraksi:
 1. type: "EXPENSE" (pengeluaran) atau "INCOME" (pemasukan).
-2. amount: Angka positif nominal Rupiah (misal "45rb" -> 45000, "3.5jt" -> 3500000, "50.000" -> 50000). Jika tidak ditemukan nominal, berikan null.
+2. amount: Angka positif nominal Rupiah berupa float atau integer.
+PENTING aturan penulisan keuangan Indonesia:
+- Tanda titik '.' adalah pemisah ribuan (contoh: "50.000" -> 50000, "1.500.000" -> 1500000).
+- Tanda koma ',' adalah pemisah desimal/sen (contoh: "2.249.291,86" -> 2249291.86). WAJIB pertahankan angka di belakang koma sebagai desimal float (2249291.86), JANGAN MENGHILANGKAN KOMA sehingga salah dibaca menjadi ratusan juta!
+- Bentuk singkatan: "45rb" / "45k" -> 45000, "3.5jt" -> 3500000.
+Jika tidak ditemukan nominal, berikan null.
 3. description: Deskripsi ringkas aktivitas transaksi yang rapi tanpa nominal (contoh: "Makan siang di warteg", "Beli bensin pertalite").
 4. categoryId: Pilih salah satu ID dari daftar kategori yang disediakan jika ada kecocokan yang relevan. JIKA TIDAK ADA KATEGORI YANG COCOK ATAU AMBIGU, WAJIB BERIKAN null (JANGAN MEMAKSA MEMILIH KATEGORI YANG SALAH).
 5. categoryName: Nama kategori yang dipilih atau null jika categoryId null.

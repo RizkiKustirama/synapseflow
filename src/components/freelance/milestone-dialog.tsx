@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { formatRupiah } from "@/lib/utils";
+import { formatRupiah, parseFinancialAmount, formatFinancialInput } from "@/lib/utils";
 import { createMilestone } from "@/actions/freelance.actions";
 
 export interface MilestoneDialogProps {
@@ -71,14 +71,14 @@ export function MilestoneDialog({
 
   if (!isOpen) return null;
 
-  const numericAmount = parseFloat(amount.replace(/[^0-9]/g, "") || "0");
+  const numericAmount = parseFinancialAmount(amount);
 
   const quickAmounts = [1000000, 2500000, 5000000, 10000000];
 
   const handleAddQuickAmount = (val: number) => {
     setAmount((prev) => {
-      const current = parseFloat(prev.replace(/[^0-9]/g, "") || "0");
-      return (current + val).toString();
+      const current = parseFinancialAmount(prev);
+      return formatFinancialInput(current + val);
     });
   };
 
@@ -217,11 +217,15 @@ export function MilestoneDialog({
               </span>
               <Input
                 type="text"
+                inputMode="decimal"
                 placeholder="5.000.000"
                 value={amount}
-                onChange={(e) => {
-                  const val = e.target.value.replace(/[^0-9]/g, "");
-                  setAmount(val ? parseInt(val, 10).toLocaleString("id-ID") : "");
+                onChange={(e) => setAmount(e.target.value)}
+                onBlur={() => {
+                  if (amount.trim()) {
+                    const parsed = parseFinancialAmount(amount);
+                    if (parsed > 0) setAmount(formatFinancialInput(parsed));
+                  }
                 }}
                 disabled={isSubmitting}
                 className="pl-10 h-10 text-xs sm:text-sm font-semibold bg-card-inner border-card-border-subtle rounded-xl"

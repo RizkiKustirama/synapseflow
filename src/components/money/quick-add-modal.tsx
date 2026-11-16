@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn, formatRupiah } from "@/lib/utils";
+import { cn, formatRupiah, parseFinancialAmount, formatFinancialInput } from "@/lib/utils";
 import {
   getCategories,
   createTransaction,
@@ -78,8 +78,9 @@ export function QuickAddModal({ isOpen, onClose, onSuccess }: QuickAddModalProps
   const quickAmounts = [10000, 25000, 50000, 100000, 500000];
 
   const handleAddQuickAmount = (val: number) => {
-    const current = parseInt(amount.replace(/[^0-9]/g, "") || "0", 10);
-    setAmount((current + val).toString());
+    const current = parseFinancialAmount(amount);
+    const updated = current + val;
+    setAmount(formatFinancialInput(updated));
   };
 
   const handlePasteClipboard = async () => {
@@ -108,7 +109,7 @@ export function QuickAddModal({ isOpen, onClose, onSuccess }: QuickAddModalProps
         setType(d.type);
 
         if (d.amount !== null && d.amount !== undefined) {
-          setAmount(d.amount.toString());
+          setAmount(formatFinancialInput(d.amount));
         }
         if (d.description) {
           setDescription(d.description);
@@ -180,7 +181,7 @@ export function QuickAddModal({ isOpen, onClose, onSuccess }: QuickAddModalProps
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const numAmount = parseFloat(amount.replace(/[^0-9]/g, ""));
+    const numAmount = parseFinancialAmount(amount);
     const cleanDescription = description.replace(/[<>]/g, "").trim();
     if (!numAmount || numAmount <= 0 || !cleanDescription || !selectedCategory) return;
 
@@ -341,22 +342,41 @@ export function QuickAddModal({ isOpen, onClose, onSuccess }: QuickAddModalProps
 
               {/* Amount Field */}
               <div>
-                <label className="block text-xs font-semibold text-muted-foreground mb-1.5">
-                  Nominal (IDR)
-                </label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-xs font-semibold text-muted-foreground">
+                    Nominal (IDR)
+                  </label>
+                  {parseFinancialAmount(amount) > 0 && (
+                    <span className="text-[11px] font-bold text-neon bg-neon/10 px-2.5 py-0.5 rounded-full border border-neon/20 animate-in fade-in">
+                      Terbaca: {formatRupiah(parseFinancialAmount(amount))}
+                    </span>
+                  )}
+                </div>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-muted-foreground">
                     Rp
                   </span>
                   <Input
-                    type="number"
-                    placeholder="0"
+                    type="text"
+                    inputMode="decimal"
+                    placeholder="0 (contoh: 2.249.291,86)"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
+                    onBlur={() => {
+                      if (amount.trim()) {
+                        const parsed = parseFinancialAmount(amount);
+                        if (parsed > 0) {
+                          setAmount(formatFinancialInput(parsed));
+                        }
+                      }
+                    }}
                     className="pl-12 text-lg font-extrabold tabular-nums tracking-wide h-12 rounded-2xl bg-card-inner border-card-border focus-visible:ring-neon/30"
                     required
                   />
                 </div>
+                <p className="text-[10px] text-muted-foreground mt-1.5 px-0.5">
+                  Aturan format: Gunakan titik (.) untuk kelipatan ribuan dan koma (,) untuk desimal/sen (contoh: 2.249.291,86).
+                </p>
 
                 {/* Quick Chip Adders */}
                 <div className="flex flex-wrap gap-1.5 mt-2">

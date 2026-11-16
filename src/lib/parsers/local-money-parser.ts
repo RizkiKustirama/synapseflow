@@ -1,3 +1,5 @@
+import { parseFinancialAmount } from "@/lib/utils";
+
 export interface CategoryRef {
   id: string;
   name: string;
@@ -167,16 +169,15 @@ export function parseTransactionWithLocalHeuristics(
     }
   }
 
-  // Pattern C: Standard Indonesian formatted currency e.g. "Rp 50.000", "50000", "Rp150.000"
+  // Pattern C: Standard Indonesian/International formatted currency e.g. "2.249.291,86", "Rp 50.000", "50000", "2,249,291.86"
   if (detectedAmount === null) {
     const standardRegex =
-      /(?:rp\.?\s*|idr\s*)?(\d{1,3}(?:\.\d{3})+|\d{4,9})\b/i;
+      /(?:rp\.?\s*|idr\s*)?(\d{1,3}(?:[.,]\d{3})*(?:[.,]\d{1,2})?|\d{4,12}(?:[.,]\d{1,2})?)\b/i;
     const standardMatch = text.match(standardRegex);
     if (standardMatch) {
-      const cleanedNumStr = standardMatch[1].replace(/\./g, "");
-      const num = parseInt(cleanedNumStr, 10);
-      if (!isNaN(num) && num > 0) {
-        detectedAmount = num;
+      const parsed = parseFinancialAmount(standardMatch[1]);
+      if (parsed > 0) {
+        detectedAmount = parsed;
         matchedAmountText = standardMatch[0];
       }
     }

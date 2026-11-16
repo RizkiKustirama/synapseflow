@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { formatRupiah } from "@/lib/utils";
+import { formatRupiah, parseFinancialAmount, formatFinancialInput } from "@/lib/utils";
 import { createProjectExpense } from "@/actions/freelance.actions";
 
 export interface ProjectExpenseDialogProps {
@@ -62,14 +62,14 @@ export function ProjectExpenseDialog({
 
   if (!isOpen) return null;
 
-  const numericAmount = parseFloat(amount.replace(/[^0-9]/g, "") || "0");
+  const numericAmount = parseFinancialAmount(amount);
 
   const quickAmounts = [100000, 250000, 500000, 1000000];
 
   const handleAddQuickAmount = (val: number) => {
     setAmount((prev) => {
-      const current = parseFloat(prev.replace(/[^0-9]/g, "") || "0");
-      return (current + val).toString();
+      const current = parseFinancialAmount(prev);
+      return formatFinancialInput(current + val);
     });
   };
 
@@ -208,11 +208,15 @@ export function ProjectExpenseDialog({
               </span>
               <Input
                 type="text"
+                inputMode="decimal"
                 placeholder="250.000"
                 value={amount}
-                onChange={(e) => {
-                  const val = e.target.value.replace(/[^0-9]/g, "");
-                  setAmount(val ? parseInt(val, 10).toLocaleString("id-ID") : "");
+                onChange={(e) => setAmount(e.target.value)}
+                onBlur={() => {
+                  if (amount.trim()) {
+                    const parsed = parseFinancialAmount(amount);
+                    if (parsed > 0) setAmount(formatFinancialInput(parsed));
+                  }
                 }}
                 disabled={isSubmitting}
                 className="pl-10 h-10 text-xs sm:text-sm font-semibold bg-card-inner border-card-border-subtle rounded-xl"
